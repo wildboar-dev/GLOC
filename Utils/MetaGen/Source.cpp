@@ -56,7 +56,8 @@ void Run(NVLib::Parameters * parameters)
 
     logger.Log(1, "Saving metadata");
     auto name = NVLib::StringUtils::GetDateTimeString();
-    auto path = pathHelper.GetPath("MetaData", name + ".xml");
+    auto path = pathHelper.GetPath("Meta", name + ".xml");
+    logger.Log(1, "Saving to: %s", path.c_str());
     Save(path, metaData.get());
 
     logger.StopApplication();

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<focal>1.1775999999999999e+03</focal>
+<imageSize>
+  640 480</imageSize>
+<rvec_1>
+  2.4158021810153776e-02 1.9326417448123021e-01 2.0534318538630707e+00</rvec_1>
+<tvec_1>
+  -7. -6. 343.</tvec_1>
+<rvec_2>
+  1.1985371138215153e+00 3.7953675271014649e+00 1.8377569078596569e+01</rvec_2>
+<tvec_2>
+  79. -6. 340.</tvec_2>
+<blockSize>5</blockSize>
+<gridSize>10</gridSize>
+</opencv_storage>
