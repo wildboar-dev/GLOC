@@ -22,3 +22,9 @@ target_link_libraries(ZhangFinderTests ZhangFinderLib NVLib ${OpenCV_LIBS} OpenS
 
 # Find the associated unit tests
 gtest_discover_tests(ZhangFinderTests)
+
+# Copy Test Resources across
+add_custom_target(test_copy ALL
+	COMMAND cmake -E copy_directory ${CMAKE_SOURCE_DIR}/ZhangFinderTests/Resources ${CMAKE_BINARY_DIR}/ZhangFinderTests 
+    DEPENDS ${MY_TARGET}
+)
