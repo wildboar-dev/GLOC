@@ -114,7 +114,7 @@ namespace NVL_Utils
             const char * keys = 
                 "{ help h usage ?   |                                   | Show help message                                 }"
                 "{ database         | /home/trevor/Research/GLOC/Data   | The location of the database within the system    }"
-                "{ dataset          | Distortion                        | The name of the dataset that we are using         }";
+                "{ dataset          | TestData                          | The name of the dataset that we are using         }";
  
             return string(keys);
         }

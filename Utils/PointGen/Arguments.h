@@ -21,23 +21,23 @@ namespace NVL_App
 	private:
 		double _focal;
 		Size _imageSize;
-		Mat _distortion;
-		Vec3d _rvec;
-		Vec3d _tvec;
-		Vec2d _blockSize;
-		Vec2i _gridSize;
-		string _folder;
+		Vec3d _rvec_1;
+		Vec3d _tvec_1;
+		Vec3d _rvec_2;
+		Vec3d _tvec_2;
+		double _blockSize;
+		int _gridSize;
 	public:
-		Arguments(double focal, Size& imageSize, Mat& distortion, Vec3d& rvec, Vec3d& tvec, Vec2d& blockSize, Vec2i& gridSize, const string& folder) :
-			_focal(focal), _imageSize(imageSize), _distortion(distortion), _rvec(rvec), _tvec(tvec), _blockSize(blockSize), _gridSize(gridSize), _folder(folder) {}
+		Arguments(double focal, Size& imageSize, Vec3d& rvec_1, Vec3d& tvec_1, Vec3d& rvec_2, Vec3d& tvec_2, double blockSize, int gridSize) :
+			_focal(focal), _imageSize(imageSize), _rvec_1(rvec_1), _tvec_1(tvec_1), _rvec_2(rvec_2), _tvec_2(tvec_2), _blockSize(blockSize), _gridSize(gridSize) {}
 
 		inline double& GetFocal() { return _focal; }
 		inline Size& GetImageSize() { return _imageSize; }
-		inline Mat& GetDistortion() { return _distortion; }
-		inline Vec3d& GetRvec() { return _rvec; }
-		inline Vec3d& GetTvec() { return _tvec; }
-		inline Vec2d& GetBlockSize() { return _blockSize; }
-		inline Vec2i& GetGridSize() { return _gridSize; }
-		inline string& GetFolder() { return _folder; }
+		inline Vec3d& GetRvec_1() { return _rvec_1; }
+		inline Vec3d& GetTvec_1() { return _tvec_1; }
+		inline Vec3d& GetRvec_2() { return _rvec_2; }
+		inline Vec3d& GetTvec_2() { return _tvec_2; }
+		inline double& GetBlockSize() { return _blockSize; }
+		inline int& GetGridSize() { return _gridSize; }
 	};
 }

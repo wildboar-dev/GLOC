@@ -6,8 +6,8 @@
 # @Date Created: 2024-03-05
 #--------------------------------------------------------
 
-cmake_minimum_required(VERSION 3.0.0)
-project(PointGen VERSION 0.1.0)
+cmake_minimum_required(VERSION 3.10.0)
+project(PointGen VERSION 1.0.0)
 
 # Set the base path of the libraries
 set(LIBRARY_BASE "$ENV{HOME}/Libraries")

@@ -10,6 +10,7 @@
 using namespace std;
 
 #include <NVLib/Logger.h>
+#include <NVLib/FileUtils.h>
 #include <NVLib/Path/PathHelper.h>
 #include <NVLib/Parameters/Parameters.h>
 
@@ -22,15 +23,16 @@ using namespace cv;
 //--------------------------------------------------
 // Function Prototypes
 //--------------------------------------------------
+void ProcessEntry(NVLib::PathHelper * pathHelper, NVLib::Logger * logger, const string fileName);
 void Run(NVLib::Parameters * parameters);
-unique_ptr<NVL_App::Arguments> LoadArguments(NVLib::PathHelper& pathHelper);
+unique_ptr<NVL_App::Arguments> LoadArguments(NVLib::PathHelper * pathHelper, const string& fileName);
 void FillScenePoints(NVL_App::Arguments * arguments, vector<Point3d>& points);
-void FillImagePoints(NVL_App::Arguments * arguments, const vector<Point3d>& scenePoints, vector<Point2d>& points);
-void FillUImagePoints(NVL_App::Arguments * arguments, const vector<Point3d>& scenePoints, vector<Point2d>& points);
+void FillImagePoints(NVL_App::Arguments * arguments, const vector<Point3d>& scenePoints, const Vec3d& rvec, const Vec3d& tvec, vector<Point2d>& points);
 Mat BuildCameraMat(NVL_App::Arguments * arguments);
 Mat MakeImage(NVL_App::Arguments * arguments, const vector<Point2d>& points);
-void SavePoints(NVLib::PathHelper& pathHelper, const string& folder, const vector<Point3d>& scenePoints, const vector<Point2d>& imagePoints);
-void SaveTruthPoints(NVLib::PathHelper& pathHelper, const string& folder, const vector<Point2d>& imagePoints);
+void SavePoints(const string& path, const vector<Point3d>& scenePoints, const vector<Point2d>& imagePoints_1, const vector<Point2d>& imagePoints_2);
+string GetImagePath(NVLib::PathHelper * pathHelper, const string& fileName, int index);
+string GetPointsPath(NVLib::PathHelper * pathHelper, const string& fileName);
 
 //--------------------------------------------------
 // Execution Logic
@@ -51,30 +53,56 @@ void Run(NVLib::Parameters * parameters)
     auto dataset = NVL_Utils::ArgReader::ReadString(parameters, "dataset");
     auto pathHelper = NVLib::PathHelper(database, dataset);
 
-    logger.Log(1, "Load the associated arguments from disk");
-    auto arguments = LoadArguments(pathHelper);
+    logger.Log(1, "Get all the XML meta files in the given folder");
+    auto metaFolder = pathHelper.GetPath("Meta");
+    auto files = vector<string>(); NVLib::FileUtils::GetFileList(metaFolder, files);
 
-    logger.Log(1, "Generate the associated 3D points");
-    auto scenePoints = vector<Point3d>(); FillScenePoints(arguments.get(), scenePoints);
-    
-    logger.Log(1, "Generate the image 2D points");
-    auto imagePoints = vector<Point2d>(); FillImagePoints(arguments.get(), scenePoints, imagePoints);
+    logger.Log(1, "Process each of the files");
+    for (auto file : files) 
+    {
+        auto fileName = NVLib::FileUtils::GetFileName(file);
+        auto extension = NVLib::FileUtils::GetExtension(fileName);
+        if (extension != "xml") continue;
 
-    logger.Log(1, "Generating ground truth image points");
-    auto truthPoints = vector<Point2d>(); FillUImagePoints(arguments.get(), scenePoints, truthPoints);
-
-    logger.Log(1, "Save the resultant image");
-    Mat image = MakeImage(arguments.get(), imagePoints);
-    auto imagePath = pathHelper.GetPath(arguments->GetFolder(), "image.png");
-    imwrite(imagePath, image);
-
-    logger.Log(1, "Save the associated points");
-    SavePoints(pathHelper, arguments->GetFolder(), scenePoints, imagePoints);
-
-    logger.Log(1, "Save the truth points");
-    SaveTruthPoints(pathHelper, arguments->GetFolder(), truthPoints);
+        logger.Log(1, "Processing: %s", fileName.c_str());
+        ProcessEntry(&pathHelper, &logger, fileName);
+    }
 
     logger.StopApplication();
+}
+
+//--------------------------------------------------
+// Data processing logic
+//--------------------------------------------------
+
+/**
+ * Add the logic to process an associated entry
+ * @param pathHelper The path helper that we are using
+ * @param logger The logger that we are using
+ * @param fileName The name of the file that we are processing
+ */
+void ProcessEntry(NVLib::PathHelper * pathHelper, NVLib::Logger * logger, const string fileName) 
+{
+    logger->Log(1, "Load the associated arguments from disk");
+    auto arguments = LoadArguments(pathHelper, fileName);
+
+    logger->Log(1, "Generate the associated 3D points");
+    auto scenePoints = vector<Point3d>(); FillScenePoints(arguments.get(), scenePoints);
+    
+    logger->Log(1, "Generate the image 2D points");
+    auto imagePoints_1 = vector<Point2d>(); FillImagePoints(arguments.get(), scenePoints, arguments->GetRvec_1(), arguments->GetTvec_1(),  imagePoints_1);
+    auto imagePoints_2 = vector<Point2d>(); FillImagePoints(arguments.get(), scenePoints, arguments->GetRvec_2(), arguments->GetTvec_2(),  imagePoints_2);
+
+    logger->Log(1, "Save the image");
+    Mat image_1 = MakeImage(arguments.get(), imagePoints_1);
+    Mat image_2 = MakeImage(arguments.get(), imagePoints_2);
+    auto imagePath_1 = GetImagePath(pathHelper, fileName, 1);
+    auto imagePath_2 = GetImagePath(pathHelper, fileName, 2);
+    imwrite(imagePath_1, image_1); imwrite(imagePath_2, image_2);
+
+    logger->Log(1, "Save the associated points");
+    auto pointsPath = GetPointsPath(pathHelper, fileName);
+    SavePoints(pointsPath, scenePoints, imagePoints_1, imagePoints_2);
 }
 
 //--------------------------------------------------
@@ -84,27 +112,28 @@ void Run(NVLib::Parameters * parameters)
 /**
  * Retrieve the arguments associated with the application
  * @param pathHelper The helper for getting the path information
+ * @param fileName The name of the file that we are processing
  * @return The arguments that we are getting for the application
 */
-unique_ptr<NVL_App::Arguments> LoadArguments(NVLib::PathHelper& pathHelper) 
+unique_ptr<NVL_App::Arguments> LoadArguments(NVLib::PathHelper* pathHelper, const string& fileName) 
 {
-    auto path = pathHelper.GetPath("Meta", "PointGen.xml");
+    auto path = pathHelper->GetPath("Meta", fileName);
 
     auto reader = FileStorage(path, FileStorage::FORMAT_XML | FileStorage::READ);
     if (!reader.isOpened()) throw runtime_error("Unable to open: " + path);
 
     double focal; reader["focal"] >> focal;
-    Size imageSize; reader["image_size"] >> imageSize;
-    Mat distortion; reader["distortion"] >> distortion;
-    Vec3d rvec; reader["rotation"] >> rvec;
-    Vec3d tvec; reader["translation"] >> tvec;
-    Vec2d blockSize; reader["block_size"] >> blockSize;
-    Vec2i gridSize; reader["grid_size"] >> gridSize;
-    string folder; reader["folder"] >> folder;
-
+    Size imageSize; reader["imageSize"] >> imageSize;
+    Vec3d rvec_1; reader["rvec_1"] >> rvec_1;
+    Vec3d tvec_1; reader["tvec_1"] >> tvec_1;
+    Vec3d rvec_2; reader["rvec_2"] >> rvec_2;
+    Vec3d tvec_2; reader["tvec_2"] >> tvec_2;
+    double blockSize; reader["blockSize"] >> blockSize;
+    int gridSize; reader["gridSize"] >> gridSize;
+  
     reader.release();
 
-    return unique_ptr<NVL_App::Arguments>(new NVL_App::Arguments(focal, imageSize, distortion, rvec, tvec, blockSize, gridSize, folder));
+    return unique_ptr<NVL_App::Arguments>(new NVL_App::Arguments(focal, imageSize, rvec_1, tvec_1, rvec_2, tvec_2, blockSize, gridSize));
 }
 
 /**
@@ -114,12 +143,12 @@ unique_ptr<NVL_App::Arguments> LoadArguments(NVLib::PathHelper& pathHelper)
  */
 void FillScenePoints(NVL_App::Arguments * arguments, vector<Point3d>& points) 
 {
-    for (auto row = 0; row < arguments->GetGridSize()[1]; row++) 
+    for (auto row = 0; row < arguments->GetGridSize(); row++) 
     {
-        for (auto column = 0; column < arguments->GetGridSize()[0]; column++) 
+        for (auto column = 0; column < arguments->GetGridSize(); column++) 
         {
-            auto X = column * arguments->GetBlockSize()[0];
-            auto Y = row * arguments->GetBlockSize()[1];
+            auto X = column * arguments->GetBlockSize();
+            auto Y = row * arguments->GetBlockSize();
             auto Z = 0;
             points.push_back(Point3d(X, Y, Z));
         }
@@ -130,31 +159,14 @@ void FillScenePoints(NVL_App::Arguments * arguments, vector<Point3d>& points)
  * Add the logic to fill associated image points
  * @param arguments The arguments that we are populating
  * @param scenePoints The given scene points for the application
+ * @param rvec The rotation vector associated with the application
+ * @param tvec The translation vector associated with the application
  * @param points The resultant image points associated with the application
  */
-void FillImagePoints(NVL_App::Arguments * arguments, const vector<Point3d> & scenePoints, vector<Point2d> & points) 
+void FillImagePoints(NVL_App::Arguments * arguments, const vector<Point3d> & scenePoints, const Vec3d& rvec, const Vec3d& tvec, vector<Point2d> & points) 
 {
     Mat camera = BuildCameraMat(arguments);
-    Mat & distortion = arguments->GetDistortion();
-    auto& rvec = arguments->GetRvec();
-    auto& tvec = arguments->GetTvec();
-
-    projectPoints(scenePoints, rvec, tvec, camera, distortion, points);
-}
-
-/**
- * Generate a "ground-truth" set of image point for evaluation purposes
- * @param arguments The arguments that we are using for the point generating
- * @param scenePoint The list of scene points that we are dealing with
- * @param points The points that we are generating as a result
-*/
-void FillUImagePoints(NVL_App::Arguments * arguments, const vector<Point3d>& scenePoints, vector<Point2d>& points) 
-{
-  Mat camera = BuildCameraMat(arguments);
     Mat distortion = Mat_<double>::zeros(4,1);
-    auto& rvec = arguments->GetRvec();
-    auto& tvec = arguments->GetTvec();
-
     projectPoints(scenePoints, rvec, tvec, camera, distortion, points);
 }
 
@@ -192,42 +204,52 @@ Mat MakeImage(NVL_App::Arguments * arguments, const vector<Point2d>& points)
 
 /**
  * Save the point files to disk
- * @param pathHelper A helper for generating the path that we are saving to
- * @param folder The folder that we are saving to
+ * @param path The folder that we are saving to
  * @param scenePoints The scene points that are being saved
- * @param imagePoints The image points that are being saved
+ * @param imagePoints_1 The image points that are being saved
+ * @param imagePoints_2 The image points that are being saved
  */
-void SavePoints(NVLib::PathHelper& pathHelper, const string& folder, const vector<Point3d>& scenePoints, const vector<Point2d>& imagePoints) 
+void SavePoints(const string& path, const vector<Point3d>& scenePoints, const vector<Point2d>& imagePoints_1, const vector<Point2d>& imagePoints_2) 
 {
-    auto path = pathHelper.GetPath(folder, "points.txt");
     auto writer = ofstream(path); if (!writer.is_open()) throw runtime_error("Unable to create file: " + path);
-    if (scenePoints.size() != imagePoints.size()) throw runtime_error("There is a size mismatch between the scene points and image points");
+    if (scenePoints.size() != imagePoints_1.size() || scenePoints.size() != imagePoints_2.size()) throw runtime_error("There is a size mismatch between the scene points and image points");
 
-    for (auto i = 0; i < scenePoints.size(); i++) 
-    {
-        writer << scenePoints[i].x << "," << scenePoints[i].y << "," << scenePoints[i].z << "," << imagePoints[i].x << "," << imagePoints[i].y << endl;
-    }
-    
+    writer << scenePoints.size() << endl;
+
+    for (auto point : scenePoints) writer << point.x << "," << point.y << "," << point.z << endl; 
+    writer << endl;
+    for (auto point : imagePoints_1) writer << point.x << "," << point.y << endl; 
+    writer << endl;
+    for (auto point : imagePoints_2) writer << point.x << "," << point.y << endl; 
+
     writer.close();
 }
 
 /**
- * Save the truth points to disk
- * @param pathHelper the path helper that we are using
- * @param folder The folder that w are writing to
- * @param imagePoints The image points that we are writing
-*/
-void SaveTruthPoints(NVLib::PathHelper& pathHelper, const string& folder, const vector<Point2d>& imagePoints) 
+ * Get the image path for the given file name
+ * @param pathHelper The path helper that we are using
+ * @param fileName The name of the file that we are processing
+ * @param index The index of the image that we are processing
+ * @return The path to the image
+ */
+string GetImagePath(NVLib::PathHelper * pathHelper, const string& fileName, int index) 
 {
-    auto path = pathHelper.GetPath(folder, "truth.txt");
-    auto writer = ofstream(path); if (!writer.is_open()) throw runtime_error("Unable to create file: " + path);
+    auto name_no_ext = NVLib::FileUtils::GetNameWithoutExtension(fileName);
+    auto imagePath = pathHelper->GetPath("Image", name_no_ext + "_" + to_string(index) + ".png");
+    return imagePath;
+}
 
-    for (auto i = 0; i < imagePoints.size(); i++) 
-    {
-        writer << imagePoints[i].x << "," << imagePoints[i].y << endl;
-    }
-    
-    writer.close();
+/**
+ * Get the points path for the given file name
+ * @param pathHelper The path helper that we are using
+ * @param fileName The name of the file that we are processing
+ * @return The path to the points
+ */
+string GetPointsPath(NVLib::PathHelper * pathHelper, const string& fileName) 
+{
+    auto name_no_ext = NVLib::FileUtils::GetNameWithoutExtension(fileName);
+    auto pointsPath = pathHelper->GetPath("Point", name_no_ext + ".txt");
+    return pointsPath;
 }
 
 //--------------------------------------------------
