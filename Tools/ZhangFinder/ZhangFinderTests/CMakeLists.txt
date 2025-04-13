@@ -16,7 +16,9 @@ include_directories("../")
 add_executable (ZhangFinderTests
 	Tests/Example_Tests.cpp
 	Tests/PointLoader_Tests.cpp
+	Tests/ZhangProblem_Tests.cpp
 )
+
 
 
 # Add link libraries

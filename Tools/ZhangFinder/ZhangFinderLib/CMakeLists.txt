@@ -11,7 +11,9 @@ include_directories("../" "${LIBRARY_BASE}/NVLib")
 
 # Create Library
 add_library (ZhangFinderLib STATIC
+	Solver/cminpack.c
+	Solver/LMFinder.cpp
 	ArgUtils.cpp
 	PointLoader.cpp
+	ZhangProblem.cpp
 )
-
