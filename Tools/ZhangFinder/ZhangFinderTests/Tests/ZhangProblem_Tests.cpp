@@ -8,9 +8,12 @@
 
 #include <gtest/gtest.h>
 
+#include <ZhangFinderLib/ZhangUtils.h>
 #include <ZhangFinderLib/PointLoader.h>
 #include <ZhangFinderLib/ZhangProblem.h>
 using namespace NVL_App;
+
+#include "../Helpers/TestHelpers.h"
 
 //--------------------------------------------------
 // Test Methods
@@ -21,14 +24,23 @@ using namespace NVL_App;
  */
 TEST(ZhangProblem_Test, verify_correct_match)
 {
-	// Setup
+	// Setup: Load Points
 	auto points = PointLoader::Load("2025-04-11 23:18:40.txt");
 
+	// Setup: Homographies
+	Mat H_1 = ZhangUtils::FindHomography(points.get(), 0);
+	Mat H_2 = ZhangUtils::FindHomography(points.get(), 1);
+
+	// Setup: Setup the error finder
+	auto problem = ZhangProblem(H_1, H_2);
+
+	// Setup: Parameters
+	Mat parameters = (Mat_<double>(4, 1) << 1177.59, 1177.59, 320.0, 240.0);
+	Mat errors = Mat_<double>::zeros(4, 1);
+	auto elink = (double *)errors.data;
+
 	// Execute
-
-	// Confirm
-
-	// Teardown
+	auto score = problem.Evaluate(parameters, errors);
 }
 
 /**
@@ -36,13 +48,23 @@ TEST(ZhangProblem_Test, verify_correct_match)
  */
 TEST(ZhangProblem_Test, verify_incorrect_match)
 {
-	FAIL() << "Not implemented";
+	// Setup: Load Points
+	auto points = PointLoader::Load("2025-04-11 23:18:40.txt");
 
-	// Setup
+	// Setup: Homographies
+	Mat H_1 = ZhangUtils::FindHomography(points.get(), 0);
+	Mat H_2 = ZhangUtils::FindHomography(points.get(), 1);
+
+	// Setup: Setup the error finder
+	auto problem = ZhangProblem(H_1, H_2);
+
+	// Setup: Parameters
+	Mat parameters = (Mat_<double>(4, 1) << 1000.0, 1000.0, 320.0, 240.0);
+	Mat errors = Mat_<double>::zeros(4, 1);
 
 	// Execute
+	auto score = problem.Evaluate(parameters, errors);
 
-	// Confirm
-
-	// Teardown
+	// Evaluate
+	ASSERT_GT(score, 0.5);
 }
