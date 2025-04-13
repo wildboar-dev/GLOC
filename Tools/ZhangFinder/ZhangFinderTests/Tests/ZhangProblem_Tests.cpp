@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 
+#include <ZhangFinderLib/PointLoader.h>
 #include <ZhangFinderLib/ZhangProblem.h>
 using namespace NVL_App;
 
@@ -20,9 +21,8 @@ using namespace NVL_App;
  */
 TEST(ZhangProblem_Test, verify_correct_match)
 {
-	FAIL() << "Not implemented";
-
 	// Setup
+	auto points = PointLoader::Load("2025-04-11 23:18:40.txt");
 
 	// Execute
 

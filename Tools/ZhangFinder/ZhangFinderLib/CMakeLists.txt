@@ -16,4 +16,6 @@ add_library (ZhangFinderLib STATIC
 	ArgUtils.cpp
 	PointLoader.cpp
 	ZhangProblem.cpp
+	ZhangUtils.cpp
 )
+
