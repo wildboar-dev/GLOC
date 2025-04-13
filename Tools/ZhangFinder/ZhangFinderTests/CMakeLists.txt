@@ -19,8 +19,6 @@ add_executable (ZhangFinderTests
 	Tests/ZhangProblem_Tests.cpp
 )
 
-
-
 # Add link libraries
 target_link_libraries(ZhangFinderTests ZhangFinderLib NVLib ${OpenCV_LIBS} OpenSSL::SSL uuid GTest::Main)
 
