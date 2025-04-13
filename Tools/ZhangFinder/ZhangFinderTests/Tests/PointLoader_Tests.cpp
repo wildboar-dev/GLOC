@@ -20,13 +20,22 @@ using namespace NVL_App;
  */
 TEST(PointLoader_Test, confirm_load)
 {
-	FAIL() << "Not implemented";
-
 	// Setup
+	auto points = PointLoader::Load("2025-04-11 23:18:40.txt");
 
-	// Execute
+	// Confirm the point counts
+	ASSERT_EQ(points->GetScenePoints().size(), 100);
+	ASSERT_EQ(points->GetImagePoints_1().size(), 100);
+	ASSERT_EQ(points->GetImagePoints_2().size(), 100);
 
-	// Confirm
+	// Confirm the last point in each collection
+	ASSERT_EQ(points->GetScenePoints().back().x, 45.0);
+	ASSERT_EQ(points->GetScenePoints().back().y, 45.0);
+	ASSERT_EQ(points->GetScenePoints().back().z, 0.0);
 
-	// Teardown
+	ASSERT_EQ(points->GetImagePoints_1().back().x, 90.1922);
+	ASSERT_EQ(points->GetImagePoints_1().back().y, 283.786);
+
+	ASSERT_EQ(points->GetImagePoints_2().back().x, 755.928);
+	ASSERT_EQ(points->GetImagePoints_2().back().y, 367.816);
 }

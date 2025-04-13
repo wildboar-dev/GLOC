@@ -23,7 +23,7 @@ namespace NVL_App
 		vector<Point2d> _imagePoints_1;
 		vector<Point2d> _imagePoints_2;
 	public:
-		Points(vector<Point3d>& scenePoints, vector<Point2d>& imagePoints_1, vector<Point2d>& imagePoints_2) :
+		Points(const vector<Point3d>& scenePoints, const vector<Point2d>& imagePoints_1, const vector<Point2d>& imagePoints_2) :
 			_scenePoints(scenePoints), _imagePoints_1(imagePoints_1), _imagePoints_2(imagePoints_2) {}
 
 		inline vector<Point3d>& GetScenePoints() { return _scenePoints; }
