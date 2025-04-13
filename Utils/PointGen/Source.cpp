@@ -216,11 +216,11 @@ void SavePoints(const string& path, const vector<Point3d>& scenePoints, const ve
 
     writer << scenePoints.size() << endl;
 
-    for (auto point : scenePoints) writer << point.x << "," << point.y << "," << point.z << endl; 
+    for (auto point : scenePoints) writer << point.x << " " << point.y << " " << point.z << endl; 
     writer << endl;
-    for (auto point : imagePoints_1) writer << point.x << "," << point.y << endl; 
+    for (auto point : imagePoints_1) writer << point.x << " " << point.y << endl; 
     writer << endl;
-    for (auto point : imagePoints_2) writer << point.x << "," << point.y << endl; 
+    for (auto point : imagePoints_2) writer << point.x << " " << point.y << endl; 
 
     writer.close();
 }
