@@ -59,7 +59,7 @@ TEST(ZhangProblem_Test, verify_incorrect_match)
 	auto problem = ZhangProblem(H_1, H_2);
 
 	// Setup: Parameters
-	Mat parameters = (Mat_<double>(4, 1) << 1000.0, 1000.0, 320.0, 240.0);
+	Mat parameters = (Mat_<double>(4, 1) << 500.0, 500.0, 320.0, 240.0);
 	Mat errors = Mat_<double>::zeros(4, 1);
 
 	// Execute

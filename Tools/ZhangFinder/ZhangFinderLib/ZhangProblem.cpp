@@ -20,7 +20,8 @@ using namespace NVL_App;
  */
 ZhangProblem::ZhangProblem(Mat& H1, Mat& H2)
 {
-	throw runtime_error("Not implemented");
+	_h11 = H1.col(0); _h12 = H1.col(1);
+	_h21 = H2.col(0); _h22 = H2.col(1);
 }
 
 //--------------------------------------------------
@@ -33,7 +34,7 @@ ZhangProblem::ZhangProblem(Mat& H1, Mat& H2)
  */
 int ZhangProblem::GetDataSize()
 {
-	throw runtime_error("Not implemented");
+	return 4;
 }
 
 //--------------------------------------------------
@@ -48,7 +49,20 @@ int ZhangProblem::GetDataSize()
  */
 double ZhangProblem::Evaluate(Mat& parameters, Mat& errors)
 {
-	throw runtime_error("Not implemented");
+	Mat B = GetB(parameters);
+
+	Mat error_1 = _h11.t() * B * _h12;
+	Mat error_2 = _h21.t() * B * _h22;
+	Mat error_3 = _h11.t() * B * _h11 - _h12.t() * B * _h12;
+	Mat error_4 = _h21.t() * B * _h21 - _h22.t() * B * _h22;
+
+	auto elink = (double *)errors.data;
+	auto score_1 = elink[0] = ((double *) error_1.data)[0] * 1e7;
+	auto score_2 = elink[1] = ((double *) error_2.data)[0] * 1e7;
+	auto score_3 = elink[2] = ((double *) error_3.data)[0] * 1e7;
+	auto score_4 = elink[3] = ((double *) error_4.data)[0] * 1e7;
+
+	return score_1 * score_1 + score_2 * score_2 + score_3 * score_3 + score_4 * score_4;
 }
 
 //--------------------------------------------------
@@ -62,5 +76,20 @@ double ZhangProblem::Evaluate(Mat& parameters, Mat& errors)
  */
 Mat ZhangProblem::GetB(Mat& parameters)
 {
-	throw runtime_error("Not implemented");
+	auto plink = (double *)parameters.data;
+	auto fx = plink[0];
+	auto fy = plink[1];
+	auto cx = plink[2];
+	auto cy = plink[3];
+
+	Mat K = (Mat_<double>(3, 3) << fx, 0, cx, 0, fy, cy, 0, 0, 1);
+	Mat KT = K.t();
+	Mat invKT = KT.inv();
+	Mat invK = K.inv();
+
+	Mat B = invKT * invK;
+
+	//cout << "B: " << endl << B << endl;
+
+	return B;
 }
