@@ -1,0 +1,29 @@
+<?xml version="1.0" ?> 
+
+<class terminator="true"> 
+
+<namespace>NVL_App</namespace> 
+<solution>ZhangFinderLib</solution> 
+<name>PointLoader</name> 
+<description>Add the logic to load point files from disk</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+    <include name="Points.h" local="true" />
+</includes> 
+
+<methods>    
+
+<!-- Load Points -->
+<method section="Load" modifiers="static" access="public" return="unique_ptr<Points>" name="Load" description="Add the functionality to load points from disk" inline="false"> 
+    <parameter type="const string&" name="path" description="The path that we are loading from" /> 
+</method> 
+
+</methods> 
+
+<tests> 
+    <test name="confirm_load" description="Unit test to determine whether the load did as expected" exception="false" />    
+</tests> 
+
+</class> 

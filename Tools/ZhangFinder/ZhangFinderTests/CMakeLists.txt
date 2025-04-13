@@ -13,9 +13,11 @@ find_package(GTest REQUIRED)
 include_directories("../")
 
 # Create the executable
-add_executable(ZhangFinderTests
-    Tests/Example_Tests.cpp
+add_executable (ZhangFinderTests
+	Tests/Example_Tests.cpp
+	Tests/PointLoader_Tests.cpp
 )
+
 
 # Add link libraries
 target_link_libraries(ZhangFinderTests ZhangFinderLib NVLib ${OpenCV_LIBS} OpenSSL::SSL uuid GTest::Main)
