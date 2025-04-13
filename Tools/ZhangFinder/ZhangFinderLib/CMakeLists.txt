@@ -18,4 +18,3 @@ add_library (ZhangFinderLib STATIC
 	ZhangProblem.cpp
 	ZhangUtils.cpp
 )
-
