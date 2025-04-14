@@ -13,6 +13,7 @@ using namespace std;
 
 #include <NVLib/Math2D.h>
 #include <NVLib/Math3D.h>
+#include <NVLib/PoseUtils.h>
 
 #include <opencv2/opencv.hpp>
 using namespace cv;
@@ -28,5 +29,6 @@ namespace NVL_App
 		static double TestHomography(Mat& H, Points * points, int pointSetIndex);
 		static Mat GetCameraMatrix(Mat& parameters);
 		static Mat GetPose(Mat& H, Mat& K);
+		static double GetProjectError(Mat& K, Mat& pose, Points * points, int pointSetIndex);
 	};
 }

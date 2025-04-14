@@ -115,3 +115,33 @@ Mat ZhangUtils::GetPose(Mat& H, Mat& K)
 
 	return pose;
 }
+
+//--------------------------------------------------
+// Error Calculation
+//--------------------------------------------------
+
+/**
+ * @brief Get the project error associated with the camera
+ * @param K The camera matrix
+ * @param pose The camera pose
+ * @param points The points that are are finding the homography from
+ * @param pointSetIndex The index of the point set to use
+ */
+double ZhangUtils::GetProjectError(Mat& K, Mat& pose, Points * points, int pointSetIndex) 
+{
+	auto & targetPoints = (pointSetIndex == 0) ? points->GetImagePoints_1() : points->GetImagePoints_2();
+	auto rvec = Vec3d(), tvec = Vec3d(); NVLib::PoseUtils::Pose2Vectors(pose, rvec, tvec);
+
+	auto estimated = vector<Point2d>(); projectPoints(points->GetScenePoints(), rvec, tvec, K, noArray(), estimated);
+
+	auto error = vector<double>();
+	for (auto i = 0; i < targetPoints.size(); i++)
+	{
+		auto diff = targetPoints[i] - estimated[i];
+		error.push_back(sqrt(diff.x * diff.x + diff.y * diff.y));
+	}
+
+	auto mean = Scalar(); meanStdDev(error, mean, noArray());
+
+	return mean[0];
+}

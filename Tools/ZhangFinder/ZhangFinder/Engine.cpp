@@ -77,6 +77,14 @@ void Engine::Run()
     _logger->Log(1, "Get the second pose");
     Mat pose_2 = ZhangUtils::GetPose(H_2, K);
     _logger->Log(1, (NVLib::Formatter() << "Pose 2: \n" << pose_2).str().c_str());
+
+    _logger->Log(1, "Testing the accuracy of the first board");
+    auto error_1 = ZhangUtils::GetProjectError(K, pose_1, points.get(), 0);
+    _logger->Log(1, (NVLib::Formatter() << "Error 1: " << error_1).str().c_str());
+
+    _logger->Log(1, "Testing the accuracy of the second board");
+    auto error_2 = ZhangUtils::GetProjectError(K, pose_2, points.get(), 1);
+    _logger->Log(1, (NVLib::Formatter() << "Error 2: " << error_2).str().c_str());
 }
 
 //--------------------------------------------------
