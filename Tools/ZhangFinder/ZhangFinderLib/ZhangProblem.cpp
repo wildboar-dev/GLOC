@@ -56,13 +56,21 @@ double ZhangProblem::Evaluate(Mat& parameters, Mat& errors)
 	Mat error_3 = _h11.t() * B * _h11 - _h12.t() * B * _h12;
 	Mat error_4 = _h21.t() * B * _h21 - _h22.t() * B * _h22;
 
-	auto elink = (double *)errors.data;
-	auto score_1 = elink[0] = ((double *) error_1.data)[0] * 1e7;
-	auto score_2 = elink[1] = ((double *) error_2.data)[0] * 1e7;
-	auto score_3 = elink[2] = ((double *) error_3.data)[0] * 1e7;
-	auto score_4 = elink[3] = ((double *) error_4.data)[0] * 1e7;
+	auto score_1 = ((double *) error_1.data)[0];
+	auto score_2 = ((double *) error_2.data)[0];
+	auto score_3 = ((double *) error_3.data)[0];
+	auto score_4 = ((double *) error_4.data)[0];
 
-	return score_1 * score_1 + score_2 * score_2 + score_3 * score_3 + score_4 * score_4;
+	auto elink = (double *)errors.data;
+	elink[0] = score_1 * score_1;
+	elink[1] = score_2 * score_2;
+	elink[2] = score_3 * score_3;
+	elink[3] = score_4 * score_4;
+	
+	auto score =  score_1 * score_1 + score_2 * score_2 + score_3 * score_3 + score_4 * score_4;
+	cout << "Score: " << score << endl;
+
+	return score;
 }
 
 //--------------------------------------------------
@@ -88,8 +96,6 @@ Mat ZhangProblem::GetB(Mat& parameters)
 	Mat invK = K.inv();
 
 	Mat B = invKT * invK;
-
-	//cout << "B: " << endl << B << endl;
 
 	return B;
 }

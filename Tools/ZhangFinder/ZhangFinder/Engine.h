@@ -13,7 +13,12 @@ using namespace std;
 
 #include <NVLib/Logger.h>
 #include <NVLib/Path/PathHelper.h>
+
 #include <ZhangFinderLib/ArgUtils.h>
+#include <ZhangFinderLib/PointLoader.h>
+#include <ZhangFinderLib/ZhangUtils.h>
+#include <ZhangFinderLib/ZhangProblem.h>
+#include <ZhangFinderLib/Solver/LMFinder.h>
 
 namespace NVL_App
 {
@@ -29,5 +34,7 @@ namespace NVL_App
 		~Engine();
 
 		void Run();
+	private:
+		string GetPointPath();
 	};
 }
