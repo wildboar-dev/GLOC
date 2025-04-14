@@ -65,6 +65,20 @@ double ZhangUtils::TestHomography(Mat& H, Points * points, int pointSetIndex)
 	return mean[0];
 }
 
+/**
+ * @brief Get the partial pose of the camera
+ * @param pose The camera pose
+ * @return Mat Returns a Mat
+ */
+Mat ZhangUtils::GetPartialPose(Mat& pose) 
+{
+	auto d = (double *) pose.data;
+
+	Mat result = (Mat_<double>(3,3) << d[0], d[1], d[3], d[4], d[5], d[7], d[8], d[9], d[11]);
+
+	return result;
+}
+
 //--------------------------------------------------
 // Homography
 //--------------------------------------------------
@@ -105,12 +119,12 @@ Mat ZhangUtils::GetPose(Mat& H, Mat& K)
 
 	r1 = r1 / factor;
 	r2 = r2 / factor;
-	t = t / factor;
 	r3 = r3 / factor;
+	t = t / factor;
 	
-	Mat pose = (Mat_<double>(4, 4) << r1[0], r1[1], r1[2], t[0],
-		r2[0], r2[1], r2[2], t[1],
-		r3[0], r3[1], r3[2], t[2],
+	Mat pose = (Mat_<double>(4, 4) << r1[0], r2[0], r3[0], t[0],
+		r1[1], r2[1], r3[1], t[1],
+		r1[2], r2[2], r3[2], t[2],
 		0, 0, 0, 1);
 
 	return pose;

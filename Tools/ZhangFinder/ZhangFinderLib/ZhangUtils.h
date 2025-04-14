@@ -30,5 +30,6 @@ namespace NVL_App
 		static Mat GetCameraMatrix(Mat& parameters);
 		static Mat GetPose(Mat& H, Mat& K);
 		static double GetProjectError(Mat& K, Mat& pose, Points * points, int pointSetIndex);
+		static Mat GetPartialPose(Mat& pose);
 	};
 }
