@@ -66,8 +66,17 @@ void Engine::Run()
     Mat parameters = (Mat_<double>(4,1) << 500, 500, 500, 500);
     solver.Solve(parameters);
 
-    
+    _logger->Log(1, "Generating the camera matrix");
+    Mat K = ZhangUtils::GetCameraMatrix(parameters);
+    _logger->Log(1, (NVLib::Formatter() << "Camera Matrix: \n" << K).str().c_str());
 
+    _logger->Log(1, "Get the first pose");
+    Mat pose_1 = ZhangUtils::GetPose(H_1, K);
+    _logger->Log(1, (NVLib::Formatter() << "Pose 1: \n" << pose_1).str().c_str());
+
+    _logger->Log(1, "Get the second pose");
+    Mat pose_2 = ZhangUtils::GetPose(H_2, K);
+    _logger->Log(1, (NVLib::Formatter() << "Pose 2: \n" << pose_2).str().c_str());
 }
 
 //--------------------------------------------------

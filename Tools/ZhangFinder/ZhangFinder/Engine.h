@@ -12,6 +12,7 @@
 using namespace std;
 
 #include <NVLib/Logger.h>
+#include <NVLib/Formatter.h>
 #include <NVLib/Path/PathHelper.h>
 
 #include <ZhangFinderLib/ArgUtils.h>
