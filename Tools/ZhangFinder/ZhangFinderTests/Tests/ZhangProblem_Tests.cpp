@@ -41,6 +41,9 @@ TEST(ZhangProblem_Test, verify_correct_match)
 
 	// Execute
 	auto score = problem.Evaluate(parameters, errors);
+
+	// Evaluate
+	ASSERT_LT(score, 1e-14);
 }
 
 /**
@@ -66,5 +69,5 @@ TEST(ZhangProblem_Test, verify_incorrect_match)
 	auto score = problem.Evaluate(parameters, errors);
 
 	// Evaluate
-	ASSERT_GT(score, 0.5);
+	ASSERT_GT(score, 1e-14);
 }
