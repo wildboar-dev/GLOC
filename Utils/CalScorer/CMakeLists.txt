@@ -34,7 +34,7 @@ find_package(OpenSSL REQUIRED)
 
 # Create the executable
 add_executable(CalScorer
-         main.cpp
+         Main.cpp
          PointLoader.cpp
          ArgUtils.cpp
 )
