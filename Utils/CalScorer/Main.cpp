@@ -29,6 +29,7 @@ unique_ptr<NVL_App::Calibration> Meta2Calibration(NVL_App::Meta* meta);
 Vec2d GetScore(NVL_App::Calibration * calibration, NVL_App::Points * points);
 void ProjectPoints(Mat& camera, Mat& pose, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints);
 void FindDifferences(vector<Point2d>& expected, vector<Point2d>& actual, vector<double>& errors);
+void SaveResult(NVLib::PathHelper * pathHelper, const string& saveName, const Vec2d& truth_error, const Vec2d& measured_error);
 
 //--------------------------------------------------
 // Main Execution Logic
@@ -78,6 +79,10 @@ void Execute(NVLib::Logger * logger, NVLib::Parameters * parameters)
     logger->Log(1, "Calculate the error with the measured calibration");
     auto measured_error = GetScore(measured_calibration.get(), points.get()); 
     logger->Log(1, "Error: %f +/- %f", measured_error[0], measured_error[1]);
+
+    logger->Log(1, "Saving the result to the disk");
+    SaveResult(&pathHelper, saveFileName, truth_error, measured_error);
+    logger->Log(1, "Save Success");
 }
 
 //--------------------------------------------------
@@ -226,6 +231,29 @@ void FindDifferences(vector<Point2d> & expected, vector<Point2d>& actual, vector
         auto error = NVLib::Math2D::GetMagnitude(difference);
         errors.push_back(error);
     }
+}
+
+//--------------------------------------------------
+// Execution entry point
+//--------------------------------------------------
+
+/**
+ * Save the result to the disk
+ * @param pathHelper The path helper to use
+ * @param elementName The name of the element
+ * @param truth_error The truth error
+ * @param measured_error The measured error
+ */
+void SaveResult(NVLib::PathHelper * pathHelper, const string& saveName, const Vec2d& truth_error, const Vec2d& measured_error) 
+{
+    auto path = pathHelper->GetPath("Calib_Output", saveName);
+
+    auto writer = ofstream(path, ios::app);
+    if (!writer.is_open()) throw runtime_error("Unable to open: " + path);
+
+    writer << truth_error[0] << " " << truth_error[1] << " " << measured_error[0] << " " << measured_error[1] << endl;
+
+    writer.close();
 }
 
 //--------------------------------------------------
