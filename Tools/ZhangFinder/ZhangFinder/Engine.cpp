@@ -68,15 +68,15 @@ void Engine::Run()
 
     _logger->Log(1, "Generating the camera matrix");
     Mat K = ZhangUtils::GetCameraMatrix(parameters);
-    _logger->Log(1, (NVLib::Formatter() << "Camera Matrix: \n" << K).str().c_str());
+    //_logger->Log(1, (NVLib::Formatter() << "Camera Matrix: \n" << K).str().c_str());
 
     _logger->Log(1, "Get the first pose");
     Mat pose_1 = ZhangUtils::GetPose(H_1, K);
-    _logger->Log(1, (NVLib::Formatter() << "Pose 1: \n" << pose_1).str().c_str());
+    //_logger->Log(1, (NVLib::Formatter() << "Pose 1: \n" << pose_1).str().c_str());
 
     _logger->Log(1, "Get the second pose");
     Mat pose_2 = ZhangUtils::GetPose(H_2, K);
-    _logger->Log(1, (NVLib::Formatter() << "Pose 2: \n" << pose_2).str().c_str());
+    //_logger->Log(1, (NVLib::Formatter() << "Pose 2: \n" << pose_2).str().c_str());
 
     _logger->Log(1, "Testing the accuracy of the first board");
     auto error_1 = ZhangUtils::GetProjectError(K, pose_1, points.get(), 0);
@@ -85,6 +85,9 @@ void Engine::Run()
     _logger->Log(1, "Testing the accuracy of the second board");
     auto error_2 = ZhangUtils::GetProjectError(K, pose_2, points.get(), 1);
     _logger->Log(1, (NVLib::Formatter() << "Error 2: " << error_2).str().c_str());
+
+    _logger->Log(1, "Writing the results to the file");
+    WriteResults(_pathHelper, K, pose_1, pose_2);
 }
 
 //--------------------------------------------------
@@ -100,4 +103,24 @@ string Engine::GetPointPath()
     auto filename = stringstream(); filename << _elementName << ".txt";
     auto path = _pathHelper->GetPath("Point", filename.str());
     return path;
+}
+
+/**
+ * @brief Helper method to write the results to the file
+ * @param pathHelper The path helper
+ * @param K The camera matrix
+ * @param M_1 The first pose
+ * @param M_2 The second pose
+ */
+void Engine::WriteResults(NVLib::PathHelper * pathHelper, Mat& K, Mat& M_1, Mat& M_2) 
+{
+    auto filename = stringstream(); filename << _elementName << ".xml";
+    auto path = pathHelper->GetPath("Calib_Output", filename.str());
+    auto writer = FileStorage(path, FileStorage::WRITE | FileStorage::FORMAT_XML);
+
+    writer << "K" << K;
+    writer << "M_1" << M_1;
+    writer << "M_2" << M_2;
+
+    writer.release();
 }

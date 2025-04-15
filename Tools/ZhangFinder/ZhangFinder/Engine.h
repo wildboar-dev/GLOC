@@ -37,5 +37,6 @@ namespace NVL_App
 		void Run();
 	private:
 		string GetPointPath();
+		void WriteResults(NVLib::PathHelper * pathHelper, Mat& K, Mat& M_1, Mat& M_2);
 	};
 }
