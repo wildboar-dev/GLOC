@@ -22,7 +22,8 @@ using namespace std;
 // Function Prototypes
 //--------------------------------------------------
 unique_ptr<NVL_App::Meta> LoadMeta(NVLib::PathHelper* pathHelper, const string& elementName);
-unique_ptr<NVL_App::Calibration> LoadCalibration(NVLib::PathHelper* pathHelper, const string& elementName); 
+unique_ptr<NVL_App::Calibration> LoadCalibration(NVLib::PathHelper* pathHelper, const string& elementName);
+unique_ptr<NVL_App::Calibration> Meta2Calibration(NVL_App::Meta* meta); 
 
 //--------------------------------------------------
 // Main Execution Logic
@@ -58,8 +59,11 @@ void Execute(NVLib::Logger * logger, NVLib::Parameters * parameters)
     auto meta = LoadMeta(&pathHelper, elementName);
     logger->Log(1, "Focal: %f", meta->GetFocal());
 
+    logger->Log(1, "Converting the meta data into calibration");
+    auto truth_calibration = Meta2Calibration(meta.get());
+
     logger->Log(1, "Load calibration information...");
-    auto calibration = LoadCalibration(&pathHelper, elementName);
+    auto measured_calibration = LoadCalibration(&pathHelper, elementName);
     logger->Log(1, "Load Success");
 }
 
@@ -109,15 +113,44 @@ unique_ptr<NVL_App::Calibration> LoadCalibration(NVLib::PathHelper* pathHelper, 
     auto reader = FileStorage(path, FileStorage::FORMAT_XML | FileStorage::READ);
     if (!reader.isOpened()) throw runtime_error("Unable to open: " + path);
 
-    Mat camera; reader["camera"] >> camera;
-    Mat pose_1; reader["pose_1"] >> pose_1;
-    Mat pose_2; reader["pose_2"] >> pose_2;
+    Mat camera; reader["K"] >> camera;
+    Mat pose_1; reader["M_1"] >> pose_1;
+    Mat pose_2; reader["M_2"] >> pose_2;
 
     if (camera.empty()) throw runtime_error("Camera matrix is empty");
     if (pose_1.empty()) throw runtime_error("Pose 1 matrix is empty");
     if (pose_2.empty()) throw runtime_error("Pose 2 matrix is empty");
 
     reader.release();
+
+    return make_unique<NVL_App::Calibration>(camera, pose_1, pose_2);
+}
+
+//--------------------------------------------------
+// Conversion Helpers
+//--------------------------------------------------
+
+/**
+ * @brief Convert Meta to Calibration
+ * @param meta The meta information
+ * @return unique_ptr<Calibration> Returns a unique_ptr<Calibration>
+ */
+unique_ptr<NVL_App::Calibration> Meta2Calibration(NVL_App::Meta* meta) 
+{
+    auto camera = Mat(3, 3, CV_64F);
+    camera.at<double>(0, 0) = meta->GetFocal();
+    camera.at<double>(1, 1) = meta->GetFocal();
+    camera.at<double>(0, 2) = meta->GetImageSize().width / 2;
+    camera.at<double>(1, 2) = meta->GetImageSize().height / 2;
+    camera.at<double>(2, 2) = 1.0;
+
+    auto pose_1 = Mat(3, 4, CV_64F);
+    Rodrigues(meta->GetRvec_1(), pose_1.colRange(0, 3));
+    pose_1.col(3) = Mat(meta->GetTvec_1());
+
+    auto pose_2 = Mat(3, 4, CV_64F);
+    Rodrigues(meta->GetRvec_2(), pose_2.colRange(0, 3));
+    pose_2.col(3) = Mat(meta->GetTvec_2());
 
     return make_unique<NVL_App::Calibration>(camera, pose_1, pose_2);
 }
