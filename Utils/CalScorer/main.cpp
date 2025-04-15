@@ -16,11 +16,13 @@ using namespace std;
 #include "ArgUtils.h"
 #include "PointLoader.h"
 #include "Meta.h"
+#include "Calibration.h"
 
 //--------------------------------------------------
 // Function Prototypes
 //--------------------------------------------------
-unique_ptr<NVL_App::Meta> LoadMeta(NVLib::PathHelper* pathHelper, const string& elementName); 
+unique_ptr<NVL_App::Meta> LoadMeta(NVLib::PathHelper* pathHelper, const string& elementName);
+unique_ptr<NVL_App::Calibration> LoadCalibration(NVLib::PathHelper* pathHelper, const string& elementName); 
 
 //--------------------------------------------------
 // Main Execution Logic
@@ -56,6 +58,9 @@ void Execute(NVLib::Logger * logger, NVLib::Parameters * parameters)
     auto meta = LoadMeta(&pathHelper, elementName);
     logger->Log(1, "Focal: %f", meta->GetFocal());
 
+    logger->Log(1, "Load calibration information...");
+    auto calibration = LoadCalibration(&pathHelper, elementName);
+    logger->Log(1, "Load Success");
 }
 
 //--------------------------------------------------
@@ -89,6 +94,33 @@ unique_ptr<NVL_App::Meta> LoadMeta(NVLib::PathHelper* pathHelper, const string& 
 
     return make_unique<NVL_App::Meta>(focal, imageSize, rvec_1, tvec_1, rvec_2, tvec_2, blockSize, gridSize);
 } 
+
+/**
+ * @brief Load the calibration information from the disk
+ * @param pathHelper The path helper to use
+ * @param elementName The name of the element
+ * @return unique_ptr<Calibration> Returns a unique_ptr<Calibration>
+ */
+unique_ptr<NVL_App::Calibration> LoadCalibration(NVLib::PathHelper* pathHelper, const string& elementName) 
+{
+    auto fileName = stringstream(); fileName << elementName << ".xml";
+    auto path = pathHelper->GetPath("Calib_Output", fileName.str());
+
+    auto reader = FileStorage(path, FileStorage::FORMAT_XML | FileStorage::READ);
+    if (!reader.isOpened()) throw runtime_error("Unable to open: " + path);
+
+    Mat camera; reader["camera"] >> camera;
+    Mat pose_1; reader["pose_1"] >> pose_1;
+    Mat pose_2; reader["pose_2"] >> pose_2;
+
+    if (camera.empty()) throw runtime_error("Camera matrix is empty");
+    if (pose_1.empty()) throw runtime_error("Pose 1 matrix is empty");
+    if (pose_2.empty()) throw runtime_error("Pose 2 matrix is empty");
+
+    reader.release();
+
+    return make_unique<NVL_App::Calibration>(camera, pose_1, pose_2);
+}
 
 //--------------------------------------------------
 // Execution entry point
