@@ -9,6 +9,7 @@ Utils/BCamera/build/
 Utils/PointGen/build/
 Utils/PointConvert/build/
 Utils/MetaGen/build/
+Utils/CalScorer/build/
 
 # Data
 # Data/**/*.png
