@@ -63,7 +63,7 @@ void Engine::Run()
     auto solver = NVL_AI::LMFinder(problem);
 
     _logger->Log(1, "Attempt to solve the problem");
-    Mat parameters = (Mat_<double>(4,1) << 1000, 1000, 500, 500);
+    Mat parameters = (Mat_<double>(4,1) << 800, 800, 500, 500);
     solver.Solve(parameters);
 
     _logger->Log(1, "Generating the camera matrix");

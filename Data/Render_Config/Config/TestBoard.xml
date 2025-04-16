@@ -10,6 +10,6 @@
     <focals>1000 1000</focals>
     <center>500 500</center>
     <image_size>1000 1000</image_size>
-    <decimals>2</decimals>
+    <decimals>12</decimals>
     <folder>TestBoard</folder>
 </opencv_storage>

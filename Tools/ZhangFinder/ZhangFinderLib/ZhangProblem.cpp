@@ -68,7 +68,7 @@ double ZhangProblem::Evaluate(Mat& parameters, Mat& errors)
 	elink[3] = score_4 * score_4;
 	
 	auto score =  score_1 * score_1 + score_2 * score_2 + score_3 * score_3 + score_4 * score_4;
-	//cout << "Score: " << score << endl;
+	cout << "Score: " << score << endl;
 
 	return score;
 }
