@@ -1,0 +1,25 @@
+<?xml version="1.0" ?> 
+
+<class> 
+
+<namespace>NVL_App</namespace> 
+<solution>CalSceneLib</solution> 
+<name>ArgumentLoader</name> 
+<description>Loads the given set of arguments from disk</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+    <include name="Arguments.h" local="true" />
+</includes> 
+
+<methods>    
+
+<!-- Argument Loading -->
+<method section="Loader" modifiers="static" access="public" return="unique_ptr<Arguments>" name="Load" description="Load arguments from disk" inline="false"> 
+    <parameter type="const string&" name="path" description="The path that we are loading from" /> 
+</method> 
+
+</methods> 
+
+</class> 

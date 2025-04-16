@@ -10,6 +10,8 @@
 include_directories("../" "${LIBRARY_BASE}/NVLib")
 
 # Create Library
-add_library(CalSceneLib STATIC
-    ArgUtils.cpp
+add_library (CalSceneLib STATIC
+	ArgUtils.cpp
+	ArgumentLoader.cpp
 )
+

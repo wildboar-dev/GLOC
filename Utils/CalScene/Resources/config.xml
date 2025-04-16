@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <opencv_storage>
-    <database>"Utils/CalScene/build/Makefile"</database>
+    <database>"/home/trevor/Research/GLOC/Data"</database>
     <dataset>"Render_Config"</dataset>
     <scene>"TestBoard"</scene>
 </opencv_storage>

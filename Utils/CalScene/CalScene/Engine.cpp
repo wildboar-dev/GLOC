@@ -49,5 +49,11 @@ Engine::~Engine()
  */
 void Engine::Run()
 {
-    // TODO: Execution Logic
+    _logger->Log(1, "Loading Arguments");
+    auto argumentFile = stringstream(); argumentFile << _sceneName << ".xml";
+    auto argumentPath = _pathHelper->GetPath("Config", argumentFile.str());
+    auto arguments = ArgumentLoader::Load(argumentPath);
+
+
+    cout << "Got Here!" << endl;
 }
