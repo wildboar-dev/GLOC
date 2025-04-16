@@ -20,7 +20,20 @@ using namespace NVL_App;
  */
 vector<Point3d> HelperUtils::GetScenePoints(Arguments * arguments)
 {
-	throw runtime_error("Not implemented");
+	auto result = vector<Point3d>();
+
+	for (auto row = 0; row < arguments->GetGridSize()[0]; row++)
+	{
+		for (auto col = 0; col < arguments->GetGridSize()[1]; col++)
+		{
+			auto x = col * arguments->GetBlockSize();
+			auto y = row * arguments->GetBlockSize();
+			auto z = 0.0;
+			result.push_back(Point3d(x, y, z));
+		}
+	}
+
+	return result;
 }
 
 //--------------------------------------------------
@@ -38,10 +51,7 @@ Mat HelperUtils::GetCameraMatrix(Arguments * arguments)
 	auto fy = arguments->GetFocals()[1];
 	auto cx = arguments->GetCenter().x;
 	auto cy = arguments->GetCenter().y;
-
-	return Mat_<double>(3, 3) << fx, 0, cx,
-		0, fy, cy,
-		0, 0, 1;
+	return Mat_<double>(3, 3) << fx, 0, cx, 0, fy, cy, 0, 0, 1;
 }
 
 //--------------------------------------------------

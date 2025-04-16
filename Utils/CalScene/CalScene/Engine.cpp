@@ -57,5 +57,7 @@ void Engine::Run()
     _logger->Log(1, "Generating the camera matrix");
     Mat cameraMatrix = HelperUtils::GetCameraMatrix(arguments.get());
 
-    cout << "Camera Matrix: " << endl << cameraMatrix << endl;
+    _logger->Log(1, "Generating the scene points");
+    auto scenePoints = HelperUtils::GetScenePoints(arguments.get());
+    _logger->Log(1, "Scene Point Count: %i", scenePoints.size());
 }

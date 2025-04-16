@@ -23,7 +23,7 @@ unique_ptr<Arguments> ArgumentLoader::Load(const string& path)
 	auto reader = FileStorage(path, FileStorage::READ & FileStorage::FORMAT_XML);
 	if (!reader.isOpened()) throw runtime_error("Failed to open file: " + path);
 	
-	int blockSize; reader["block_size"] >> blockSize;
+	double blockSize; reader["block_size"] >> blockSize;
 	Vec2i gridSize; reader["grid_size"] >> gridSize;
 	Vec2d shiftXY; reader["shift_xy"] >> shiftXY;
 	Vec2d RotYZ; reader["rot_yz"] >> RotYZ;
