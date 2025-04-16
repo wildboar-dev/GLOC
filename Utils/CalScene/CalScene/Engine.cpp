@@ -23,9 +23,9 @@ Engine::Engine(NVLib::Logger* logger, NVLib::Parameters* parameters)
     _logger = logger; _parameters = parameters;
 
     _logger->Log(1, "Creating a path helper");
-    auto database = ArgUtils::GetString(parameters, "database");
+    _database = ArgUtils::GetString(parameters, "database");
     auto dataset = ArgUtils::GetString(parameters, "dataset");
-    _pathHelper = new NVLib::PathHelper(database, dataset);
+    _pathHelper = new NVLib::PathHelper(_database, dataset);
 
     _logger->Log(1, "Retrieving the scene name");
     _sceneName = ArgUtils::GetString(parameters, "scene");
@@ -75,4 +75,23 @@ void Engine::Run()
 
     _logger->Log(1, "Writing the preview image");
     imwrite("preview.png", image);
+
+    _logger->Log(1, "Verify that the output structure exists");
+    HelperUtils::CreateFolders(_database, arguments->GetFolder());
+    auto oPathHelper = new NVLib::PathHelper(_database, arguments->GetFolder());
+
+    _logger->Log(1, "Writing the meta data");
+    auto metaFile = stringstream(); metaFile << "meta_" << setw(4) << setfill('0') << arguments->GetIndex() << ".xml";
+    auto metaPath = oPathHelper->GetPath("Meta", metaFile.str());
+    HelperUtils::WriteMeta(metaPath, arguments.get(), pose_1, pose_2);
+
+    _logger->Log(1, "Writing the image");
+    auto imageFile = stringstream(); imageFile << "image_" << setw(4) << setfill('0') << arguments->GetIndex() << ".png";
+    auto imagePath = oPathHelper->GetPath("Image", imageFile.str());
+    imwrite(imagePath, image);
+
+    _logger->Log(1, "Writing the points");
+    auto pointFile = stringstream(); pointFile << "points_" << setw(4) << setfill('0') << arguments->GetIndex() << ".txt";
+    auto pointPath = oPathHelper->GetPath("Point", pointFile.str());
+    HelperUtils::WritePoints(pointPath, arguments->GetDecimals(), scenePoints, board_1.GetImagePoints(), board_2.GetImagePoints());
 }

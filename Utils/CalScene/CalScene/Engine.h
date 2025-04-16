@@ -30,6 +30,7 @@ namespace NVL_App
 		NVLib::PathHelper * _pathHelper;
 
 		string _sceneName;
+		string _database;
 	public:
 		Engine(NVLib::Logger* logger, NVLib::Parameters * parameters);
 		~Engine();

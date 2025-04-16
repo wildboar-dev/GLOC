@@ -11,5 +11,5 @@
     <center>500 500</center>
     <image_size>1000 1000</image_size>
     <decimals>2</decimals>
-    <folder>testboard</folder>
+    <folder>TestBoard</folder>
 </opencv_storage>
