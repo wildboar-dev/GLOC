@@ -56,6 +56,12 @@ void Engine::Run()
     Mat H_1 = ZhangUtils::FindHomography(points.get(), 0);
     Mat H_2 = ZhangUtils::FindHomography(points.get(), 1);
 
+    // Test the fit
+    auto e_1 = ZhangUtils::TestHomography(H_1, points.get(), 0);
+    auto e_2 = ZhangUtils::TestHomography(H_2, points.get(), 1);
+    cout << "Error 1: " << e_1 << endl;
+    cout << "Error 2: " << e_2 << endl;
+
     _logger->Log(1, "Create the Zhang Problem");
     auto problem = new ZhangProblem(H_1, H_2);
 
@@ -63,12 +69,33 @@ void Engine::Run()
     auto solver = NVL_AI::LMFinder(problem);
 
     _logger->Log(1, "Attempt to solve the problem");
-    Mat parameters = (Mat_<double>(4,1) << 800, 800, 500, 500);
+    Mat parameters = (Mat_<double>(4,1) << 1200, 1200, 500, 500);
     solver.Solve(parameters);
 
     _logger->Log(1, "Generating the camera matrix");
     Mat K = ZhangUtils::GetCameraMatrix(parameters);
-    //_logger->Log(1, (NVLib::Formatter() << "Camera Matrix: \n" << K).str().c_str());
+    _logger->Log(1, (NVLib::Formatter() << "Camera Matrix: \n" << K).str().c_str());
+
+    /// TESTING
+    Mat M_1 = K.inv() * H_1;
+    Mat T = K * M_1;
+
+    Vec3d col1 = M_1.col(0);
+    Vec3d col2 = M_1.col(1);
+
+    auto magnitude_1 = sqrt(col1.dot(col1));
+    auto magnitude_2 = sqrt(col2.dot(col2));
+    auto diff = col1.dot(col2);
+
+
+    cout << "H_1: " << endl << H_1 << endl;
+    cout << "M_1: " << endl << M_1 << endl;
+    cout << "T: " << endl << T << endl;
+
+
+    /// END_TESTING
+
+
 
     _logger->Log(1, "Get the first pose");
     Mat pose_1 = ZhangUtils::GetPose(H_1, K);

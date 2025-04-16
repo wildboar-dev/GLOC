@@ -34,7 +34,7 @@ ZhangProblem::ZhangProblem(Mat& H1, Mat& H2)
  */
 int ZhangProblem::GetDataSize()
 {
-	return 4;
+	return 5;
 }
 
 //--------------------------------------------------
@@ -49,6 +49,8 @@ int ZhangProblem::GetDataSize()
  */
 double ZhangProblem::Evaluate(Mat& parameters, Mat& errors)
 {
+	auto plink = (double *)parameters.data;
+
 	Mat B = GetB(parameters);
 
 	Mat error_1 = _h11.t() * B * _h12;
@@ -66,9 +68,10 @@ double ZhangProblem::Evaluate(Mat& parameters, Mat& errors)
 	elink[1] = score_2 * score_2;
 	elink[2] = score_3 * score_3;
 	elink[3] = score_4 * score_4;
-	
+	elink[4] = abs(plink[0] - plink[1]) * 1e-21;
+
 	auto score =  score_1 * score_1 + score_2 * score_2 + score_3 * score_3 + score_4 * score_4;
-	cout << "Score: " << score << endl;
+	//cout << "Score: " << score << endl;
 
 	return score;
 }
