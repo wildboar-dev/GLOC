@@ -15,6 +15,7 @@ using namespace std;
 #include <NVLib/Path/PathHelper.h>
 
 #include <CalSceneLib/ArgUtils.h>
+#include <CalSceneLib/HelperUtils.h>
 #include <CalSceneLib/ArgumentLoader.h>
 
 namespace NVL_App

@@ -54,6 +54,8 @@ void Engine::Run()
     auto argumentPath = _pathHelper->GetPath("Config", argumentFile.str());
     auto arguments = ArgumentLoader::Load(argumentPath);
 
+    _logger->Log(1, "Generating the camera matrix");
+    Mat cameraMatrix = HelperUtils::GetCameraMatrix(arguments.get());
 
-    cout << "Got Here!" << endl;
+    cout << "Camera Matrix: " << endl << cameraMatrix << endl;
 }

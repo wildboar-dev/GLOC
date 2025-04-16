@@ -13,5 +13,5 @@ include_directories("../" "${LIBRARY_BASE}/NVLib")
 add_library (CalSceneLib STATIC
 	ArgUtils.cpp
 	ArgumentLoader.cpp
+	HelperUtils.cpp
 )
-
