@@ -40,7 +40,7 @@ namespace NVL_App
 		inline double& GetBlockSize() { return _blockSize; }
 		inline Vec2i& GetGridSize() { return _gridSize; }
 		inline Vec2d& GetShiftXY() { return _shiftXY; }
-		inline Vec2d& GetRotYZ() { return _RotYZ; }
+		inline Vec2d& GetRotXZ() { return _RotYZ; }
 		inline double& GetAngle() { return _angle; }
 		inline double& GetDistance() { return _distance; }
 		inline Vec2d& GetFocals() { return _focals; }

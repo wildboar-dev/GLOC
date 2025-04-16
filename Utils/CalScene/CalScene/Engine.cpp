@@ -60,4 +60,12 @@ void Engine::Run()
     _logger->Log(1, "Generating the scene points");
     auto scenePoints = HelperUtils::GetScenePoints(arguments.get());
     _logger->Log(1, "Scene Point Count: %i", scenePoints.size());
+
+    _logger->Log(1, "Generating the board poses");
+    Mat pose_1 = PoseHelper::FindPose(arguments.get(), 0);
+    Mat pose_2 = PoseHelper::FindPose(arguments.get(), 1);
+
+    cout << "Pose 1: " << endl << pose_1 << endl;
+    cout << "Pose 2: " << endl << pose_2 << endl;
+
 }
