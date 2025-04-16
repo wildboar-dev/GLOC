@@ -19,9 +19,10 @@ using namespace NVL_App;
  * @param pose The pose matrix
  * @param scenePoints The 3D points in the scene
  */
-Board::Board(Mat & camera, Mat & pose, vector<Point3d> & scenePoints)
+Board::Board(Mat & camera, Mat & pose, vector<Point3d> & scenePoints) : _camera(camera), _pose(pose), _scenePoints(scenePoints)
 {
-	throw runtime_error("Not implemented");
+	auto rvec = Vec3d(), tvec = Vec3d(); NVLib::PoseUtils::Pose2Vectors(_pose, rvec, tvec);
+	projectPoints(scenePoints, rvec, tvec, camera, noArray(), _imagePoints);
 }
 
 //--------------------------------------------------
@@ -34,7 +35,12 @@ Board::Board(Mat & camera, Mat & pose, vector<Point3d> & scenePoints)
  */
 void Board::Render(Mat& image)
 {
-	throw runtime_error("Not implemented");
+	// Draw the points
+	for (size_t i = 0; i < _imagePoints.size(); i++)
+	{
+		circle(image, _imagePoints[i], 5, Scalar(0, 0, 255), FILLED, LINE_AA);
+		circle(image, _imagePoints[i], 1, Scalar::all(255), FILLED);
+	}
 }
 
 //--------------------------------------------------
@@ -47,5 +53,8 @@ void Board::Render(Mat& image)
  */
 void Board::Save(ostream& writer)
 {
-	throw runtime_error("Not implemented");
+	for (size_t i = 0; i < _imagePoints.size(); i++)
+	{
+		writer << _imagePoints[i].x << " " << _imagePoints[i].y << endl;
+	}
 }

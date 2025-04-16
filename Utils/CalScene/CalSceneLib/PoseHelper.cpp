@@ -97,7 +97,7 @@ Mat PoseHelper::GetRotZ(double angle)
  */
 Vec3d PoseHelper::GetTranslation(Mat& rotation, Arguments * arguments, int boardIndex)
 {
-	auto initialX = boardIndex == 0 ? -arguments->GetBlockSize() : arguments->GetBlockSize();
+	auto initialX = boardIndex == 0 ? -arguments->GetBlockSize() * 2.5 : arguments->GetBlockSize() * 2.5;
 	Mat tempT = (rotation * Mat(Vec3d(initialX, 0, 0))); auto tvec = Vec3d(tempT.col(0));
 	auto offset = Vec3d(arguments->GetShiftXY()[0], arguments->GetShiftXY()[1], arguments->GetDistance());
 	return tvec + offset;

@@ -1,15 +1,15 @@
 <?xml version="1.0" ?>
 <opencv_storage>
-    <block_size>30</block_size>
+    <index>0</index>
+    <block_size>20</block_size>
     <grid_size>6 4</grid_size>
-    <shift_xy>0 0</shift_xy>
+    <shift_xy>-35 -60</shift_xy>
     <rot_yz>0 0</rot_yz>
     <angle>30</angle>
-    <distance>300</distance>
+    <distance>220</distance>
     <focals>1000 1000</focals>
     <center>500 500</center>
     <image_size>1000 1000</image_size>
     <decimals>2</decimals>
     <folder>testboard</folder>
-    <index>0</index>
 </opencv_storage>

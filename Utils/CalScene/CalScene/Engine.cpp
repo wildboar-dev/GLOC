@@ -65,7 +65,14 @@ void Engine::Run()
     Mat pose_1 = PoseHelper::FindPose(arguments.get(), 0);
     Mat pose_2 = PoseHelper::FindPose(arguments.get(), 1);
 
-    cout << "Pose 1: " << endl << pose_1 << endl;
-    cout << "Pose 2: " << endl << pose_2 << endl;
+    _logger->Log(1, "Generating the boards");
+    auto board_1 = Board(cameraMatrix, pose_1, scenePoints);
+    auto board_2 = Board(cameraMatrix, pose_2, scenePoints);
 
+    _logger->Log(1, "Generating the image");
+    Mat image = Mat_<Vec3b>::zeros(arguments->GetImageSize());
+    board_1.Render(image); board_2.Render(image);
+
+    _logger->Log(1, "Writing the preview image");
+    imwrite("preview.png", image);
 }

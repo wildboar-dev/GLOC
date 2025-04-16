@@ -15,6 +15,7 @@ using namespace std;
 #include <NVLib/Path/PathHelper.h>
 
 #include <CalSceneLib/ArgUtils.h>
+#include <CalSceneLib/Board.h>
 #include <CalSceneLib/PoseHelper.h>
 #include <CalSceneLib/HelperUtils.h>
 #include <CalSceneLib/ArgumentLoader.h>

@@ -11,6 +11,8 @@
 #include <iostream>
 using namespace std;
 
+#include <NVLib/PoseUtils.h>
+
 #include <opencv2/opencv.hpp>
 using namespace cv;
 
