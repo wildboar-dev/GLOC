@@ -1,0 +1,47 @@
+<?xml version="1.0" ?> 
+
+<class> 
+
+<namespace>NVL_App</namespace> 
+<solution>CalSceneLib</solution> 
+<name>Board</name> 
+<description>Contains all the details associated with a board in this rendering</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+</includes> 
+
+<variables> 
+    <variable type="Mat" name="camera" code="10" />
+    <variable type="Mat" name="pose" code="10" />
+    <variable type="vector<Point3d>" name="scenePoints" code="10" />
+    <variable type="vector<Point2d>" name="imagePoints" code="10" /> 
+</variables> 
+
+<constructors> 
+
+<!-- Main Constructor -->
+<constructor type="custom" inline="false"> 
+    <parameter type="Mat &" name="camera" description="The camera matrix" />
+    <parameter type="Mat &" name="pose" description="The pose matrix" />
+    <parameter type="vector<Point3d> &" name="scenePoints" description="The 3D points in the scene" /> 
+</constructor> 
+
+</constructors>    
+
+<methods>    
+
+<!-- Render Board -->
+<method section="Render" access="public" return="void" name="Render" description="Render the board on an image" inline="false"> 
+    <parameter type="Mat&" name="image" description="The image that we are rendering the board upon" /> 
+</method> 
+
+<!-- Save Points -->
+<method section="Save" access="public" return="void" name="Save" description="Save the board points to a stream" inline="false"> 
+    <parameter type="ostream&" name="writer" description="The writer that we are saving to" /> 
+</method> 
+
+</methods> 
+
+</class> 

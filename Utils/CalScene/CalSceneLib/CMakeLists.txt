@@ -15,4 +15,6 @@ add_library (CalSceneLib STATIC
 	ArgumentLoader.cpp
 	HelperUtils.cpp
 	PoseHelper.cpp
+	Board.cpp
 )
+
