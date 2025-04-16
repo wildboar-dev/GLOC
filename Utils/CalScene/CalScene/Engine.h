@@ -23,6 +23,8 @@ namespace NVL_App
 		NVLib::Parameters * _parameters;
 		NVLib::Logger* _logger;
 		NVLib::PathHelper * _pathHelper;
+
+		string _sceneName;
 	public:
 		Engine(NVLib::Logger* logger, NVLib::Parameters * parameters);
 		~Engine();

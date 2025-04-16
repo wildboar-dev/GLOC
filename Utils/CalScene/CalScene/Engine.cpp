@@ -26,6 +26,10 @@ Engine::Engine(NVLib::Logger* logger, NVLib::Parameters* parameters)
     auto database = ArgUtils::GetString(parameters, "database");
     auto dataset = ArgUtils::GetString(parameters, "dataset");
     _pathHelper = new NVLib::PathHelper(database, dataset);
+
+    _logger->Log(1, "Retrieving the scene name");
+    _sceneName = ArgUtils::GetString(parameters, "scene");
+    _logger->Log(1, "Scene name: %s", _sceneName.c_str());
 }
 
 /**

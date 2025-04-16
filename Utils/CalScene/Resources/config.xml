@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <opencv_storage>
-    <database>"/home/trevor/Data"</database>
-    <dataset>"dataset"</dataset>
+    <database>"Utils/CalScene/build/Makefile"</database>
+    <dataset>"Render_Config"</dataset>
+    <scene>"TestBoard"</scene>
 </opencv_storage>
