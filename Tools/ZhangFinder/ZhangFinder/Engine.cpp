@@ -74,28 +74,7 @@ void Engine::Run()
 
     _logger->Log(1, "Generating the camera matrix");
     Mat K = ZhangUtils::GetCameraMatrix(parameters);
-    _logger->Log(1, (NVLib::Formatter() << "Camera Matrix: \n" << K).str().c_str());
-
-    /// TESTING
-    Mat M_1 = K.inv() * H_1;
-    Mat T = K * M_1;
-
-    Vec3d col1 = M_1.col(0);
-    Vec3d col2 = M_1.col(1);
-
-    auto magnitude_1 = sqrt(col1.dot(col1));
-    auto magnitude_2 = sqrt(col2.dot(col2));
-    auto diff = col1.dot(col2);
-
-
-    cout << "H_1: " << endl << H_1 << endl;
-    cout << "M_1: " << endl << M_1 << endl;
-    cout << "T: " << endl << T << endl;
-
-
-    /// END_TESTING
-
-
+   // _logger->Log(1, (NVLib::Formatter() << "Camera Matrix: \n" << K).str().c_str());
 
     _logger->Log(1, "Get the first pose");
     Mat pose_1 = ZhangUtils::GetPose(H_1, K);
