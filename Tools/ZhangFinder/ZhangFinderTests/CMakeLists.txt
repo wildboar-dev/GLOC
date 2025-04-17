@@ -19,6 +19,7 @@ add_executable (ZhangFinderTests
 	Tests/PointLoader_Tests.cpp
 	Tests/ZhangProblem_Tests.cpp
 	Tests/ZhangUtils_Tests.cpp
+	Tests/ClosedSolver_Tests.cpp
 )
 
 # Add link libraries

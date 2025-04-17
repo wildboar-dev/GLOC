@@ -17,4 +17,5 @@ add_library (ZhangFinderLib STATIC
 	PointLoader.cpp
 	ZhangProblem.cpp
 	ZhangUtils.cpp
+	ClosedSolver.cpp
 )
