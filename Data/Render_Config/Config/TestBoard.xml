@@ -6,10 +6,10 @@
     <shift_xy>-35 -60</shift_xy>
     <rot_yz>0 0</rot_yz>
     <angle>30</angle>
-    <distance>220</distance>
-    <focals>1000 1000</focals>
+    <distance>1000</distance>
+    <focals>3500 3500</focals>
     <center>500 500</center>
     <image_size>1000 1000</image_size>
-    <decimals>12</decimals>
+    <decimals>2</decimals>
     <folder>TestBoard</folder>
 </opencv_storage>
