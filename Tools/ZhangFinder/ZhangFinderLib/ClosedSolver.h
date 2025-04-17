@@ -27,7 +27,8 @@ namespace NVL_App
 	private:
 		void AddRowT1(Mat& V, Mat& H);
 		void AddRowT2(Mat& V, Mat& H);
-		void FindB(Mat& V);
-		Mat ExtractK(Mat& B);
+		Mat GetVector(Mat& H, int i, int j);
+		Vec4d FindB(Mat& V);
+		Mat ExtractK(const Vec4d & B);
 	};
 }

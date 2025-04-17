@@ -16,6 +16,7 @@ using namespace std;
 #include <NVLib/Path/PathHelper.h>
 
 #include <ZhangFinderLib/ArgUtils.h>
+#include <ZhangFinderLib/ClosedSolver.h>
 #include <ZhangFinderLib/PointLoader.h>
 #include <ZhangFinderLib/ZhangUtils.h>
 #include <ZhangFinderLib/ZhangProblem.h>

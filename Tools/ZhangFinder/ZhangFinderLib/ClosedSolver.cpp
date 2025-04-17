@@ -18,7 +18,7 @@ using namespace NVL_App;
  */
 ClosedSolver::ClosedSolver()
 {
-	throw runtime_error("Not implemented");
+	// Extra implementation
 }
 
 //--------------------------------------------------
@@ -31,7 +31,7 @@ ClosedSolver::ClosedSolver()
  */
 void ClosedSolver::AddHomography(Mat & H)
 {
-	throw runtime_error("Not implemented");
+	_homographies.push_back(H);
 }
 
 //--------------------------------------------------
@@ -44,7 +44,26 @@ void ClosedSolver::AddHomography(Mat & H)
  */
 Mat ClosedSolver::FindK()
 {
-	throw runtime_error("Not implemented");
+	// Create a container for the V matrix
+	Mat V;
+
+	// Build up the V Matrix
+	for (auto& H : _homographies)
+	{
+		AddRowT1(V, H);
+		AddRowT2(V, H);
+	}
+
+	// Solve for B
+	auto B = FindB(V);
+
+	//cout << "b: " << B << endl;
+
+	// Extract K
+	Mat K = ExtractK(B);
+
+	// Return the K matrix
+	return K;
 }
 
 //--------------------------------------------------
@@ -58,7 +77,10 @@ Mat ClosedSolver::FindK()
  */
 void ClosedSolver::AddRowT1(Mat& V, Mat& H)
 {
-	throw runtime_error("Not implemented");
+	Mat row = GetVector(H, 0, 1);
+
+	if (V.empty()) V = row;
+	else V.push_back(row);
 }
 
 /**
@@ -68,16 +90,48 @@ void ClosedSolver::AddRowT1(Mat& V, Mat& H)
  */
 void ClosedSolver::AddRowT2(Mat& V, Mat& H)
 {
-	throw runtime_error("Not implemented");
+	Mat v1 = GetVector(H, 0, 0);
+	Mat v2 = GetVector(H, 1, 1);
+	Mat row = v1 - v2;
+
+	if (V.empty()) V = row;
+	else V.push_back(row);
+}
+
+/**
+ * @brief Get the vector from the homography
+ * @param H The homography that we are extracting from
+ * @param i The row index
+ * @param j The column index
+ * @return Mat Returns a Mat
+ */
+Mat ClosedSolver::GetVector(Mat& H, int i, int j) 
+{
+	return (Mat_<double>(1, 4) <<
+		H.at<double>(0, i) * H.at<double>(0, j) + H.at<double>(1, i) * H.at<double>(1, j),
+		H.at<double>(2, i) * H.at<double>(0, j) + H.at<double>(0, i) * H.at<double>(2, j),
+		H.at<double>(2, i) * H.at<double>(1, j) + H.at<double>(1, i) * H.at<double>(2, j),
+		H.at<double>(2, i) * H.at<double>(2, j));
 }
 
 /**
  * @brief Use SVD to extract the b vector and make the B matrix
  * @param V The V matrix that we are extracting from
+ * @return Mat Returns a Mat
  */
-void ClosedSolver::FindB(Mat& V)
+Vec4d ClosedSolver::FindB(Mat& V)
 {
-	throw runtime_error("Not implemented");
+	// Perform SVD
+	Mat U, S, Vt;
+	SVD::compute(V, S, U, Vt);
+
+	// Get the last column of Vt
+	auto b = Vt.row(Vt.rows - 1);
+
+	// Convert to Vec4d
+	Vec4d B(b.at<double>(0), b.at<double>(1), b.at<double>(2), b.at<double>(3));
+
+	return B;
 }
 
 /**
@@ -85,7 +139,11 @@ void ClosedSolver::FindB(Mat& V)
  * @param B The B matrix that we are extracting K from
  * @return Mat Returns a Mat
  */
-Mat ClosedSolver::ExtractK(Mat& B)
-{
-	throw runtime_error("Not implemented");
+Mat ClosedSolver::ExtractK(const Vec4d & B)
+{	
+	auto f = sqrt(1 / B[0]);
+	auto cx = -B[1] * (1 / B[0]);
+	auto cy = -B[2] * (1 / B[0]);	
+
+	return Mat_<double>(3, 3) << f, 0, cx, 0, f, cy, 0, 0, 1;
 }

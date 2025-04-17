@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <fstream>
 #include <iostream>
 using namespace std;
 
@@ -18,4 +19,6 @@ class TestHelpers
 {
 public:
     static Mat GetCamera(const vector<double> & params);
+    static void SaveHomography(const string& path, const Mat& H);
+    static void SaveMatrix(const string& path, const Mat& M);
 };

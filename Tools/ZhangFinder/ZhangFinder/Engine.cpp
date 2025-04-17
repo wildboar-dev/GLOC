@@ -68,9 +68,21 @@ void Engine::Run()
     _logger->Log(1, "Creating a problem solver engine");
     auto solver = NVL_AI::LMFinder(problem);
 
+    _logger->Log(1, "Approximating parameters");
+    auto lsolver = NVL_App::ClosedSolver();
+    lsolver.AddHomography(H_1);
+    lsolver.AddHomography(H_2);
+    auto estK = lsolver.FindK();
+    auto f = estK.at<double>(0, 0);
+    auto cx = estK.at<double>(0, 2);
+    auto cy = estK.at<double>(1, 2);
+    Mat parameters = (Mat_<double>(4, 1) << f, f, cx, cy);
+    _logger->Log(1, (NVLib::Formatter() << "Initial Parameters: " << parameters.t()).str().c_str());
+
     _logger->Log(1, "Attempt to solve the problem");
-    Mat parameters = (Mat_<double>(4,1) << 1200, 1200, 500, 500);
     solver.Solve(parameters);
+
+    _logger->Log(1, (NVLib::Formatter() << "Final Parameters: " << parameters.t()).str().c_str());
 
     _logger->Log(1, "Generating the camera matrix");
     Mat K = ZhangUtils::GetCameraMatrix(parameters);
