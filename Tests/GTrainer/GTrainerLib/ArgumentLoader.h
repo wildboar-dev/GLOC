@@ -22,6 +22,6 @@ namespace NVL_App
 	class ArgumentLoader
 	{
 	public:
-		static unique_ptr<Arguments> Load(NVLib::PathHelper& pathHelper);
+		static unique_ptr<Arguments> Load(NVLib::PathHelper * pathHelper);
 	};
 }

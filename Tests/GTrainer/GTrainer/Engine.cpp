@@ -45,5 +45,9 @@ Engine::~Engine()
  */
 void Engine::Run()
 {
-    // TODO: Execution Logic
+    _logger->Log(1, "Loading the arguments from disk");
+    auto arguments = ArgumentLoader::Load(_pathHelper);
+
+
+    _logger->Log(1, "Grid Size: %d x %d", arguments->GetGridSize().width, arguments->GetGridSize().height);
 }
