@@ -56,19 +56,37 @@ void Engine::Run()
     Mat H_1 = ZhangUtils::FindHomography(points.get(), 0);
     Mat H_2 = ZhangUtils::FindHomography(points.get(), 1);
 
+    // Test the fit
+    auto e_1 = ZhangUtils::TestHomography(H_1, points.get(), 0);
+    auto e_2 = ZhangUtils::TestHomography(H_2, points.get(), 1);
+    cout << "Error 1: " << e_1 << endl;
+    cout << "Error 2: " << e_2 << endl;
+
     _logger->Log(1, "Create the Zhang Problem");
     auto problem = new ZhangProblem(H_1, H_2);
 
     _logger->Log(1, "Creating a problem solver engine");
     auto solver = NVL_AI::LMFinder(problem);
 
+    _logger->Log(1, "Approximating parameters");
+    auto lsolver = NVL_App::ClosedSolver();
+    lsolver.AddHomography(H_1);
+    lsolver.AddHomography(H_2);
+    auto estK = lsolver.FindK();
+    auto f = estK.at<double>(0, 0);
+    auto cx = estK.at<double>(0, 2);
+    auto cy = estK.at<double>(1, 2);
+    Mat parameters = (Mat_<double>(4, 1) << f, f, cx, cy);
+    _logger->Log(1, (NVLib::Formatter() << "Initial Parameters: " << parameters.t()).str().c_str());
+
     _logger->Log(1, "Attempt to solve the problem");
-    Mat parameters = (Mat_<double>(4,1) << 500, 500, 500, 500);
     solver.Solve(parameters);
+
+    _logger->Log(1, (NVLib::Formatter() << "Final Parameters: " << parameters.t()).str().c_str());
 
     _logger->Log(1, "Generating the camera matrix");
     Mat K = ZhangUtils::GetCameraMatrix(parameters);
-    //_logger->Log(1, (NVLib::Formatter() << "Camera Matrix: \n" << K).str().c_str());
+   // _logger->Log(1, (NVLib::Formatter() << "Camera Matrix: \n" << K).str().c_str());
 
     _logger->Log(1, "Get the first pose");
     Mat pose_1 = ZhangUtils::GetPose(H_1, K);
@@ -114,6 +132,9 @@ string Engine::GetPointPath()
  */
 void Engine::WriteResults(NVLib::PathHelper * pathHelper, Mat& K, Mat& M_1, Mat& M_2) 
 {
+    auto basePath = pathHelper->GetPath("Calib_Output");
+    if (!NVLib::FileUtils::Exists(basePath)) NVLib::FileUtils::AddFolder(basePath);
+
     auto filename = stringstream(); filename << _elementName << ".xml";
     auto path = pathHelper->GetPath("Calib_Output", filename.str());
     auto writer = FileStorage(path, FileStorage::WRITE | FileStorage::FORMAT_XML);

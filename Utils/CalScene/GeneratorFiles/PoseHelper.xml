@@ -1,0 +1,47 @@
+<?xml version="1.0" ?> 
+
+<class> 
+
+<namespace>NVL_App</namespace> 
+<solution>CalSceneLib</solution> 
+<name>PoseHelper</name> 
+<description>Generates a pose for the left and right boards, given the arguments</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+    <include name="Arguments.h" local="true" />
+</includes> 
+
+<methods>    
+
+<!-- Public Main Method -->
+<method section="Main" modifiers="static" access="public" return="Mat" name="FindPose" description="Derives the pose of a board using the input arguments" inline="false"> 
+    <parameter type="Arguments *" name="arguments" description="The arguments that we are generating the psoe from" />
+    <parameter type="int" name="boardIndex" description="The identifier of the board that we are generating the index for" /> 
+</method> 
+
+<!-- Rotation around X -->
+<method section="Rotation" modifiers="static" access="private" return="Mat" name="GetRotX" description="Retrieve the rotation around the X-axis" inline="false"> 
+    <parameter type="double" name="angle" description="The angle to rotation (in degrees)" /> 
+</method> 
+
+<!-- Rotation around Y -->
+<method section="Rotation" modifiers="static" access="private" return="Mat" name="GetRotY" description="Retrieve the rotation around the Y-axis" inline="false"> 
+    <parameter type="double" name="angle" description="The angle to rotation (in degrees)" /> 
+</method> 
+
+<!-- Rotation around Z -->
+<method section="Rotation" modifiers="static" access="private" return="Mat" name="GetRotZ" description="Retrieve the rotation around the Z-axis" inline="false"> 
+    <parameter type="double" name="angle" description="The angle to rotation (in degrees)" /> 
+</method> 
+
+<!-- Translation -->
+<method section="Translation" modifiers="static" access="private" return="Mat" name="GetTranslation" description="Retrieve the translation of the board" inline="false"> 
+    <parameter type="Mat&" name="rotation" description="The rotation component of the board pose" />
+    <parameter type="Arguments *" name="arguments" description="The arguments that are generating the rendering from" /> 
+</method> 
+
+</methods> 
+
+</class> 

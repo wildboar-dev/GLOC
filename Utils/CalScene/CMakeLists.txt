@@ -1,13 +1,17 @@
 #--------------------------------------------------------
-# CMake for generating the main executable
+# Top-Level: CalScene
 #
 # @author: Wild Boar
 #
-# Date Created: 2025-04-12
+# @Date Created: 2025-04-16
 #--------------------------------------------------------
 
+# Create the main application
 cmake_minimum_required(VERSION 3.10.0)
-project(CalScorer VERSION 0.1.0 LANGUAGES C CXX)
+project(CalScene VERSION 1.0.0)
+
+# Enable Testing
+enable_testing()
 
 # Set the correct version of C++
 set(CMAKE_CXX_STANDARD 17)
@@ -32,18 +36,7 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 # Include OpenSSL
 find_package(OpenSSL REQUIRED)
 
-# Create the executable
-add_executable(CalScorer
-         Main.cpp
-         PointLoader.cpp
-         ArgUtils.cpp
-)
-
-# Add link libraries                               
-target_link_libraries(CalScorer NVLib ${OpenCV_LIBS} OpenSSL::SSL uuid)
-
-# Copy Resources across
-add_custom_target(resource_copy ALL
-	COMMAND cmake -E copy_directory ${CMAKE_SOURCE_DIR}/Resources ${CMAKE_BINARY_DIR} 
-    DEPENDS ${MY_TARGET}
-)
+# Add the available subfolders
+add_subdirectory(CalSceneLib)
+add_subdirectory(CalSceneTests)
+add_subdirectory(CalScene)

@@ -1,0 +1,36 @@
+<?xml version="1.0" ?> 
+
+<class> 
+
+<namespace>NVL_App</namespace> 
+<solution>CalSceneLib</solution> 
+<name>HelpersUtils</name> 
+<description>A set of utilities that support the rendering of our synthetic calibration measurements</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+    <include name="Arguments.h" local="true" />
+</includes> 
+
+<methods>    
+
+<!-- Generate the scene points -->
+<method section="Scene Points" modifiers="static" access="public" return="vector<Point3d>" name="GetScenePoints" description="Generate the set of scene points for the calibration" inline="false"> 
+    <parameter type="Arguments *" name="arguments" description="The arguments that we need to generate the scene points correctly" /> 
+</method> 
+
+<!-- Generates the camera matrix -->
+<method section="Camera Matrix" modifiers="static" access="public" return="Mat" name="GetCameraMatrix" description="Generate a camera matrix from the provided arguments" inline="false"> 
+    <parameter type="Arguments *" name="arguments" description="The arguments that we are basing our camera matrix off" /> 
+</method> 
+
+<!-- Write Meta data to disk -->
+<method section="Meta Writer" modifiers="static" access="public" return="void" name="WriteMeta" description="Write meta data to disk" inline="false"> 
+    <parameter type="const string&" name="path" description="The path of the file that we are rendering to" />
+    <parameter type="Arguments *" name="arguments" description="The arguments that we are rendering (partially)" />
+</method> 
+
+</methods> 
+
+</class> 

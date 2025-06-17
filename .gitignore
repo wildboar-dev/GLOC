@@ -10,6 +10,7 @@ Utils/PointGen/build/
 Utils/PointConvert/build/
 Utils/MetaGen/build/
 Utils/CalScorer/build/
+Utils/CalScene/build/
 
 # Data
 # Data/**/*.png

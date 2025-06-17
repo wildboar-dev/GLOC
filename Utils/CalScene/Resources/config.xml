@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <opencv_storage>
     <database>"/home/trevor/Research/GLOC/Data"</database>
-    <dataset>"TestBoard"</dataset>
-    <element>"points_0000"</element>
+    <dataset>"Render_Config"</dataset>
+    <scene>"TestBoard"</scene>
 </opencv_storage>

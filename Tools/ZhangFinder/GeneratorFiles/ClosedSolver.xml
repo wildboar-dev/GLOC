@@ -1,0 +1,64 @@
+<?xml version="1.0" ?> 
+
+<class> 
+
+<namespace>NVL_App</namespace> 
+<solution>ZhangFinderLib</solution> 
+<name>ClosedSolver</name> 
+<description>A closed-form solver designed to extract the camera matrix from homographies</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+</includes> 
+
+<variables> 
+    <variable type="vector<Mat>" name="homographies" code="10" /> 
+</variables> 
+
+<constructors> 
+
+<!-- Main Constructor -->
+<constructor type="empty" inline="false" /> 
+
+</constructors>    
+
+<methods>    
+
+<!-- Add Homography -->
+<method section="Update" access="public" return="void" name="AddHomography" description="Inserts a new homography for consideration within the system" inline="false"> 
+    <parameter type="Mat &" name="H" description="The homography that we are inserting" /> 
+</method> 
+
+<!-- Find K -->
+<method section="Main" access="public" return="Mat" name="FindK" description="Determine the camera matrix from the homography list" inline="false" /> 
+
+<!-- Insert Row Type 1 -->
+<method section="Helpers" access="private" return="void" name="AddRowT1" description="Add a type one row to the V matrix" inline="false"> 
+    <parameter type="Mat&" name="V" description="The matrix that we are updating" />
+    <parameter type="Mat&" name="H" description="The homography whose data we are inserting" /> 
+</method> 
+
+<!-- Insert Row Type 2 -->
+<method section="Helpers" access="private" return="void" name="AddRowT2" description="Add a type two row to the V matrix" inline="false"> 
+    <parameter type="Mat&" name="V" description="The matrix that we are updating" />
+    <parameter type="Mat&" name="H" description="The homography whose data we are inserting" /> 
+</method> 
+
+<!-- Find B -->
+<method section="Helpers" access="private" return="void" name="FindB" description="Use SVD to extract the b vector and make the B matrix" inline="false"> 
+    <parameter type="Mat&" name="V" description="The V matrix that we are extracting from" /> 
+</method> 
+
+<!-- Extract K -->
+<method section="Helpers" access="private" return="Mat" name="ExtractK" description="Extract the K matrix from the B matrix" inline="false"> 
+    <parameter type="Mat&" name="B" description="The B matrix that we are extracting K from" /> 
+</method> 
+
+</methods> 
+
+<tests> 
+    <test name="match_test" description="Confirms the operation of the algorithm" exception="false" />
+</tests> 
+
+</class> 

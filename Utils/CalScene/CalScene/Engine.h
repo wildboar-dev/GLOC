@@ -3,7 +3,7 @@
 //
 // @author: Wild Boar
 //
-// @date: 2025-04-12
+// @date: 2025-04-16
 //--------------------------------------------------
 
 #pragma once
@@ -12,15 +12,13 @@
 using namespace std;
 
 #include <NVLib/Logger.h>
-#include <NVLib/Formatter.h>
 #include <NVLib/Path/PathHelper.h>
 
-#include <ZhangFinderLib/ArgUtils.h>
-#include <ZhangFinderLib/ClosedSolver.h>
-#include <ZhangFinderLib/PointLoader.h>
-#include <ZhangFinderLib/ZhangUtils.h>
-#include <ZhangFinderLib/ZhangProblem.h>
-#include <ZhangFinderLib/Solver/LMFinder.h>
+#include <CalSceneLib/ArgUtils.h>
+#include <CalSceneLib/Board.h>
+#include <CalSceneLib/PoseHelper.h>
+#include <CalSceneLib/HelperUtils.h>
+#include <CalSceneLib/ArgumentLoader.h>
 
 namespace NVL_App
 {
@@ -30,14 +28,13 @@ namespace NVL_App
 		NVLib::Parameters * _parameters;
 		NVLib::Logger* _logger;
 		NVLib::PathHelper * _pathHelper;
-		string _elementName;
+
+		string _sceneName;
+		string _database;
 	public:
 		Engine(NVLib::Logger* logger, NVLib::Parameters * parameters);
 		~Engine();
 
 		void Run();
-	private:
-		string GetPointPath();
-		void WriteResults(NVLib::PathHelper * pathHelper, Mat& K, Mat& M_1, Mat& M_2);
 	};
 }

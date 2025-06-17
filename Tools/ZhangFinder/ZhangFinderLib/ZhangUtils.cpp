@@ -96,6 +96,7 @@ Mat ZhangUtils::GetCameraMatrix(Mat& parameters)
 	auto cy = ((double *) parameters.data)[3];
 
 	Mat cameraMatrix = (Mat_<double>(3, 3) << fx, 0, cx, 0, fy, cy, 0, 0, 1);
+
 	return cameraMatrix;
 }
 
