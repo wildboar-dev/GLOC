@@ -13,4 +13,5 @@ include_directories("../" "${LIBRARY_BASE}/NVLib")
 add_library (GTrainerLib STATIC
 	ArgUtils.cpp
 	ArgumentLoader.cpp
+	StateGenerator.cpp
 )
