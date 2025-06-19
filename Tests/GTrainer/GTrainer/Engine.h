@@ -13,9 +13,11 @@ using namespace std;
 
 #include <NVLib/Logger.h>
 #include <NVLib/Path/PathHelper.h>
+#include <NVLib/Formatter.h>
 
 #include <GTrainerLib/ArgUtils.h>
 #include <GTrainerLib/ArgumentLoader.h>
+#include <GTrainerLib/StateGenerator.h>
 
 namespace NVL_App
 {

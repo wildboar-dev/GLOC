@@ -11,6 +11,9 @@
 #include <iostream>
 using namespace std;
 
+#include <NVLib/RandomUtils.h>
+#include <NVLib/PoseUtils.h>
+
 #include <opencv2/opencv.hpp>
 using namespace cv;
 
@@ -23,5 +26,9 @@ namespace NVL_App
 	{
 	public:
 		static unique_ptr<ProblemState> Create(Arguments * arguments);
+	private:
+		static Mat GenerateCamera(Arguments * arguments);
+		static Mat GenerateDistortion(Arguments * arguments);
+		static Mat GeneratePose(Arguments * arguments);
 	};
 }
