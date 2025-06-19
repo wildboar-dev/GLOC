@@ -54,5 +54,4 @@ void Engine::Run()
     _logger->Log(1, "Camera Matrix:\n%s", (NVLib::Formatter() <<  problemState->GetCamera()).str().c_str());
     _logger->Log(1, "Distortion Matrix:\n%s", (NVLib::Formatter() <<  problemState->GetDistortion()).str().c_str());
     _logger->Log(1, "Pose Matrix:\n%s", (NVLib::Formatter() <<  problemState->GetPose()).str().c_str());
-
 }

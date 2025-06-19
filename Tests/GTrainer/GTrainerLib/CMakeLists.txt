@@ -14,4 +14,5 @@ add_library (GTrainerLib STATIC
 	ArgUtils.cpp
 	ArgumentLoader.cpp
 	StateGenerator.cpp
+	Grid.cpp
 )

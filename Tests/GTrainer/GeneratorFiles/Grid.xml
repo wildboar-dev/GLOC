@@ -1,0 +1,49 @@
+<?xml version="1.0" ?> 
+
+<class terminator="true"> 
+
+<namespace>NVL_App</namespace> 
+<solution>GTrainerLib</solution> 
+<name>Grid</name> 
+<description>Generate a grid representing a virtual calibration object</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+    <include name="Argument.h" local="true" />
+    <include name="ProblemState.h" local="true" />    
+</includes> 
+
+<variables> 
+    <variable type="vector<Point3d>" name="scenePoints" code="10" />
+    <variable type="vector<Point2d>" name="imagePoints" code="10" />
+    <variable type="bool" name="isValid" code="10" /> 
+</variables> 
+
+<constructors> 
+
+<!-- Main Constructor -->
+<constructor type="custom" inline="false"> 
+    <parameter type="Arguments *" name="arguments" description="The input arguments that we are adding" />
+    <parameter type="ProblemState *" name="problemState" description="The problem state to which this grid belongs" />
+    <parameter type="int" name="gridNumber" description="The number associated with the grid" /> 
+</constructor> 
+
+</constructors>    
+
+<methods>    
+
+<!-- Is Valid -->
+<method section="Is Valid" access="public" return="bool" name="IsValid" description="Determine whether the grid is valid" inline="false" /> 
+
+<!-- Render -->
+<method section="Render" access="public" return="void" name="Render" description="Render the grid on an image" inline="false"> 
+    <parameter type="Mat&" name="image" description="The image that we are rendering upon" /> 
+</method> 
+
+<!-- Error -->
+<method section="Error" access="public" return="Mat" name="GetErrors" description="Generate the errors of the grids wrt a homography" inline="false" /> 
+
+</methods> 
+
+</class> 
