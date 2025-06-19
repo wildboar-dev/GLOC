@@ -11,6 +11,8 @@
 #include <iostream>
 using namespace std;
 
+#include <NVLib/Math3D.h>
+
 #include <opencv2/opencv.hpp>
 using namespace cv;
 
@@ -26,7 +28,7 @@ namespace NVL_App
 		vector<Point2d> _imagePoints;
 		bool _isValid;
 	public:
-		Grid(Arguments * arguments, ProblemState * problemState, int gridNumber);
+		Grid(Arguments * arguments, ProblemState * problemState);
 
 		bool IsValid();
 		void Render(Mat& image);
@@ -35,5 +37,9 @@ namespace NVL_App
 		inline vector<Point3d>& GetScenePoints() { return _scenePoints; }
 		inline vector<Point2d>& GetImagePoints() { return _imagePoints; }
 		inline bool GetIsValid() { return _isValid; }
+
+	private:
+		void MakeVanillaScenePoints(Arguments * arguments, vector<Point3d>& scenePoints);
+		bool ValidatePoints(Arguments * arguments);
 	};
 }
