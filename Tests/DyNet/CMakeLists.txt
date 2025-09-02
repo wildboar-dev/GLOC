@@ -40,7 +40,11 @@ set_target_properties(NVLib PROPERTIES
 # Create the executable
 add_executable(DynetTest
     Source.cpp
+    DataLoader.cpp
 )
 
 # Add link libraries                               
 target_link_libraries(DynetTest NVLib ${OpenCV_LIBS} OpenSSL::SSL uuid DyNet)
+
+# Copy Resources across
+file(COPY ${CMAKE_SOURCE_DIR}/data.csv DESTINATION ${CMAKE_BINARY_DIR})
