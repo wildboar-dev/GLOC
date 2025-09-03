@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<block_size>5.</block_size>
+<grid_size>
+  7 5</grid_size>
+<shift_xy>
+  26. 19.</shift_xy>
+<rot_yz>
+  2.0000000000000000e-03 -1.0000000000000000e-02</rot_yz>
+<angle>75.</angle>
+<distance>152.</distance>
+<focals>
+  928. 928.</focals>
+<center>
+  301. 250.</center>
+<image_size>
+  640 480</image_size>
+<decimals>8</decimals>
+<distortion>
+  -2.0999999999999999e-01 -5.0000000000000003e-02 5.6000000000000005e-01
+  -3.3000000000000002e-01</distortion>
+</opencv_storage>

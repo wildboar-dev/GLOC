@@ -86,12 +86,13 @@ unique_ptr<NVL_App::Arguments> CreateArguments()
     Vec2d shiftXY = Vec2d(Random(10,30), Random(10,30));
     Vec2d RotYZ = Vec2d(Random(-10,10) / 1e3, Random(-10,10) / 1e3);
     double angle = Random(30,90);
-    double distance = Random(100, 600);
+    double distance = Random(100, 300);
     Vec2d focals = Vec2d(focal, focal);
     Point2d center = Point2d(imageSize.width / 2.0 + Random(-20,20), imageSize.height / 2.0 + Random(-20,20));
     int decimals = 8;
+    auto distortion = GetRandomDistortion();
 
-    return make_unique<NVL_App::Arguments>(blockSize, gridSize, shiftXY, RotYZ, angle, distance, focals, center, imageSize, decimals);
+    return make_unique<NVL_App::Arguments>(blockSize, gridSize, shiftXY, RotYZ, angle, distance, focals, center, distortion, imageSize, decimals);
 }
 
 /**
@@ -141,6 +142,7 @@ void Save(const string& path, NVL_App::Arguments * arguments)
     fs << "center" << arguments->GetCenter();
     fs << "image_size" << arguments->GetImageSize();
     fs << "decimals" << arguments->GetDecimals();
+    fs << "distortion" << arguments->GetDistortion();
 
     fs.release();
 }
