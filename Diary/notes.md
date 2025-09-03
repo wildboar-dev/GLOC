@@ -1,5 +1,7 @@
 # Diary Notes #
 
+**NOTE:** As per my current strategy - these notes are now being retained on Obsidian (which is now my central storage place for note taking across all the projects that I am working on).
+
 **20 November 2024**
 
 I am getting back into this thing after a busy year - with too little attention given to this project. So what needs to be done?
