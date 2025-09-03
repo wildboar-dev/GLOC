@@ -23,11 +23,12 @@ namespace NVL_App
         Vec3d _tvec_1;
         Vec3d _rvec_2;
         Vec3d _tvec_2;
+        Vec4d _distortion; 
         int _blockSize;
         int _gridSize;
     public:
-        MetaData(double focal, Size imageSize, Vec3d rvec_1, Vec3d tvec_1, Vec3d rvec_2, Vec3d tvec_2, int blockSize, int gridSize)
-            : _focal(focal), _imageSize(imageSize), _rvec_1(rvec_1), _tvec_1(tvec_1), _rvec_2(rvec_2), _tvec_2(tvec_2), _blockSize(blockSize), _gridSize(gridSize) {}
+        MetaData(double focal, Size imageSize, Vec3d rvec_1, Vec3d tvec_1, Vec3d rvec_2, Vec3d tvec_2, Vec4d distortion, int blockSize, int gridSize)
+            : _focal(focal), _imageSize(imageSize), _rvec_1(rvec_1), _tvec_1(tvec_1), _rvec_2(rvec_2), _tvec_2(tvec_2), _distortion(distortion), _blockSize(blockSize), _gridSize(gridSize) {}
 
         double GetFocal() { return _focal; }
         Size& GetImageSize() { return _imageSize; }
@@ -35,6 +36,7 @@ namespace NVL_App
         Vec3d& GetTVec_1() { return _tvec_1; }
         Vec3d& GetRVec_2() { return _rvec_2; }
         Vec3d& GetTVec_2() { return _tvec_2; }
+        Vec4d& GetDistortion() { return _distortion; }
         int GetBlockSize() { return _blockSize; }
         int GetGridSize() { return _gridSize; }
     };

@@ -28,6 +28,7 @@ void Run(NVLib::Parameters * parameters);
 unique_ptr<NVL_App::MetaData> CreateMetaData();
 Vec3d GetRandomRotation();
 Vec3d GetRandomTranslation();
+Vec4d GetRandomDistortion();
 void Save(const string& path, NVL_App::MetaData * metaData);
 void CreateDB(NVLib::PathHelper& pathHelper);
 void MakeFolder(const string& path);   
@@ -85,11 +86,12 @@ unique_ptr<NVL_App::MetaData> CreateMetaData()
     auto tvec_1 = GetRandomTranslation();
     auto rvec_2 = GetRandomRotation();
     auto tvec_2 = GetRandomTranslation();
-    
+    auto distortion = GetRandomDistortion();
+
     auto blockSize = 5;
     auto gridSize = 10;
 
-    return make_unique<NVL_App::MetaData>(focal, imageSize, rvec_1, tvec_1, rvec_2, tvec_2, blockSize, gridSize);
+    return make_unique<NVL_App::MetaData>(focal, imageSize, rvec_1, tvec_1, rvec_2, tvec_2, distortion, blockSize, gridSize);
 }
 
 /**
@@ -118,6 +120,19 @@ Vec3d GetRandomTranslation()
     return Vec3d(tx, ty, tz);
 }
 
+/**
+ * Get a random distortion vector
+ * @return The random distortion vector
+ */
+Vec4d GetRandomDistortion() 
+{
+    auto k1 = NVLib::RandomUtils::GetInteger(-100, 100) / 100.0;
+    auto k2 = NVLib::RandomUtils::GetInteger(-100, 100) / 100.0;
+    auto p1 = NVLib::RandomUtils::GetInteger(-100, 100) / 100.0;
+    auto p2 = NVLib::RandomUtils::GetInteger(-100, 100) / 100.0;
+    return Vec4d(k1, k2, p1, p2);
+}
+
 //--------------------------------------------------
 // Saving Logic
 //--------------------------------------------------
@@ -140,6 +155,7 @@ void Save(const string& path, NVL_App::MetaData * metaData)
     fs << "tvec_2" << metaData->GetTVec_2();
     fs << "blockSize" << metaData->GetBlockSize();
     fs << "gridSize" << metaData->GetGridSize();
+    fs << "distortion" << metaData->GetDistortion();
 
     fs.release();
 }
