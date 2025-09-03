@@ -66,8 +66,9 @@ void Engine::Run()
     Mat pose_2 = PoseHelper::FindPose(arguments.get(), 1);
 
     _logger->Log(1, "Generating the boards");
-    auto board_1 = Board(cameraMatrix, pose_1, scenePoints);
-    auto board_2 = Board(cameraMatrix, pose_2, scenePoints);
+    Mat distortion = Mat(arguments.get()->GetDistortion());
+    auto board_1 = Board(cameraMatrix, pose_1, distortion, scenePoints);
+    auto board_2 = Board(cameraMatrix, pose_2, distortion, scenePoints);
 
     _logger->Log(1, "Generating the image");
     Mat image = Mat_<Vec3b>::zeros(arguments->GetImageSize());

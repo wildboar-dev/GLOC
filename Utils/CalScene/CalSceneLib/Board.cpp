@@ -19,10 +19,10 @@ using namespace NVL_App;
  * @param pose The pose matrix
  * @param scenePoints The 3D points in the scene
  */
-Board::Board(Mat & camera, Mat & pose, vector<Point3d> & scenePoints) : _camera(camera), _pose(pose), _scenePoints(scenePoints)
+Board::Board(Mat & camera, Mat & pose, Mat& distortion, vector<Point3d> & scenePoints) : _camera(camera), _pose(pose), _distortion(distortion), _scenePoints(scenePoints)
 {
 	auto rvec = Vec3d(), tvec = Vec3d(); NVLib::PoseUtils::Pose2Vectors(_pose, rvec, tvec);
-	projectPoints(scenePoints, rvec, tvec, camera, noArray(), _imagePoints);
+	projectPoints(scenePoints, rvec, tvec, camera, distortion, _imagePoints);
 }
 
 //--------------------------------------------------

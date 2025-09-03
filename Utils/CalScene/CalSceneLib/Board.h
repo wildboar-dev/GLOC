@@ -23,11 +23,11 @@ namespace NVL_App
 	private:
 		Mat _camera;
 		Mat _pose;
+		Mat _distortion;
 		vector<Point3d> _scenePoints;
 		vector<Point2d> _imagePoints;
-
 	public:
-		Board(Mat & camera, Mat & pose, vector<Point3d> & scenePoints);
+		Board(Mat & camera, Mat & pose, Mat& distortion, vector<Point3d> & scenePoints);
 
 		void Render(Mat& image);
 		void Save(ostream& writer);

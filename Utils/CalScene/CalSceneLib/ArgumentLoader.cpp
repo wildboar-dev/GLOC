@@ -34,8 +34,9 @@ unique_ptr<Arguments> ArgumentLoader::Load(const string& path)
 	Point2d center; reader["center"] >> center;
 	Size imageSize; reader["image_size"] >> imageSize;
 	int decimals; reader["decimals"] >> decimals;
+	Vec4d distortion; reader["distortion"] >> distortion;
 
 	reader.release();
 
-	return make_unique<Arguments>(blockSize, gridSize, shiftXY, RotYZ, angle, distance, focals, center, imageSize, decimals);
+	return make_unique<Arguments>(blockSize, gridSize, shiftXY, RotYZ, angle, distance, focals, center, distortion, imageSize, decimals);
 }
