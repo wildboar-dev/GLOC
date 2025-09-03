@@ -29,6 +29,8 @@ unique_ptr<NVL_App::MetaData> CreateMetaData();
 Vec3d GetRandomRotation();
 Vec3d GetRandomTranslation();
 void Save(const string& path, NVL_App::MetaData * metaData);
+void CreateDB(NVLib::PathHelper& pathHelper);
+void MakeFolder(const string& path);   
 
 //--------------------------------------------------
 // Execution Logic
@@ -50,6 +52,9 @@ void Run(NVLib::Parameters * parameters)
     auto database = NVL_Utils::ArgReader::ReadString(parameters, "database");
     auto dataset = NVL_Utils::ArgReader::ReadString(parameters, "dataset");
     auto pathHelper = NVLib::PathHelper(database, dataset);
+
+    logger.Log(1, "Creating database folders");
+    CreateDB(pathHelper);
 
     logger.Log(1, "Creating metadata");
     auto metaData = CreateMetaData();
@@ -137,6 +142,32 @@ void Save(const string& path, NVL_App::MetaData * metaData)
     fs << "gridSize" << metaData->GetGridSize();
 
     fs.release();
+}
+
+//--------------------------------------------------
+// Database Creation
+//--------------------------------------------------
+
+/**
+ * Make sure that the database folder structure exists
+ * @param pathHelper The path helper object
+ */
+void CreateDB(NVLib::PathHelper& pathHelper) 
+{
+    MakeFolder(pathHelper.GetBasePath());
+    MakeFolder(pathHelper.GetPath("Meta"));
+}
+    
+/**
+ * Create a folder if it doesn't exist
+ * @param path The path to the folder
+ */
+void MakeFolder(const string& path) 
+{
+    if (!filesystem::exists(path)) 
+    {
+        filesystem::create_directories(path);
+    }
 }
 
 //--------------------------------------------------
