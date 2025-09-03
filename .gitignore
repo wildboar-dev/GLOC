@@ -4,12 +4,14 @@
 # @author: Wildboar
 #----------------------------------------------------------
 
+# Archive
+Archive/BCamera/build/
+Archive/PointGen/build/
+Archive/PointConvert/build/
+Archive/CalScorer/build/
+
 # Utilities
-Utils/BCamera/build/
-Utils/PointGen/build/
-Utils/PointConvert/build/
 Utils/MetaGen/build/
-Utils/CalScorer/build/
 Utils/CalScene/build/
 
 # Data

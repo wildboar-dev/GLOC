@@ -12,11 +12,6 @@ The main novelity of this work is:
 
 The following are utilities that have been developed for the research project.
 
-* **BCamera:** This is a *Pylon* based utility to capture images with *Basler* cameras.
+* **MetaGen:** Generates a random scene with calibration parameters (current it does not appear to 
 * **CalScene:** Appears to load up a multi-scene data file and output points and board images. It does not appear to deal with distortion though.
-* **CalScore:** Appears to calculate the errors associated with an *approximated* calibration.
-* **MetaGen:** Generates a random scene with calibration parameters (current it does not appear to generate distortion).
-* **PointConvert:** Appears to write the grid points of the meta file.
-* **PointGen:** Appears to generate the points for a particular meta, but only one grid.
-
 
