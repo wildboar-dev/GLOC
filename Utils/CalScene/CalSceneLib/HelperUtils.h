@@ -28,7 +28,7 @@ namespace NVL_App
 		static vector<Point3d> GetScenePoints(Arguments * arguments);
 		static Mat GetCameraMatrix(Arguments * arguments);
 		static void WriteMeta(const string& path, Arguments * arguments, Mat& pose_1, Mat& pose_2);
-		static void CreateFolders(const string& databasePath, const string& folder);
+		static void CreateFolders(NVLib::PathHelper & pathHelper);
 		static void WritePoints(const string& paths, int precision, const vector<Point3d>& scenePoints, vector<Point2d>& imagePoints_1, vector<Point2d>& imagePoints_2);
 	};
 }

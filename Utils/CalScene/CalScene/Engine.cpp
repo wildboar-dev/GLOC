@@ -73,25 +73,24 @@ void Engine::Run()
     Mat image = Mat_<Vec3b>::zeros(arguments->GetImageSize());
     board_1.Render(image); board_2.Render(image);
 
-    _logger->Log(1, "Writing the preview image");
-    imwrite("preview.png", image);
+    //_logger->Log(1, "Writing the preview image");
+    //imwrite("preview.png", image);
 
     _logger->Log(1, "Verify that the output structure exists");
-    HelperUtils::CreateFolders(_database, arguments->GetFolder());
-    auto oPathHelper = new NVLib::PathHelper(_database, arguments->GetFolder());
+    HelperUtils::CreateFolders(*_pathHelper);
 
     _logger->Log(1, "Writing the meta data");
-    auto metaFile = stringstream(); metaFile << "meta_" << setw(4) << setfill('0') << arguments->GetIndex() << ".xml";
-    auto metaPath = oPathHelper->GetPath("Meta", metaFile.str());
+    auto metaFile = stringstream(); metaFile << "meta.xml";
+    auto metaPath = _pathHelper->GetPath("Meta", metaFile.str());
     HelperUtils::WriteMeta(metaPath, arguments.get(), pose_1, pose_2);
 
     _logger->Log(1, "Writing the image");
-    auto imageFile = stringstream(); imageFile << "image_" << setw(4) << setfill('0') << arguments->GetIndex() << ".png";
-    auto imagePath = oPathHelper->GetPath("Image", imageFile.str());
+    auto imageFile = stringstream(); imageFile << "image.png";
+    auto imagePath = _pathHelper->GetPath("Image", imageFile.str());
     imwrite(imagePath, image);
 
     _logger->Log(1, "Writing the points");
-    auto pointFile = stringstream(); pointFile << "points_" << setw(4) << setfill('0') << arguments->GetIndex() << ".txt";
-    auto pointPath = oPathHelper->GetPath("Point", pointFile.str());
+    auto pointFile = stringstream(); pointFile << "points.txt";
+    auto pointPath = _pathHelper->GetPath("Point", pointFile.str());
     HelperUtils::WritePoints(pointPath, arguments->GetDecimals(), scenePoints, board_1.GetImagePoints(), board_2.GetImagePoints());
 }

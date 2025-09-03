@@ -27,8 +27,8 @@ Mat PoseHelper::FindPose(Arguments * arguments, int boardIndex)
 	Mat rotationY = GetRotY(angleY);
 
 	// Determine the rotation around Z and X
-	Mat rotationX = GetRotX(arguments->GetRotXZ()[0]);
-	Mat rotationZ = GetRotZ(arguments->GetRotXZ()[1]);
+	Mat rotationX = GetRotX(arguments->GetRotYZ()[0]);
+	Mat rotationZ = GetRotZ(arguments->GetRotYZ()[1]);
 
 	// Compose the final rotation
 	Mat rotation = rotationZ * rotationX * rotationY;

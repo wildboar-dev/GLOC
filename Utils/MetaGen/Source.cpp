@@ -19,19 +19,18 @@ using namespace std;
 using namespace cv;
 
 #include "ArgReader.h"
-#include "MetaData.h"
+#include "Arguments.h"
 
 //--------------------------------------------------
 // Function Prototypes
 //--------------------------------------------------
 void Run(NVLib::Parameters * parameters);
-unique_ptr<NVL_App::MetaData> CreateMetaData();
-Vec3d GetRandomRotation();
-Vec3d GetRandomTranslation();
+unique_ptr<NVL_App::Arguments> CreateArguments();
 Vec4d GetRandomDistortion();
-void Save(const string& path, NVL_App::MetaData * metaData);
+void Save(const string& path, NVL_App::Arguments * arguments);
 void CreateDB(NVLib::PathHelper& pathHelper);
-void MakeFolder(const string& path);   
+void MakeFolder(const string& path);
+int Random(int min, int max);   
 
 //--------------------------------------------------
 // Execution Logic
@@ -57,14 +56,14 @@ void Run(NVLib::Parameters * parameters)
     logger.Log(1, "Creating database folders");
     CreateDB(pathHelper);
 
-    logger.Log(1, "Creating metadata");
-    auto metaData = CreateMetaData();
+    logger.Log(1, "Creating Output Configuration");
+    auto arguments = CreateArguments();
 
-    logger.Log(1, "Saving metadata");
+    logger.Log(1, "Saving Output Configuration");
     auto name = NVLib::StringUtils::GetDateTimeString();
-    auto path = pathHelper.GetPath("Meta", name + ".xml");
+    auto path = pathHelper.GetPath("Config", name + ".xml");
     logger.Log(1, "Saving to: %s", path.c_str());
-    Save(path, metaData.get());
+    Save(path, arguments.get());
 
     logger.StopApplication();
 }
@@ -77,47 +76,22 @@ void Run(NVLib::Parameters * parameters)
  * Create the metadata for the application
  * @return The metadata object
  */
-unique_ptr<NVL_App::MetaData> CreateMetaData() 
+unique_ptr<NVL_App::Arguments> CreateArguments() 
 {
     auto focal = 640.0 * (1.0 + NVLib::RandomUtils::GetInteger(0, 100) / 100.0);
     auto imageSize = Size(640, 480);
 
-    auto rvec_1 = GetRandomRotation();
-    auto tvec_1 = GetRandomTranslation();
-    auto rvec_2 = GetRandomRotation();
-    auto tvec_2 = GetRandomTranslation();
-    auto distortion = GetRandomDistortion();
+    double blockSize = 5.0;
+    Vec2i gridSize = Vec2i(7, 5);
+    Vec2d shiftXY = Vec2d(Random(10,30), Random(10,30));
+    Vec2d RotYZ = Vec2d(Random(-10,10) / 1e3, Random(-10,10) / 1e3);
+    double angle = Random(30,90);
+    double distance = Random(100, 600);
+    Vec2d focals = Vec2d(focal, focal);
+    Point2d center = Point2d(imageSize.width / 2.0 + Random(-20,20), imageSize.height / 2.0 + Random(-20,20));
+    int decimals = 8;
 
-    auto blockSize = 5;
-    auto gridSize = 10;
-
-    return make_unique<NVL_App::MetaData>(focal, imageSize, rvec_1, tvec_1, rvec_2, tvec_2, distortion, blockSize, gridSize);
-}
-
-/**
- * Get a random rotation vector
- * @return The random rotation vector
- */
-Vec3d GetRandomRotation() 
-{
-    auto rx = NVLib::RandomUtils::GetInteger(0, 20) / 100.0;
-    auto ry = NVLib::RandomUtils::GetInteger(0, 20) / 100.0;
-    auto rz = NVLib::RandomUtils::GetInteger(80, 100) / 100.0;
-    auto rmag_r = sqrt(rx * rx + ry * ry + rz * rz);
-    auto rmag = M_PI_4 * NVLib::RandomUtils::GetInteger(0, 100) / 100.0;
-    return Vec3d(rx, ry, rz) / (rmag / rmag_r);
-}
-
-/**
- * Get a random translation vector
- * @return The random translation vector
- */
-Vec3d GetRandomTranslation() 
-{
-    auto tx = NVLib::RandomUtils::GetInteger(-100, 100);
-    auto ty = NVLib::RandomUtils::GetInteger(-20, 20);
-    auto tz = NVLib::RandomUtils::GetInteger(200, 500);
-    return Vec3d(tx, ty, tz);
+    return make_unique<NVL_App::Arguments>(blockSize, gridSize, shiftXY, RotYZ, angle, distance, focals, center, imageSize, decimals);
 }
 
 /**
@@ -133,6 +107,16 @@ Vec4d GetRandomDistortion()
     return Vec4d(k1, k2, p1, p2);
 }
 
+/**
+ * Defines a random number generator helper
+ * @param min The min value possible for the random number
+ * @param max The max value possible for the random number
+ */
+int Random(int min, int max) 
+{
+    return NVLib::RandomUtils::GetInteger(min, max);    
+}   
+
 //--------------------------------------------------
 // Saving Logic
 //--------------------------------------------------
@@ -142,20 +126,21 @@ Vec4d GetRandomDistortion()
  * @param path The path to save the metadata
  * @param metaData The metadata object
  */
-void Save(const string& path, NVL_App::MetaData * metaData) 
+void Save(const string& path, NVL_App::Arguments * arguments) 
 {
     auto fs = FileStorage(path, FileStorage::WRITE | FileStorage::FORMAT_XML);
     if (!fs.isOpened()) throw runtime_error("Failed to open file for writing: " + path);
-    
-    fs << "focal" << metaData->GetFocal();
-    fs << "imageSize" << metaData->GetImageSize();
-    fs << "rvec_1" << metaData->GetRVec_1();
-    fs << "tvec_1" << metaData->GetTVec_1();
-    fs << "rvec_2" << metaData->GetRVec_2();
-    fs << "tvec_2" << metaData->GetTVec_2();
-    fs << "blockSize" << metaData->GetBlockSize();
-    fs << "gridSize" << metaData->GetGridSize();
-    fs << "distortion" << metaData->GetDistortion();
+
+    fs << "block_size" << arguments->GetBlockSize();
+    fs << "grid_size" << arguments->GetGridSize();
+    fs << "shift_xy" << arguments->GetShiftXY();
+    fs << "rot_yz" << arguments->GetRotYZ();
+    fs << "angle" << arguments->GetAngle();
+    fs << "distance" << arguments->GetDistance();
+    fs << "focals" << arguments->GetFocals();
+    fs << "center" << arguments->GetCenter();
+    fs << "image_size" << arguments->GetImageSize();
+    fs << "decimals" << arguments->GetDecimals();
 
     fs.release();
 }
@@ -171,7 +156,7 @@ void Save(const string& path, NVL_App::MetaData * metaData)
 void CreateDB(NVLib::PathHelper& pathHelper) 
 {
     MakeFolder(pathHelper.GetBasePath());
-    MakeFolder(pathHelper.GetPath("Meta"));
+    MakeFolder(pathHelper.GetPath("Config"));
 }
     
 /**

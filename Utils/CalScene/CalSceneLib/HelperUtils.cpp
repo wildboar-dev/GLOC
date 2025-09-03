@@ -94,22 +94,19 @@ void HelperUtils::WriteMeta(const string& path, Arguments * arguments, Mat& pose
  * @param databasePath The path where the database is located
  * @param folder The folder that we are creating
  */
-void HelperUtils::CreateFolders(const string& databasePath, const string& folder) 
+void HelperUtils::CreateFolders(NVLib::PathHelper & pathHelper) 
 {
-	// Add the base folder
-	auto basePath = NVLib::FileUtils::PathCombine(databasePath, folder);
-	if (!NVLib::FileUtils::Exists(basePath)) NVLib::FileUtils::AddFolder(basePath);
 
 	// Add meta folder
-	auto metaPath = NVLib::FileUtils::PathCombine(basePath, "Meta");
+	auto metaPath = pathHelper.GetPath("Meta");
 	if (!NVLib::FileUtils::Exists(metaPath)) NVLib::FileUtils::AddFolder(metaPath);
 
 	// Add image folder
-	auto imagePath = NVLib::FileUtils::PathCombine(basePath, "Image");
+	auto imagePath = pathHelper.GetPath("Image");
 	if (!NVLib::FileUtils::Exists(imagePath)) NVLib::FileUtils::AddFolder(imagePath);
 
 	// Add point folder
-	auto pointPath = NVLib::FileUtils::PathCombine(basePath, "Point");
+	auto pointPath = pathHelper.GetPath("Point");
 	if (!NVLib::FileUtils::Exists(pointPath)) NVLib::FileUtils::AddFolder(pointPath);
 }
 

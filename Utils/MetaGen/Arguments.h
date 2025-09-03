@@ -29,6 +29,7 @@ namespace NVL_App
 		Point2d _center;
 		Size _imageSize;
 		int _decimals;
+
 	public:
 		Arguments(double blockSize, Vec2i& gridSize, Vec2d& shiftXY, Vec2d& RotYZ, double angle, double distance, Vec2d& focals, Point2d& center, Size& imageSize, int decimals) :
 			_blockSize(blockSize), _gridSize(gridSize), _shiftXY(shiftXY), _RotYZ(RotYZ), _angle(angle), _distance(distance), _focals(focals), _center(center), _imageSize(imageSize), _decimals(decimals) {}

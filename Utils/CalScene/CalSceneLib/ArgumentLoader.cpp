@@ -21,6 +21,7 @@ using namespace NVL_App;
 unique_ptr<Arguments> ArgumentLoader::Load(const string& path)
 {
 	auto reader = FileStorage(path, FileStorage::READ & FileStorage::FORMAT_XML);
+	auto open = reader.isOpened();
 	if (!reader.isOpened()) throw runtime_error("Failed to open file: " + path);
 	
 	double blockSize; reader["block_size"] >> blockSize;
@@ -33,10 +34,8 @@ unique_ptr<Arguments> ArgumentLoader::Load(const string& path)
 	Point2d center; reader["center"] >> center;
 	Size imageSize; reader["image_size"] >> imageSize;
 	int decimals; reader["decimals"] >> decimals;
-	string folder; reader["folder"] >> folder;
-	int index; reader["index"] >> index;
 
 	reader.release();
-	
-	return make_unique<Arguments>(index, blockSize, gridSize, shiftXY, RotYZ, angle, distance, focals, center, imageSize, decimals, folder);
+
+	return make_unique<Arguments>(blockSize, gridSize, shiftXY, RotYZ, angle, distance, focals, center, imageSize, decimals);
 }
