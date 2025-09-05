@@ -45,5 +45,7 @@ Engine::~Engine()
  */
 void Engine::Run()
 {
-    // TODO: Execution Logic
+    _logger->Log(1, "Loading points from the dataset");
+    auto points = NVL_App::PointLoader::Load(_pathHelper->GetPath("Point", "points.txt"));
+    _logger->Log(1, "Loaded %d points", points->PointCount());
 }

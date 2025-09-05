@@ -13,7 +13,9 @@ using namespace std;
 
 #include <NVLib/Logger.h>
 #include <NVLib/Path/PathHelper.h>
+
 #include <MemeLib/ArgUtils.h>
+#include <MemeLib/PointLoader.h>
 
 namespace NVL_App
 {
