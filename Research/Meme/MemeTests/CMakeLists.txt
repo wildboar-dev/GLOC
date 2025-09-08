@@ -13,8 +13,9 @@ find_package(GTest REQUIRED)
 include_directories("../")
 
 # Create the executable
-add_executable(MemeTests
-    Tests/Example_Tests.cpp
+add_executable (MemeTests
+	Tests/Example_Tests.cpp
+	Tests/CostFunction_Tests.cpp
 )
 
 # Add link libraries

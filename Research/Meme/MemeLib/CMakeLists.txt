@@ -10,7 +10,8 @@
 include_directories("../" "${LIBRARY_BASE}/NVLib")
 
 # Create Library
-add_library(MemeLib STATIC
-    ArgUtils.cpp
-    PointLoader.cpp
+add_library (MemeLib STATIC
+	ArgUtils.cpp
+	PointLoader.cpp
+	CostFunction.cpp
 )

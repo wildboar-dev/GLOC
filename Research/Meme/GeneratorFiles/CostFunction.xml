@@ -1,0 +1,25 @@
+<?xml version="1.0" ?> 
+
+<class terminator="true"> 
+
+<namespace>NVL_App</namespace> 
+<solution>MemeLib</solution> 
+<name>CostFunction</name> 
+<description>Attempts to get a cost value for a given set of points</description> 
+
+<methods>    
+
+<!-- Calculate Error -->
+<method section="Calculate" access="public" return="double" name="CalculateError" description="Calculates the error between the scene points and the image points" inline="false"> 
+    <parameter type="const Size&" name="gridSize" description="The size of the image" />
+    <parameter type="const Points&" name="points" description="The points to calculate the error for" /> 
+    <parameter type="vector<double>&" name="errors" description="The individual errors" />
+</method> 
+
+</methods> 
+
+<tests>
+    <test name="calculate_error" description="Find the error that we are dealing with" exception="false" />
+</tests>
+
+</class> 
