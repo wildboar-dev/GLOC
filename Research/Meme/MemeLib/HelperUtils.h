@@ -15,6 +15,7 @@ using namespace std;
 using namespace cv;
 
 #include "Points.h"
+#include "CostFunction.h"
 
 namespace NVL_App
 {
@@ -22,6 +23,6 @@ namespace NVL_App
 	{
 	public:
 		static unique_ptr<Points> Undistort(Mat& cameraMatrix, const Vec4d& distCoeffs, Points * points);
-		static Mat RenderKSpace(Mat& cameraMatrix, const Points& inputPoints, const Size& imageSize, const Range& RangeK1, const Range& RangeK2);
+		static Mat RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Size& imageSize, const Range& RangeK1, const Range& RangeK2);
 	};
 }

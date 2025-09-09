@@ -22,7 +22,15 @@ using namespace NVL_App;
  */
 unique_ptr<Points> HelperUtils::Undistort(Mat& cameraMatrix, const Vec4d& distCoeffs, Points * points)
 {
-	throw runtime_error("Not implemented");
+	auto points_1 = vector<Point2d>(); auto points_2 = vector<Point2d>();
+
+	auto& ipoints_1 = points->GetImagePoints_1();
+	auto& ipoints_2 = points->GetImagePoints_2();
+
+	undistortPoints(ipoints_1, points_1, cameraMatrix, distCoeffs);
+	undistortPoints(ipoints_2, points_2, cameraMatrix, distCoeffs);
+
+	return make_unique<Points>(points->GetScenePoints(), points_1, points_2);
 }
 
 //--------------------------------------------------
@@ -38,7 +46,28 @@ unique_ptr<Points> HelperUtils::Undistort(Mat& cameraMatrix, const Vec4d& distCo
  * @param RangeK2 The range of the K2
  * @return Mat Returns a Mat
  */
-Mat HelperUtils::RenderKSpace(Mat& cameraMatrix, const Points& inputPoints, const Size& imageSize, const Range& RangeK1, const Range& RangeK2)
+Mat HelperUtils::RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Size& imageSize, const Range& RangeK1, const Range& RangeK2)
 {
-	throw runtime_error("Not implemented");
+	Mat image = Mat_<float>::zeros(imageSize);
+	auto link = (float *)image.data;
+
+	auto stepK1 = (RangeK1.end - RangeK1.start) / (float)imageSize.width;
+	auto stepK2 = (RangeK2.end - RangeK2.start) / (float)imageSize.height;
+
+	for (auto row = 0; row < image.rows; row++) 
+	{
+		for (auto column = 0; column < image.cols; column++) 
+		{
+			auto k1 = RangeK1.start + column * stepK1;
+			auto k2 = RangeK2.start + row * stepK2;
+
+			auto undistortedPoints = HelperUtils::Undistort(cameraMatrix, Vec4d(k1, k2, 0.0, 0.0), inputPoints);
+			auto errors = vector<double>();
+			auto score = CostFunction::CalculateError(undistortedPoints.get(), errors);
+
+			link[row * image.cols + column] = (float)score;
+		}
+	}
+
+	return image;
 }
