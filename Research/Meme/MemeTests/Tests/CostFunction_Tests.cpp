@@ -40,13 +40,16 @@ TEST(CostFunction_Test, calculate_error)
 	auto errors_5 = vector<double>();
 
 	// Execute
-	auto score_1 = CostFunction::CalculateError(gridSize, points_1.get(), errors_1);
-	auto score_2 = CostFunction::CalculateError(gridSize, points_2.get(), errors_2);
-	auto score_3 = CostFunction::CalculateError(gridSize, points_3.get(), errors_3);
-	auto score_4 = CostFunction::CalculateError(gridSize, points_4.get(), errors_4);
-	auto score_5 = CostFunction::CalculateError(gridSize, points_5.get(), errors_5);
+	auto score_1 = CostFunction::CalculateError(points_1.get(), errors_1);
+	auto score_2 = CostFunction::CalculateError(points_2.get(), errors_2);
+	auto score_3 = CostFunction::CalculateError(points_3.get(), errors_3);
+	auto score_4 = CostFunction::CalculateError(points_4.get(), errors_4);
+	auto score_5 = CostFunction::CalculateError(points_5.get(), errors_5);
 
 	// Confirm
-
-	// Teardown
+	ASSERT_NEAR(0.0, score_1, 0.001);
+	ASSERT_GT(score_2, score_1);
+	ASSERT_GT(score_3, score_1);
+	ASSERT_GT(score_4, score_3);
+	ASSERT_GT(score_5, score_3);
 }

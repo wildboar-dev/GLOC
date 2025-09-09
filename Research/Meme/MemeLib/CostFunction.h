@@ -11,6 +11,8 @@
 #include <iostream>
 using namespace std;
 
+#include <NVLib/Math2D.h>
+
 #include <opencv2/opencv.hpp>
 using namespace cv;
 
@@ -21,6 +23,8 @@ namespace NVL_App
 	class CostFunction
 	{
 	public:
-		static double CalculateError(const Size& gridSize, Points * points, vector<double>& errors);
+		static double CalculateError(Points * points, vector<double>& errors);
+	private:
+		static double HomographyError(const vector<Point3d>& scenePoints, const vector<Point2d>& image, Mat& H, vector<double>& errors);
 	};
 }
