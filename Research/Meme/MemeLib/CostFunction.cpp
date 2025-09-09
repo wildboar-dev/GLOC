@@ -20,7 +20,7 @@ using namespace NVL_App;
  * @param errors The individual errors
  * @return double Returns a double
  */
-double CostFunction::CalculateError(const Size& gridSize, const Points& points, vector<double>& errors)
+double CostFunction::CalculateError(const Size& gridSize, Points * points, vector<double>& errors)
 {
 	throw runtime_error("Not implemented");
 }

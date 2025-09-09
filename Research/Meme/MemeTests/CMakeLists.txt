@@ -14,6 +14,7 @@ include_directories("../")
 
 # Create the executable
 add_executable (MemeTests
+	Helpers/TestHelpers.cpp
 	Tests/Example_Tests.cpp
 	Tests/CostFunction_Tests.cpp
 )

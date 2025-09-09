@@ -21,6 +21,6 @@ namespace NVL_App
 	class CostFunction
 	{
 	public:
-		double CalculateError(const Size& gridSize, const Points& points, vector<double>& errors);
+		static double CalculateError(const Size& gridSize, Points * points, vector<double>& errors);
 	};
 }
