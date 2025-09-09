@@ -1,0 +1,41 @@
+<?xml version="1.0" ?> 
+
+<class> 
+
+<namespace>NVL_App</namespace> 
+<solution>MemeLib</solution> 
+<name>HelperUtils</name> 
+<description>Defines a set of utilities for helping the distortion estimation process</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+    <include name="Points.h" namespace="NVLib" local="true" />
+</includes> 
+
+<methods>    
+
+<!-- Distortion Removal -->
+<method section="Undistort" modifiers="static" access="public" return="unique_ptr<Points>" name="Undistort" description="Undistort the associated pointset that has been provided" inline="false"> 
+    <parameter type="Mat&" name="cameraMatrix" description="The camera matrix to use for undistortion" />
+    <parameter type="const Vec4d&" name="distCoeffs" description="The distortion coefficients to use for undistortion" />
+    <parameter type="Points *" name="points" description="The input points to be undistorted" /> 
+</method> 
+
+<!-- Render Error Space -->
+<method section="Render" modifiers="static" access="public" return="Mat" name="RenderKSpace" description="Render the error space for the given points" inline="false"> 
+    <parameter type="Mat&" name="cameraMatrix" description="The camera matrix to use for rendering" />
+    <parameter type="const Points&" name="inputPoints" description="The input points to be rendered" /> 
+    <parameter type="const Size&" name="imageSize" description="The size of the output image" />
+    <parameter type="const Range&" name="RangeK1" description="The range of the K1" />
+    <parameter type="const Range&" name="RangeK2" description="The range of the K2" />
+</method> 
+
+</methods> 
+
+<tests> 
+    <test name="undistort" description="Undistort the associated pointset that has been provided" exception="false" />
+    <test name="render" description="Render the cost topography for k1 and k2" exception="false" />
+</tests> 
+
+</class> 

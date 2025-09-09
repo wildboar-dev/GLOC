@@ -14,4 +14,5 @@ add_library (MemeLib STATIC
 	ArgUtils.cpp
 	PointLoader.cpp
 	CostFunction.cpp
+	HelperUtils.cpp
 )
