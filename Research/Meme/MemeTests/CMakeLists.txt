@@ -21,7 +21,7 @@ add_executable (MemeTests
 )
 
 # Add link libraries
-target_link_libraries(MemeTests MemeLib NVLib ${OpenCV_LIBS} OpenSSL::SSL uuid GTest::Main)
+target_link_libraries(MemeTests MemeLib NVLib OptLib ${OpenCV_LIBS} OpenSSL::SSL uuid GTest::Main)
 
 # Find the associated unit tests
 gtest_discover_tests(MemeTests)

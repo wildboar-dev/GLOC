@@ -11,8 +11,13 @@
 #include <MemeLib/HelperUtils.h>
 using namespace NVL_App;
 
+#include <MemeLib/DistortCost.h>
 #include <MemeLib/CostFunction.h>
+#include <MemeLib/HelperUtils.h>
 using namespace NVL_App;
+
+#include <OptLib/Helpers/Tracker.h>
+#include <OptLib/GradientDescent/GradientDescent.h>
 
 #include "../Helpers/TestHelpers.h"
 
@@ -69,4 +74,32 @@ TEST(HelperUtils_Test, render)
 	// Execute
 	Mat image = HelperUtils::RenderKSpace(cameraMatrix, points.get(), Size(1280, 960), Range(-2, 2), Range(-2, 2));
 	imwrite("KSpace.tiff", image);
+}
+
+/**
+ * @brief Perform a refinement of the distortion coefficients
+ */
+TEST(HelperUtils_Test, refinement)
+{
+	// Setup
+	auto gridSize = Size(4, 7);
+	auto scenePoints = vector<Point3d>(); TestHelpers::BuildGrid(gridSize.width, gridSize.height, scenePoints);
+	auto cameraMatrix = TestHelpers::BuildCameraMatrix(500.0, 500.0, Point2d(640.0, 480.0));
+
+	auto basePoints = TestHelpers::BuildTestPoints(scenePoints, cameraMatrix);
+	auto points = TestHelpers::ApplyDistortion(cameraMatrix, Vec4d(0.3, -0.2, 0.0, 0.0), basePoints.get());	
+
+	auto distCost = NVL_App::DistortCost(points.get(), cameraMatrix);
+	auto initial = Eigen::Vector2d(-1.8, 2.0);
+
+	auto tracker = NVL_App::Tracker();
+
+	auto result = NVL_App::GradientDescent::Solve(&distCost, initial, 2e3, 1e-5, &tracker);
+
+	cout << "Result: " << result.transpose() << endl;
+
+	auto path = vector<Point2d>(); for (auto step : tracker.GetPath()) path.push_back(Point2d(step[0], step[1]));
+
+	auto image = HelperUtils::RenderPath(Size(1280, 960), path, Range(-2, 2), Range(-2, 2));
+	imwrite("Path.png", image);
 }

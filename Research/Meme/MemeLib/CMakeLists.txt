@@ -7,7 +7,7 @@
 #--------------------------------------------------------
 
 # Setup include directories
-include_directories("../" "${LIBRARY_BASE}/NVLib")
+include_directories("../" "${LIBRARY_BASE}/NVLib" "${LIBRARY_BASE}/OptLib")
 
 # Create Library
 add_library (MemeLib STATIC

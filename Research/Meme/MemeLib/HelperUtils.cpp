@@ -71,3 +71,31 @@ Mat HelperUtils::RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Siz
 
 	return image;
 }
+
+/**
+ * @brief Render the path of the given points
+ * @param imageSize The size of the output image
+ * @param points The points to be rendered
+ * @param RangeK1 The range of the K1
+ * @param RangeK2 The range of the K2
+ * @return Mat Returns a Mat
+ */
+Mat HelperUtils::RenderPath(const Size& imageSize, const vector<Point2d>& points, const Range& RangeK1, const Range& RangeK2)
+{
+	Mat image = Mat::zeros(imageSize, CV_8UC3);
+
+	auto stepK1 = (float)imageSize.width / (RangeK1.end - RangeK1.start);
+	auto stepK2 = (float)imageSize.height / (RangeK2.end - RangeK2.start);
+
+	for (size_t i = 1; i < points.size() - 1; i++)
+	{
+		auto k_1_0 = (points[i - 1].x - RangeK1.start) * stepK1;
+		auto k_2_0 = (points[i - 1].y - RangeK2.start) * stepK2;
+		auto k_1_1 = (points[i].x - RangeK1.start) * stepK1;
+		auto k_2_1 = (points[i].y - RangeK2.start) * stepK2;
+
+		line(image, Point2d(k_1_0, k_2_0), Point2d(k_1_1, k_2_1), Scalar(0, 255, 0), 2);
+	}
+
+	return image;
+}

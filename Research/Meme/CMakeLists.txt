@@ -20,13 +20,20 @@ set(CMAKE_CXX_STANDARD 17)
 set(LIBRARY_BASE $ENV{HOME}/Libraries)
 
 # Setup the includes for the libraries
-include_directories("../" "${LIBRARY_BASE}/NVLib")
+include_directories("../" "${LIBRARY_BASE}/NVLib" "${LIBRARY_BASE}/OptLib")
 
 # Add the NVLib library to the folder
 add_library(NVLib STATIC IMPORTED)
 set_target_properties(NVLib PROPERTIES
     IMPORTED_LOCATION "${LIBRARY_BASE}/NVLib/build/NVLib/libNVLib.a"
     INTERFACE_INCLUDE_DIRECTORIES "${LIBRARY_BASE}/NVLib"
+)
+
+# OptLib
+add_library(OptLib STATIC IMPORTED)
+set_target_properties(OptLib PROPERTIES
+    IMPORTED_LOCATION "${LIBRARY_BASE}/OptLib/build/OptLib/libOptLib.a"
+    INTERFACE_INCLUDE_DIRECTORIES "${LIBRARY_BASE}/OptLib"
 )
 
 # Add opencv to the solution
