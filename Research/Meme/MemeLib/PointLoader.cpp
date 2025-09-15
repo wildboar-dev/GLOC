@@ -21,34 +21,41 @@ using namespace NVL_App;
 unique_ptr<Points> PointLoader::Load(const string& path)
 {
 	auto reader = ifstream(path);  if (!reader.is_open()) { throw runtime_error("Could not open file: " + path); }
-
-	auto pointCount = 0; reader >> pointCount;
-
-	auto scenePoints = vector<Point3d>(pointCount);
-	for (auto i = 0; i < pointCount; ++i)
-	{
-		auto x = 0.0, y = 0.0, z = 0.0;
-		reader >> x >> y >> z;
-		scenePoints[i] = Point3d(x, y, z);
-	}
-
-	auto imagePoints_1 = vector<Point2d>(pointCount);
-	for (auto i = 0; i < pointCount; ++i)
-	{
-		auto x = 0.0, y = 0.0;
-		reader >> x >> y;
-		imagePoints_1[i] = Point2d(x, y);
-	}
-
-	auto imagePoints_2 = vector<Point2d>(pointCount);
-	for (auto i = 0; i < pointCount; ++i)
-	{
-		auto x = 0.0, y = 0.0;
-		reader >> x >> y;
-		imagePoints_2[i] = Point2d(x, y);
-	}
-
+	auto points = Load(reader);
 	reader.close();
+	return points;
+}
+
+/**
+ * @brief Add the functionality to load points from a stream
+ * @param reader The stream that we are loading from
+ * @return unique_ptr<Points> Returns a unique_ptr<Points>
+ */
+unique_ptr<Points> PointLoader::Load(istream& reader) 
+{
+	auto header = string(); getline(reader, header); // Read the header line
+
+	auto scenePoints = vector<Point3d>();
+	auto imagePoints_1 = vector<Point2d>();
+	auto imagePoints_2 = vector<Point2d>();
+
+	auto line = string();
+	while (getline(reader, line))
+	{
+		auto parts = vector<string>();
+		auto stream = stringstream(line);
+		auto part = string();
+		while (getline(stream, part, ','))
+		{
+			parts.push_back(part);
+		}
+
+		if (parts.size() != 7) { throw runtime_error("Invalid point format, expected 7 values per line"); }
+
+		scenePoints.push_back(Point3d(stod(parts[0]), stod(parts[1]), stod(parts[2])));
+		imagePoints_1.push_back(Point2d(stod(parts[3]), stod(parts[4])));
+		imagePoints_2.push_back(Point2d(stod(parts[5]), stod(parts[6])));
+	}
 
 	return make_unique<Points>(scenePoints, imagePoints_1, imagePoints_2);
 }

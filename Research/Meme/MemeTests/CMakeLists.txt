@@ -18,6 +18,7 @@ add_executable (MemeTests
 	Tests/Example_Tests.cpp
 	Tests/CostFunction_Tests.cpp
 	Tests/HelperUtils_Tests.cpp
+	Tests/PointLoader_Tests.cpp
 )
 
 # Add link libraries

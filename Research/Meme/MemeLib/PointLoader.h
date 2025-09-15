@@ -23,5 +23,6 @@ namespace NVL_App
 	{
 	public:
 		static unique_ptr<Points> Load(const string& path);
+		static unique_ptr<Points> Load(istream& reader);
 	};
 }
