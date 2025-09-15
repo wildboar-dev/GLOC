@@ -15,4 +15,5 @@ add_library (MemeLib STATIC
 	PointLoader.cpp
 	CostFunction.cpp
 	HelperUtils.cpp
+	MetaLoader.cpp
 )

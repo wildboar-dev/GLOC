@@ -16,7 +16,7 @@ using namespace cv;
 
 namespace NVL_App
 {
-	class MemeData
+	class MetaData
 	{
 	private:
 		Mat _cameraMatrix;
@@ -24,7 +24,7 @@ namespace NVL_App
 		Size _gridSize;
 		double _blockSize;
 	public:
-		MemeData(Mat& cameraMatrix, Size& imageSize, Size& gridSize, double blockSize) :
+		MetaData(Mat& cameraMatrix, Size& imageSize, Size& gridSize, double blockSize) :
 			_cameraMatrix(cameraMatrix), _imageSize(imageSize), _gridSize(gridSize), _blockSize(blockSize) {}
 
 		inline Mat& GetCameraMatrix() { return _cameraMatrix; }

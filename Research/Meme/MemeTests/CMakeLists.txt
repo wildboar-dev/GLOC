@@ -19,7 +19,9 @@ add_executable (MemeTests
 	Tests/CostFunction_Tests.cpp
 	Tests/HelperUtils_Tests.cpp
 	Tests/PointLoader_Tests.cpp
+	Tests/MetaLoader_Tests.cpp
 )
+
 
 # Add link libraries
 target_link_libraries(MemeTests MemeLib NVLib OptLib ${OpenCV_LIBS} OpenSSL::SSL uuid GTest::Main)

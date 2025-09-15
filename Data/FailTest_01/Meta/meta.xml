@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <opencv_storage>
-<CameraMatrix type_id="opencv-matrix">
+<cameraMatrix type_id="opencv-matrix">
   <rows>3</rows>
   <cols>3</cols>
   <dt>d</dt>
