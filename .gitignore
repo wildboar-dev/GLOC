@@ -13,6 +13,7 @@ Archive/CalScorer/build/
 # Utilities
 Utils/MetaGen/build/
 Utils/CalScene/build/
+Utils/CustomScene/build/
 
 # Data
 # Data/**/*.png
