@@ -1,0 +1,41 @@
+<?xml version="1.0" ?> 
+
+<class terminator="true"> 
+
+<namespace>NVL_App</namespace> 
+<solution>DescentLib</solution> 
+<name>TrainerUtils</name> 
+<description>Utilities for finding the model update for a linear model during training</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+</includes> 
+
+<variables> 
+    <variable type="" name="" code="" /> 
+</variables> 
+
+<constructors> 
+
+<!-- Main Constructor -->
+<constructor type="custom" inline="false"> 
+    <parameter type="" name="" description="" /> 
+</constructor> 
+
+</constructors>    
+
+<methods>    
+
+<!-- Method Description -->
+<method section="" modifiers="" access="" return="" name="" description="" inline=""> 
+    <parameter type="" name="" description="" /> 
+</method> 
+
+</methods> 
+
+<tests> 
+    <test name="" description="" exception="false" />    
+</tests> 
+
+</class> 
