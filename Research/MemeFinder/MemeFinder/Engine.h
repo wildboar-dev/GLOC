@@ -13,7 +13,12 @@ using namespace std;
 
 #include <NVLib/Logger.h>
 #include <NVLib/Path/PathHelper.h>
+
 #include <MemeFinderLib/ArgUtils.h>
+
+#include <MemeLib/Points.h>
+#include <MemeLib/PointLoader.h>
+#include <MemeLib/MetaLoader.h>
 
 namespace NVL_App
 {

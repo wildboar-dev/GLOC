@@ -26,6 +26,15 @@ Engine::Engine(NVLib::Logger* logger, NVLib::Parameters* parameters)
     auto database = ArgUtils::GetString(parameters, "database");
     auto dataset = ArgUtils::GetString(parameters, "dataset");
     _pathHelper = new NVLib::PathHelper(database, dataset);
+
+    _logger->Log(1, "Loading Points");
+    auto points = PointLoader::Load(_pathHelper->GetPath("Point","point.txt"));
+    _logger->Log(1, "Loaded %d points", points->PointCount());
+
+    _logger->Log(1, "Loading Meta");
+    auto meta = MetaLoader::Load(_pathHelper->GetPath("Meta","meta.xml"));
+
+    cout << "Got Here!" << endl;
 }
 
 /**

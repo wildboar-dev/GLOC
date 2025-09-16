@@ -5,7 +5,7 @@
   <cols>3</cols>
   <dt>d</dt>
   <data>
-    2432. 0. 640. 0. 2432. 480. 0. 0. 1.</data></CameraMatrix>
+    2432. 0. 640. 0. 2432. 480. 0. 0. 1.</data></cameraMatrix>
 <imageSize>
   1280 960</imageSize>
 <gridSize>

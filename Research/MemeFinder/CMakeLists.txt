@@ -29,6 +29,13 @@ set_target_properties(NVLib PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${LIBRARY_BASE}/NVLib"
 )
 
+# Add the MemeLib library to the folder
+add_library(MemeLib STATIC IMPORTED)
+set_target_properties(MemeLib PROPERTIES
+    IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/../Meme/build/MemeLib/libMemeLib.a"
+    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/../Meme"
+)
+
 # Add opencv to the solution
 find_package( OpenCV REQUIRED)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
