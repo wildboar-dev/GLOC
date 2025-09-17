@@ -17,7 +17,7 @@ using namespace NVL_App;
  * @brief Custom Constructor
  * @param center The center point of the image
  */
-Parameters::Parameters(const Point2d& center)
+Parameters::Parameters(const Point2d& center) : _center(center)
 {
 	_k1 = 0.0;
 	_k2 = 0.0;
@@ -85,4 +85,30 @@ Mat Parameters::GetDistortion()
 Point2d Parameters::GetCenter()
 {
 	return Point2d(_cx, _cy);
+}
+
+/**
+ * @brief Get the delta value for a given parameter index
+ * @param index The index of the parameter to get
+ * @return double Returns the delta value
+ */
+double Parameters::GetValueDelta(int index) 
+{
+	switch (index)
+	{
+	case 0:
+		return _k1;
+	case 1:
+		return _k2;
+	case 2:
+		return _p1;
+	case 3:
+		return _p2;
+	case 4:
+		return _cx - _center.x;
+	case 5:
+		return _cy - _center.y;
+	default:
+		throw runtime_error("Index out of range");
+	}
 }

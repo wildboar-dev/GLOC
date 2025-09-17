@@ -25,6 +25,7 @@ namespace NVL_App
 		double _p2;
 		double _cx;
 		double _cy;
+		Point2d _center;
 		vector<double> _activeParams;
 	public:
 		Parameters(const Point2d& center);
@@ -33,6 +34,7 @@ namespace NVL_App
 
 		Mat GetDistortion();
 		Point2d GetCenter();
+		double GetValueDelta(int index);
 
 		inline double& GetK1() { return _k1; }
 		inline double& GetK2() { return _k2; }
@@ -40,7 +42,7 @@ namespace NVL_App
 		inline double& GetP2() { return _p2; }
 		inline double& GetCx() { return _cx; }
 		inline double& GetCy() { return _cy; }
-		
+
 		inline vector<double>& GetActiveParams() { return _activeParams; }
 	};
 }
