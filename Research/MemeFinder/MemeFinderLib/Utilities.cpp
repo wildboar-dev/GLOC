@@ -6,7 +6,7 @@
 // @date: 2025-09-17
 //--------------------------------------------------
 
-#include "HelperUtils.h"
+#include "Utilities.h"
 using namespace NVL_App;
 
 //--------------------------------------------------
@@ -20,7 +20,13 @@ using namespace NVL_App;
  * @param points The input points to distort
  * @return unique_ptr<Points> Returns a unique_ptr<Points>
  */
-unique_ptr<Points> HelperUtils::ApplyDistortion(Mat& camera, Parameters * parameters, Points * points)
+unique_ptr<Points> Utilities::ApplyDistortion(Mat& camera, Parameters * parameters, Points * points)
 {
-	throw runtime_error("Not implemented");
+	Mat newCamera = camera.clone();
+	newCamera.at<double>(0, 2) = parameters->GetCx();
+	newCamera.at<double>(1, 2) = parameters->GetCy();
+
+	Mat distortion = parameters->GetDistortion();
+
+	return HelperUtils::Undistort(newCamera, distortion, points);
 }

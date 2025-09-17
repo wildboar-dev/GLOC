@@ -15,6 +15,7 @@ using namespace std;
 #include <NVLib/Path/PathHelper.h>
 
 #include <MemeFinderLib/ArgUtils.h>
+#include <MemeFinderLib/ParameterFactory.h>
 
 #include <MemeLib/Points.h>
 #include <MemeLib/PointLoader.h>

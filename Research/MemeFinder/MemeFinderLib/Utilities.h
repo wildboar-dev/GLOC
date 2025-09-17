@@ -15,12 +15,13 @@ using namespace std;
 using namespace cv;
 
 #include <MemeLib/Points.h>
+#include <MemeLib/HelperUtils.h>
 
 #include "Parameters.h"
 
 namespace NVL_App
 {
-	class HelperUtils
+	class Utilities
 	{
 	public:
 		static unique_ptr<Points> ApplyDistortion(Mat& camera, Parameters * parameters, Points * points);

@@ -34,7 +34,10 @@ Engine::Engine(NVLib::Logger* logger, NVLib::Parameters* parameters)
     _logger->Log(1, "Loading Meta");
     auto meta = MetaLoader::Load(_pathHelper->GetPath("Meta","meta.xml"));
 
-    cout << "Got Here!" << endl;
+    _logger->Log(1, "Determine a randomly selected parameter");
+
+
+
 }
 
 /**

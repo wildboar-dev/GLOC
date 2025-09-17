@@ -14,5 +14,5 @@ add_library (MemeFinderLib STATIC
 	ArgUtils.cpp
 	Parameters.cpp
 	ParameterFactory.cpp
-	HelperUtils.cpp
+	Utilities.cpp
 )
