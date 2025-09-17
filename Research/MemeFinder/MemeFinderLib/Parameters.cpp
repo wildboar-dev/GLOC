@@ -29,8 +29,45 @@ Parameters::Parameters(const Point2d& center) : _center(center)
 }
 
 //--------------------------------------------------
-// Update
+// Update and Set Values
 //--------------------------------------------------
+
+/**
+ * @brief Update a parameter value by index
+ * @param index The index of the parameter to set
+ * @param value The new value to set
+ */
+void Parameters::UpdateValue(int index, double delta)
+{
+	switch (index)
+	{
+	case 0:
+		_k1 += delta; 
+		break;
+	case 1:
+		_k2 += delta;
+		break;
+	case 2:
+		_p1 += delta;
+		break;
+	case 3:
+		_p2 += delta;
+		break;
+	case 4:
+		_cx += delta;
+		break;
+	case 5:
+		_cy += delta;
+		break;
+	default:
+		throw runtime_error("Index out of range");
+	}
+
+	if (_activeSet.find(index) == _activeSet.end())
+	{
+		_activeSet.insert(index);
+	}
+}
 
 /**
  * @brief Update a parameter value by index
@@ -42,29 +79,34 @@ void Parameters::SetValue(int index, double value)
 	switch (index)
 	{
 	case 0:
-		_k1 += value; 
+		_k1 = value; 
 		break;
 	case 1:
-		_k2 += value;
+		_k2 = value;
 		break;
 	case 2:
-		_p1 += value;
+		_p1 = value;
 		break;
 	case 3:
-		_p2 += value;
+		_p2 = value;
 		break;
 	case 4:
-		_cx += value;
+		_cx = _center.x + value;
 		break;
 	case 5:
-		_cy += value;
+		_cy = _center.y + value;
 		break;
 	default:
 		throw runtime_error("Index out of range");
 	}
 
-	_activeParams.push_back(index);
+	if (_activeSet.find(index) == _activeSet.end())
+	{
+		_activeSet.insert(index);
+	}
+
 }
+
 
 //--------------------------------------------------
 // Get

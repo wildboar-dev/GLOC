@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <unordered_set>
 #include <iostream>
 using namespace std;
 
@@ -26,11 +27,12 @@ namespace NVL_App
 		double _cx;
 		double _cy;
 		Point2d _center;
-		vector<double> _activeParams;
+		unordered_set<int> _activeSet;
 	public:
 		Parameters(const Point2d& center);
 
 		void SetValue(int index, double value);
+		void UpdateValue(int index, double delta);
 
 		Mat GetDistortion();
 		Point2d GetCenter();
@@ -43,6 +45,9 @@ namespace NVL_App
 		inline double& GetCx() { return _cx; }
 		inline double& GetCy() { return _cy; }
 
-		inline vector<double>& GetActiveParams() { return _activeParams; }
+		inline vector<double> GetActiveParams() const
+		{
+			 return vector<double>(_activeSet.begin(), _activeSet.end()); 
+		}
 	};
 }
