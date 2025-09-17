@@ -7,11 +7,12 @@
 #--------------------------------------------------------
 
 # Setup include directories
-include_directories("../" "${LIBRARY_BASE}/NVLib")
+include_directories("../" "${LIBRARY_BASE}/NVLib" "${CMAKE_CURRENT_SOURCE_DIR}/../Meme")
 
 # Create Library
 add_library (MemeFinderLib STATIC
 	ArgUtils.cpp
 	Parameters.cpp
 	ParameterFactory.cpp
+	HelperUtils.cpp
 )

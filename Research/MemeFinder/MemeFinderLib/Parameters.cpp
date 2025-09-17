@@ -23,6 +23,7 @@ Parameters::Parameters(const Point2d& center) : _center(center)
 	_k2 = 0.0;
 	_p1 = 0.0;
 	_p2 = 0.0;
+	
 	_cx = center.x;
 	_cy = center.y;
 }
