@@ -9,6 +9,7 @@
 #pragma once
 
 #include <iostream>
+#include <unordered_set>
 using namespace std;
 
 #include <opencv2/opencv.hpp>

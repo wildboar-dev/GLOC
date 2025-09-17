@@ -17,9 +17,9 @@ using namespace NVL_App;
  * @brief Custom Constructor
  * @param center The center point of the image
  */
-ParameterFactory::ParameterFactory(const Point2d& center)
+ParameterFactory::ParameterFactory(const Point2d& center) : _center(center)
 {
-	throw runtime_error("Not implemented");
+	NVLib::RandomUtils::TimeSeedRandomNumbers();
 }
 
 //--------------------------------------------------
@@ -32,7 +32,22 @@ ParameterFactory::ParameterFactory(const Point2d& center)
  */
 unique_ptr<Parameters> ParameterFactory::Generate()
 {
-	throw runtime_error("Not implemented");
+	// Generate the indices to update
+	vector<int> ignore;
+	auto index1 = SelectIndex(ignore); ignore.push_back(index1);
+	auto index2 = SelectIndex(ignore); ignore.push_back(index2);
+
+	// Create the parameters object
+	auto parameters = make_unique<Parameters>(_center);
+
+	// Generate random values for the active parameters
+	for (auto index : { index1, index2 })
+	{
+		auto range = GetValueRange(index);
+		parameters->SetValue(index, GetRandomValue(range));
+	}
+
+	return parameters;
 }
 
 //--------------------------------------------------
@@ -46,7 +61,17 @@ unique_ptr<Parameters> ParameterFactory::Generate()
  */
 int ParameterFactory::SelectIndex(vector<int> ignore)
 {
-	throw runtime_error("Not implemented");
+	auto duplicate = unordered_set<int>(ignore.begin(), ignore.end());
+
+	int index;
+	
+	do
+	{
+		index = NVLib::RandomUtils::GetInteger(0, 6);
+	} 
+	while (duplicate.count(index) > 0);
+
+	return index;
 }
 
 /**
@@ -56,7 +81,7 @@ int ParameterFactory::SelectIndex(vector<int> ignore)
  */
 pair<double, double> ParameterFactory::GetValueRange(int index)
 {
-	throw runtime_error("Not implemented");
+	return { -2.0, 2.0 };
 }
 
 /**
@@ -66,5 +91,7 @@ pair<double, double> ParameterFactory::GetValueRange(int index)
  */
 double ParameterFactory::GetRandomValue(pair<double, double>& range)
 {
-	throw runtime_error("Not implemented");
+	std::mt19937_64 eng(std::chrono::system_clock::now().time_since_epoch().count());
+	auto distribution = uniform_real_distribution<double>(range.first, range.second);
+	return distribution(eng);
 }
