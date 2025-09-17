@@ -40,6 +40,7 @@ namespace NVL_App
 		inline double& GetP2() { return _p2; }
 		inline double& GetCx() { return _cx; }
 		inline double& GetCy() { return _cy; }
+		
 		inline vector<double>& GetActiveParams() { return _activeParams; }
 	};
 }

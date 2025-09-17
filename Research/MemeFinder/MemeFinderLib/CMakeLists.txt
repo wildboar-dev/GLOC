@@ -13,5 +13,5 @@ include_directories("../" "${LIBRARY_BASE}/NVLib")
 add_library (MemeFinderLib STATIC
 	ArgUtils.cpp
 	Parameters.cpp
+	ParameterFactory.cpp
 )
-
