@@ -209,6 +209,7 @@ Mat RenderPoints(const vector<Point2d>& imagePoints, int width, int height)
 void SaveImage(NVLib::PathHelper& pathHelper , const string& name, const Mat& image) 
 {
     auto imageFolder = pathHelper.GetPath("Image");
+
     if (!NVLib::FileUtils::Exists(imageFolder)) 
     {
         NVLib::FileUtils::AddFolder(imageFolder);
@@ -313,7 +314,7 @@ void SavePose(NVLib::PathHelper& pathHelper, const string& name, const Vec3d& eu
 
     // Convert Euler to rvec
     Mat R = Euler2Rotation(euler);
-    Mat rvec; Rodrigues(R, rvec);
+    Vec3d rvec; Rodrigues(R, rvec);
 
     writer << "rvec" << rvec;
     writer << "tvec" << translation;
