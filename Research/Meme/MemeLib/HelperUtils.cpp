@@ -22,13 +22,18 @@ using namespace NVL_App;
  */
 unique_ptr<Points> HelperUtils::Undistort(Mat& cameraMatrix, const Vec4d& distCoeffs, Points * points)
 {
+	auto fx = cameraMatrix.at<double>(0, 0);
+	auto fy = cameraMatrix.at<double>(1, 1);
+	auto cx = cameraMatrix.at<double>(0, 2);
+	auto cy = cameraMatrix.at<double>(1, 2);
+
 	auto points_1 = vector<Point2d>(); auto points_2 = vector<Point2d>();
 
 	auto& ipoints_1 = points->GetImagePoints_1();
 	auto& ipoints_2 = points->GetImagePoints_2();
 
-	undistortPoints(ipoints_1, points_1, cameraMatrix, distCoeffs);
-	undistortPoints(ipoints_2, points_2, cameraMatrix, distCoeffs);
+	undistortPoints(ipoints_1, points_1, cameraMatrix, distCoeffs, noArray(), cameraMatrix);
+	undistortPoints(ipoints_2, points_2, cameraMatrix, distCoeffs, noArray(), cameraMatrix);
 
 	return make_unique<Points>(points->GetScenePoints(), points_1, points_2);
 }

@@ -33,10 +33,28 @@ Engine::Engine(NVLib::Logger* logger, NVLib::Parameters* parameters)
 
     _logger->Log(1, "Loading Meta");
     auto meta = MetaLoader::Load(_pathHelper->GetPath("Meta","meta.xml"));
+    cout << "Camera Matrix: " << meta->GetCameraMatrix() << endl;
 
-    _logger->Log(1, "Determine a randomly selected parameter");
+    _logger->Log(1, "Determine a randomly selected scene");
+    auto cx = meta->GetCameraMatrix().at<double>(0, 2);
+    auto cy = meta->GetCameraMatrix().at<double>(1, 2);
+    auto factory = ParameterFactory(Point2d(cx, cy));
+    auto scene = factory.Generate();
 
+    _logger->Log(1, "Creating distorted points");
+    auto distortedPoints = Utilities::ApplyDistortion(meta->GetCameraMatrix(), scene.get(), points.get());
 
+    _logger->Log(1, "Creating the cost function");
+    auto costFunction = DCostFunction(meta->GetCameraMatrix(), scene->GetIndices(), distortedPoints.get());
+
+    _logger->Log(1, "Running optimization");
+    auto x0 = VectorXd::Zero((int)scene->GetIndices().size());
+    auto result = GradientDescent::Solve(&costFunction, x0, 1000, 1e-21, nullptr);
+    //auto solver = LMSolver(&costFunction);
+    //VectorXd result = x0; double finalCost = solver.Solve(result);
+
+    _logger->Log(1, "Result: %f %f", result[0], result[1]);
+    _logger->Log(1, "True Values: %f %f", scene->GetValueDelta(scene->GetIndices()[0]), scene->GetValueDelta(scene->GetIndices()[1]));
 
 }
 

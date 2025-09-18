@@ -28,7 +28,7 @@ TEST(ParameterFactory_Test, generation_test)
 		auto parameters = factory.Generate();
 
 		// Test that two appropriate parameter indices are generated
-		auto active = parameters->GetActiveParams();
+		auto active = parameters->GetIndices();
 		ASSERT_EQ(active.size(), 2);
 		ASSERT_TRUE(active[0] >= 0 && active[0] < 6);
 		ASSERT_TRUE(active[1] >= 0 && active[1] < 6);

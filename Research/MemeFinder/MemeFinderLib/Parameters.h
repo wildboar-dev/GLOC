@@ -45,9 +45,9 @@ namespace NVL_App
 		inline double& GetCx() { return _cx; }
 		inline double& GetCy() { return _cy; }
 
-		inline vector<double> GetActiveParams() const
+		inline vector<int> GetIndices() const
 		{
-			 return vector<double>(_activeSet.begin(), _activeSet.end()); 
+			 return vector<int>(_activeSet.begin(), _activeSet.end()); 
 		}
 	};
 }

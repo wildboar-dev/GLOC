@@ -93,5 +93,6 @@ double ParameterFactory::GetRandomValue(pair<double, double>& range)
 {
 	std::mt19937_64 eng(std::chrono::system_clock::now().time_since_epoch().count());
 	auto distribution = uniform_real_distribution<double>(range.first, range.second);
-	return distribution(eng);
+	auto value = distribution(eng);
+	return value;
 }

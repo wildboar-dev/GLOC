@@ -12,6 +12,8 @@
 using namespace std;
 
 #include <MemeLib/Points.h>
+#include <MemeLib/HelperUtils.h>
+#include <MemeLib/CostFunction.h>
 
 #include <OptLib/Common/CostBase.h>
 
@@ -24,9 +26,9 @@ namespace NVL_App
     private:
         Mat _camera;
         Parameters * _parameters;
-        Points * _points;
+        Points * _dPoints;
     public:
-        DCostFunction(Mat& camera, vector<int>& indices, Points * points);
+        DCostFunction(Mat& camera, const vector<int>& indices, Points * dPoints);
         ~DCostFunction();
         
         virtual double Evaluate(const Eigen::VectorXd& inputs) override;

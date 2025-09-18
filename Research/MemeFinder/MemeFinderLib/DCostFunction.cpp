@@ -17,11 +17,12 @@ using namespace NVL_App;
  * @brief Main Constructor
  * @param camera The camera matrix
  * @param indices The indices we are updating
- * @param points The points to use for optimization
+ * @param dPoints The distorted points to use for optimization
  */
-DCostFunction::DCostFunction(Mat& camera, vector<int>& indices, Points * points) : _camera(camera), _points(points)
+DCostFunction::DCostFunction(Mat& camera, const vector<int>& indices, Points * dPoints) : _camera(camera), _dPoints(dPoints)
 {
-    // Implementation can be added later
+    _parameters = new Parameters(Point2d(camera.at<double>(0, 2), camera.at<double>(1, 2)));
+    for (auto index : indices) _parameters->SetValue(index, 0);
 }
 
 /**
@@ -43,6 +44,29 @@ DCostFunction::~DCostFunction()
  */
 double DCostFunction::Evaluate(const Eigen::VectorXd& inputs)
 {
-    // Implementation of the evaluation logic goes here
-    return 0.0;  // Placeholder return value
+    auto indices = _parameters->GetIndices();
+    for (size_t i = 0; i < indices.size(); i++)
+    {
+        _parameters->SetValue(indices[i], inputs[i]);
+    }
+
+    // Setup the camera matrix
+    Mat camera = _camera.clone();
+    camera.at<double>(0, 2) = _parameters->GetCx();
+    camera.at<double>(1, 2) = _parameters->GetCy();
+
+    // Get the distortion parameters
+    Mat distortion = _parameters->GetDistortion();
+
+    // Get the points
+    auto upoints = HelperUtils::Undistort(camera, distortion, _dPoints);
+
+    // Compute the cost
+    auto scores = vector<double>(); auto score = CostFunction::CalculateError(upoints.get(), scores);
+
+    // normalize the score
+    score /= (double)upoints->PointCount();
+
+    // Return the score result
+    return score;
 }
