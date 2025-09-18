@@ -29,6 +29,7 @@ Mat RenderPoints(const vector<Point2d>& imagePoints, int width, int height);
 void SaveImage(NVLib::PathHelper& pathHelper , const string& name, const Mat& image);
 void SavePoints(NVLib::PathHelper& pathHelper, const vector<Point3d>& scenePoints, const vector<Point2d>& imagePoints1, const vector<Point2d>& imagePoints2);
 void SaveMeta(NVLib::PathHelper& pathHelper, const Mat& cameraMatrix, const Size& imageSize, const Size& gridSize, int blockSize);
+void SavePose(NVLib::PathHelper& pathHelper, const string& name, const Vec3d& euler, const Vec3d& translation);
 
 //--------------------------------------------------
 // Execution Logic
@@ -81,6 +82,12 @@ void Run(NVLib::Parameters * parameters)
 
     logger.Log(1, "Meta data");
     SaveMeta(pathHelper, cameraMatrix, imageSize, gridSize, blockSize);
+
+    logger.Log(1, "Save Pose 1");
+    SavePose(pathHelper, "pose1", euler1, translation1);
+
+    logger.Log(1, "Save Pose 2");
+    SavePose(pathHelper, "pose2", euler2, translation2);
 
     logger.StopApplication();
 }
@@ -274,12 +281,44 @@ void SaveMeta(NVLib::PathHelper& pathHelper, const Mat& cameraMatrix, const Size
     auto reader = FileStorage(metaPath, FileStorage::WRITE | FileStorage::FORMAT_XML);
     if (!reader.isOpened())  throw runtime_error("Failed to open meta file for writing: " + metaPath);
     
-    reader << "CameraMatrix" << cameraMatrix;
+    reader << "cameraMatrix" << cameraMatrix;
     reader << "imageSize" << imageSize;
     reader << "gridSize" << gridSize;
     reader << "blockSize" << blockSize;
 
     reader.release();
+}
+
+/**
+ * Save the pose data to disk
+ * @param pathHelper The path helper for generating paths
+ * @param name The name of the pose file
+ * @param euler The euler angles
+ * @param translation The translation vector
+ */
+void SavePose(NVLib::PathHelper& pathHelper, const string& name, const Vec3d& euler, const Vec3d& translation) 
+{
+    auto metaFolder = pathHelper.GetPath("Meta");
+    if (!NVLib::FileUtils::Exists(metaFolder)) 
+    {
+        NVLib::FileUtils::AddFolder(metaFolder);
+    }
+
+    auto filename = name + ".xml";
+
+    auto metaPath = pathHelper.GetPath("Meta", filename);
+
+    auto writer = FileStorage(metaPath, FileStorage::WRITE | FileStorage::FORMAT_XML);
+    if (!writer.isOpened())  throw runtime_error("Failed to open pose file for writing: " + metaPath);
+
+    // Convert Euler to rvec
+    Mat R = Euler2Rotation(euler);
+    Mat rvec; Rodrigues(R, rvec);
+
+    writer << "rvec" << rvec;
+    writer << "tvec" << translation;
+
+    writer.release();
 }
 
 //--------------------------------------------------
