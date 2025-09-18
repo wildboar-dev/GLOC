@@ -1,0 +1,35 @@
+<?xml version="1.0" ?> 
+
+<class> 
+
+<namespace>NVL_App</namespace> 
+<solution>MemeFinderLib</solution> 
+<name>Pose</name> 
+<description>Represents a human pose in 3D space.</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+    <include name="NVLib/PoseUtils.h" local="false" />
+</includes> 
+
+<variables> 
+    <variable type="Vec3d" name="rvec" code="10" />
+    <variable type="Vec3d" name="tvec" code="10" /> 
+</variables> 
+
+<constructors> 
+
+<!-- Main Constructor -->
+<constructor type="auto" inline="true" /> 
+
+</constructors>    
+
+<methods>    
+
+<!-- Get Pose Matrix -->
+<method section="Get Pose" modifiers="inline" access="public" return="Mat" name="GetPoseMatrix" description="Retrieve the associated pose matrix" inline="true" /> 
+
+</methods> 
+
+</class> 

@@ -1,0 +1,25 @@
+<?xml version="1.0" ?> 
+
+<class> 
+
+<namespace>NVL_App</namespace> 
+<solution>MemeFinderLib</solution> 
+<name>PoseLoader</name> 
+<description>Utilities for loading and processing pose data</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+    <include name="Pose.h" namespace="NVLib" local="true" />
+</includes> 
+
+<methods>    
+
+<!-- Pose Loader -->
+<method section="Loader" modifiers="static" access="public" return="Mat" name="LoadPose" description="Add the logic to load pose data from disk" inline="false"> 
+    <parameter type="const string&" name="path" description="Path to the pose data file" /> 
+</method> 
+
+</methods> 
+
+</class> 

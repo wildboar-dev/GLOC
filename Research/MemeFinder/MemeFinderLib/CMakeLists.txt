@@ -16,4 +16,5 @@ add_library (MemeFinderLib STATIC
 	ParameterFactory.cpp
 	Utilities.cpp
 	DCostFunction.cpp
+	PoseLoader.cpp
 )
