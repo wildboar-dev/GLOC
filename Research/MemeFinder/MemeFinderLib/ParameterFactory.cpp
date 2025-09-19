@@ -47,8 +47,8 @@ unique_ptr<Parameters> ParameterFactory::Generate()
 	//	parameters->SetValue(index, GetRandomValue(range));
 	//}
 
-	parameters->SetValue(0, 0.2);
-	parameters->SetValue(1, 0.0);
+	parameters->SetValue(0, 1.0);
+	parameters->SetValue(2, -1.0);
 
 	return parameters;
 }

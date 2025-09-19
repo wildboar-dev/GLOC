@@ -55,9 +55,11 @@ Engine::Engine(NVLib::Logger* logger, NVLib::Parameters* parameters)
 
     _logger->Log(1, "Running optimization");
     auto x0 = VectorXd::Zero((int)scene->GetIndices().size());
-    //auto result = GradientDescent::Solve(&costFunction, x0, 1000, 1e-21, nullptr);
-    auto solver = LMSolver(&costFunction);
-    VectorXd result = x0; double finalCost = solver.Solve(result);
+    auto result = GradientDescent::Solve(&costFunction, x0, 5e3, 1e-21, nullptr);
+    //auto solver = LMSolver(&costFunction);
+    //VectorXd result = x0; double finalCost = solver.Solve(result);
+    auto finalScore = costFunction.Evaluate(result);
+    _logger->Log(1, "Final Score: %f", finalScore);
 
     _logger->Log(1, "Result: %f %f", result[0], result[1]);
     _logger->Log(1, "True Values: %f %f", scene->GetValueDelta(scene->GetIndices()[0]), scene->GetValueDelta(scene->GetIndices()[1]));

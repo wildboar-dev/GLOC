@@ -32,8 +32,10 @@ unique_ptr<Points> HelperUtils::Undistort(Mat& cameraMatrix, const Vec4d& distCo
 	auto& ipoints_1 = points->GetImagePoints_1();
 	auto& ipoints_2 = points->GetImagePoints_2();
 
-	undistortPoints(ipoints_1, points_1, cameraMatrix, distCoeffs, noArray(), cameraMatrix);
-	undistortPoints(ipoints_2, points_2, cameraMatrix, distCoeffs, noArray(), cameraMatrix);
+	Mat distortion = (Mat_<double>(5,1) << distCoeffs[0], distCoeffs[1], distCoeffs[2], distCoeffs[3], 0.0);
+
+	undistortPoints(ipoints_1, points_1, cameraMatrix, distortion, Mat(), cameraMatrix);
+	undistortPoints(ipoints_2, points_2, cameraMatrix, distortion, Mat(), cameraMatrix);
 
 	return make_unique<Points>(points->GetScenePoints(), points_1, points_2);
 }

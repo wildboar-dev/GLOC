@@ -69,11 +69,11 @@ TEST(HelperUtils_Test, render)
 	auto cameraMatrix2 = TestHelpers::BuildCameraMatrix(450.0, 450.0, Point2d(640.0, 480.0));
 
 	auto basePoints = TestHelpers::BuildTestPoints(scenePoints, cameraMatrix);
-	auto points = TestHelpers::ApplyDistortion(cameraMatrix2, Vec4d(0.3, -0.2, 0.0, 0.0), basePoints.get());	
+	auto points = TestHelpers::ApplyDistortion(cameraMatrix2, Vec4d(1.0, 0.0, -1.0, 0.0), basePoints.get());	
 
 	// Execute
-	//Mat image = HelperUtils::RenderKSpace(cameraMatrix, points.get(), Size(1280, 960), Range(-2, 2), Range(-2, 2));
-	//imwrite("KSpace.tiff", image);
+	Mat image = HelperUtils::RenderKSpace(cameraMatrix, points.get(), Size(1280, 960), Range(-2, 2), Range(-2, 2));
+	imwrite("KSpace.tiff", image);
 }
 
 /**
@@ -87,14 +87,14 @@ TEST(HelperUtils_Test, refinement)
 	auto cameraMatrix = TestHelpers::BuildCameraMatrix(500.0, 500.0, Point2d(640.0, 480.0));
 
 	auto basePoints = TestHelpers::BuildTestPoints(scenePoints, cameraMatrix);
-	auto points = TestHelpers::ApplyDistortion(cameraMatrix, Vec4d(0.3, -0.2, 0.0, 0.0), basePoints.get());	
+	auto points = TestHelpers::ApplyDistortion(cameraMatrix, Vec4d(1.0, 0.0, -1.0, 0.0), basePoints.get());	
 
 	auto distCost = NVL_App::DistortCost(points.get(), cameraMatrix);
-	auto initial = Eigen::Vector2d(-1.8, 2.0);
+	auto initial = Eigen::Vector2d(0.0, 0.0);
 
 	auto tracker = NVL_App::Tracker();
 
-	auto result = NVL_App::GradientDescent::Solve(&distCost, initial, 2e3, 1e-5, &tracker);
+	auto result = NVL_App::GradientDescent::Solve(&distCost, initial, 5e3, 1e-6, &tracker);
 
 	cout << "Result: " << result.transpose() << endl;
 

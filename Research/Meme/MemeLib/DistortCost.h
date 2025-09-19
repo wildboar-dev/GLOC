@@ -45,7 +45,7 @@ namespace NVL_App
 		{
             auto distCoeffs = Vec4d(inputs[0], inputs[1], 0, 0);
             auto undistortedPoints = HelperUtils::Undistort(_cameraMatrix, distCoeffs, _points);
-            auto scores = vector<double>();
+            vector<double> scores = vector<double>();
             auto score = CostFunction::CalculateError(undistortedPoints.get(), scores);
             return score;
         }
