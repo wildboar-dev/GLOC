@@ -22,6 +22,6 @@ namespace NVL_App
 	class PoseLoader
 	{
 	public:
-		static Mat LoadPose(const string& path);
+		static unique_ptr<Pose> LoadPose(const string& path);
 	};
 }

@@ -18,6 +18,7 @@ using namespace std;
 #include <MemeFinderLib/ParameterFactory.h>
 #include <MemeFinderLib/DCostFunction.h>
 #include <MemeFinderLib/Utilities.h>
+#include <MemeFinderLib/PoseLoader.h>
 
 #include <MemeLib/Points.h>
 #include <MemeLib/PointLoader.h>

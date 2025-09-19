@@ -47,7 +47,9 @@ namespace NVL_App
 
 		inline vector<int> GetIndices() const
 		{
-			 return vector<int>(_activeSet.begin(), _activeSet.end()); 
+			auto values = vector<int>(_activeSet.begin(), _activeSet.end()); 
+			sort(values.begin(), values.end());
+			return values;
 		}
 	};
 }

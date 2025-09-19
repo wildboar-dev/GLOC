@@ -18,7 +18,15 @@ using namespace NVL_App;
  * @param path Path to the pose data file
  * @return Mat Returns a Mat
  */
-Mat PoseLoader::LoadPose(const string& path)
+unique_ptr<Pose> PoseLoader::LoadPose(const string& path)
 {
-	throw runtime_error("Not implemented");
+	auto reader = FileStorage(path, FileStorage::READ | FileStorage::FORMAT_XML);
+	if (!reader.isOpened()) throw runtime_error("Could not open pose file: " + path);
+
+	Vec3d rvec, tvec;
+	reader["rvec"] >> rvec;
+	reader["tvec"] >> tvec;
+	reader.release();
+
+	return make_unique<Pose>(rvec, tvec);
 }

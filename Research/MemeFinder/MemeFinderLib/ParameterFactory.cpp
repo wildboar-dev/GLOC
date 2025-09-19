@@ -41,11 +41,14 @@ unique_ptr<Parameters> ParameterFactory::Generate()
 	auto parameters = make_unique<Parameters>(_center);
 
 	// Generate random values for the active parameters
-	for (auto index : { index1, index2 })
-	{
-		auto range = GetValueRange(index);
-		parameters->SetValue(index, GetRandomValue(range));
-	}
+	//for (auto index : { index1, index2 })
+	//{
+	//	auto range = GetValueRange(index);
+	//	parameters->SetValue(index, GetRandomValue(range));
+	//}
+
+	parameters->SetValue(0, 0.2);
+	parameters->SetValue(1, 0.0);
 
 	return parameters;
 }
@@ -67,7 +70,7 @@ int ParameterFactory::SelectIndex(vector<int> ignore)
 	
 	do
 	{
-		index = NVLib::RandomUtils::GetInteger(0, 6);
+		index = NVLib::RandomUtils::GetInteger(0, 4);
 	} 
 	while (duplicate.count(index) > 0);
 
@@ -94,5 +97,6 @@ double ParameterFactory::GetRandomValue(pair<double, double>& range)
 	std::mt19937_64 eng(std::chrono::system_clock::now().time_since_epoch().count());
 	auto distribution = uniform_real_distribution<double>(range.first, range.second);
 	auto value = distribution(eng);
-	return value;
+	//return value;
+	return 0;
 }
