@@ -66,10 +66,9 @@ TEST(HelperUtils_Test, render)
 	auto gridSize = Size(4, 7);
 	auto scenePoints = vector<Point3d>(); TestHelpers::BuildGrid(gridSize.width, gridSize.height, scenePoints);
 	auto cameraMatrix = TestHelpers::BuildCameraMatrix(500.0, 500.0, Point2d(640.0, 480.0));
-	auto cameraMatrix2 = TestHelpers::BuildCameraMatrix(450.0, 450.0, Point2d(640.0, 480.0));
 
 	auto basePoints = TestHelpers::BuildTestPoints(scenePoints, cameraMatrix);
-	auto points = TestHelpers::ApplyDistortion(cameraMatrix2, Vec4d(1.0, 0.0, -1.0, 0.0), basePoints.get());	
+	auto points = TestHelpers::ApplyDistortion(cameraMatrix, Vec4d(1.0, 0.0, -1.0, 0.0), basePoints.get());	
 
 	// Execute
 	Mat image = HelperUtils::RenderKSpace(cameraMatrix, points.get(), Size(1280, 960), Range(-2, 2), Range(-2, 2));
@@ -79,6 +78,7 @@ TEST(HelperUtils_Test, render)
 /**
  * @brief Perform a refinement of the distortion coefficients
  */
+
 TEST(HelperUtils_Test, refinement)
 {
 	// Setup

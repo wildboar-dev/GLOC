@@ -72,7 +72,7 @@ Mat HelperUtils::RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Siz
 			auto errors = vector<double>();
 			auto score = CostFunction::CalculateError(undistortedPoints.get(), errors);
 
-			link[row * image.cols + column] = (float)score;
+			link[row * image.cols + column] = min(255.0f, (float)score);
 		}
 	}
 

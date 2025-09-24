@@ -64,9 +64,11 @@ double DCostFunction::Evaluate(const Eigen::VectorXd& inputs)
     // Compute the cost
     auto scores = vector<double>(); auto score = CostFunction::CalculateError(upoints.get(), scores);
 
-    // normalize the score
-    score /= (double)upoints->PointCount();
-
+    // Add a random component
+    std::mt19937_64 eng(std::chrono::system_clock::now().time_since_epoch().count());
+	auto distribution = uniform_real_distribution<double>(0, 1);
+	score += distribution(eng);
+    
     // Return the score result
     return score;
 }
