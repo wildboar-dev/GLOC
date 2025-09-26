@@ -23,7 +23,7 @@ namespace NVL_App
 	{
 	public:
 		static unique_ptr<Points> Undistort(Mat& cameraMatrix, const Vec4d& distCoeffs, Points * points);
-		static Mat RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Size& imageSize, const Range& RangeK1, const Range& RangeK2);
-		static Mat RenderPath(const Size& imageSize, const vector<Point2d>& points, const Range& RangeK1, const Range& RangeK2);
+		static Mat RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Size& imageSize, const Range& RangeK1 = Range(-1, 1), const Range& RangeK2 = Range(-1, 1));	
+		static Mat RenderPath(const Size& imageSize, const vector<Point2d>& points, const Range& RangeK1 = Range(-1, 1), const Range& RangeK2 = Range(-1, 1));
 	};
 }

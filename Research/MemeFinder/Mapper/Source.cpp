@@ -7,14 +7,15 @@
 #include <iostream>
 using namespace std;
 
+#include <MemeLib/Points.h>
+#include <MemeLib/PointLoader.h>
+#include <MemeLib/MetaLoader.h>
+#include <MemeLib/HelperUtils.h>
+
 #include <MemeFinderLib/ArgUtils.h>
 #include <MemeFinderLib/ParameterFactory.h>
 #include <MemeFinderLib/PoseLoader.h>
 #include <MemeFinderLib/Parameters.h>
-
-#include <MemeLib/Points.h>
-#include <MemeLib/PointLoader.h>
-#include <MemeLib/MetaLoader.h>
 
 #include <NVLib/Path/PathHelper.h>
 
@@ -56,6 +57,11 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
     auto cx = meta->GetCameraMatrix().at<double>(0, 2); auto cy = meta->GetCameraMatrix().at<double>(1, 2);
     auto scene = NVL_App::Parameters(Point2d(cx, cy)); scene.SetValue(0, -0.2); scene.SetValue(2, 0.03);
 
+    logger << NVL_App::Logger::Color(34) << "Creating an image of the cost function" << NVL_App::Logger::Save();
+    Mat camera = meta->GetCameraMatrix().clone();
+    Mat image = NVL_App::HelperUtils::RenderKSpace(camera, points.get(), Size(640, 640));
+    imwrite("cost.png", image);
+    logger << NVL_App::Logger::Color(32) << "Wrote 'cost.png' to disk" << NVL_App::Logger::Save();
 }
 
 //-----------------------------------------------------------------
