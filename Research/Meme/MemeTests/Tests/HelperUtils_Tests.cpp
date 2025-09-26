@@ -71,7 +71,8 @@ TEST(HelperUtils_Test, render)
 	auto points = TestHelpers::ApplyDistortion(cameraMatrix, Vec4d(1.0, 0.0, -1.0, 0.0), basePoints.get());	
 
 	// Execute
-	Mat image = HelperUtils::RenderKSpace(cameraMatrix, points.get(), Size(1280, 960), Range(-2, 2), Range(-2, 2));
+	auto indices = vector<int> {0, 2}; // K1 and K3
+	Mat image = HelperUtils::RenderKSpace(cameraMatrix, points.get(), Size(1280, 960), indices, Range(-2, 2), Range(-2, 2));
 	imwrite("KSpace.tiff", image);
 }
 

@@ -16,6 +16,7 @@ using namespace std;
 #include <MemeFinderLib/ParameterFactory.h>
 #include <MemeFinderLib/PoseLoader.h>
 #include <MemeFinderLib/Parameters.h>
+#include <MemeFinderLib/Utilities.h>
 
 #include <NVLib/Path/PathHelper.h>
 
@@ -43,8 +44,8 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
     auto pathHelper = NVLib::PathHelper(database, dataset);
 
     logger << NVL_App::Logger::Color(34) << "Loading Points" << NVL_App::Logger::Save();
-    auto points = NVL_App::PointLoader::Load(pathHelper.GetPath("Point","point.txt"));
-    logger << "Loaded " << points->PointCount() << " points" << NVL_App::Logger::Save();
+    auto basePoints = NVL_App::PointLoader::Load(pathHelper.GetPath("Point","point.txt"));
+    logger << "Loaded " << basePoints->PointCount() << " basePoints" << NVL_App::Logger::Save();
 
     logger << NVL_App::Logger::Color(34) << "Loading Meta" << NVL_App::Logger::Save();
     auto meta = NVL_App::MetaLoader::Load(pathHelper.GetPath("Meta","meta.xml"));
@@ -55,13 +56,17 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
 
     logger << NVL_App::Logger::Color(34) << "Create a parameters" << NVL_App::Logger::Save();
     auto cx = meta->GetCameraMatrix().at<double>(0, 2); auto cy = meta->GetCameraMatrix().at<double>(1, 2);
-    auto scene = NVL_App::Parameters(Point2d(cx, cy)); scene.SetValue(0, -0.2); scene.SetValue(2, 0.03);
+    auto scene = NVL_App::Parameters(Point2d(cx, cy)); scene.SetValue(0, 0.1); scene.SetValue(2, 0.1);
+
+    logger << NVL_App::Logger::Color(34) << "Applying the parameters to the basePoints" << NVL_App::Logger::Save();
+    Mat camera = meta->GetCameraMatrix().clone(); Mat distortion = scene.GetDistortion();
+    auto points = NVL_App::Utilities::ApplyDistortion(camera, pose_1.get(), pose_2.get(), &scene, basePoints.get());
 
     logger << NVL_App::Logger::Color(34) << "Creating an image of the cost function" << NVL_App::Logger::Save();
-    Mat camera = meta->GetCameraMatrix().clone();
-    Mat image = NVL_App::HelperUtils::RenderKSpace(camera, points.get(), Size(640, 640));
-    imwrite("cost.png", image);
-    logger << NVL_App::Logger::Color(32) << "Wrote 'cost.png' to disk" << NVL_App::Logger::Save();
+    auto indices = scene.GetIndices();
+    Mat image = NVL_App::HelperUtils::RenderKSpace(camera, points.get(), Size(640, 640), indices);
+    imwrite("cost_2.tiff", image);
+    logger << NVL_App::Logger::Color(32) << "Wrote 'cost.tiff' to disk" << NVL_App::Logger::Save();
 }
 
 //-----------------------------------------------------------------

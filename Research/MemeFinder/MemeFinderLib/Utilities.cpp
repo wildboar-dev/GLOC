@@ -30,7 +30,7 @@ unique_ptr<Points> Utilities::ApplyDistortion(Mat& camera, Pose * pose1, Pose * 
 
 	Mat distortion = parameters->GetDistortion();
 
-	cout << "Using Distortion: " << distortion.t() << endl;
+	cout << "Using Distortion: " << distortion << endl;
 
 	auto rvec_1 = pose1->GetRvec();
 	auto rvec_2 = pose2->GetRvec();

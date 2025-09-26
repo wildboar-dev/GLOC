@@ -49,11 +49,12 @@ unique_ptr<Points> HelperUtils::Undistort(Mat& cameraMatrix, const Vec4d& distCo
  * @param cameraMatrix The camera matrix to use for rendering
  * @param inputPoints The input points to be rendered
  * @param imageSize The size of the output image
+ * @param indices The output indices of the minimum error found
  * @param RangeK1 The range of the K1
  * @param RangeK2 The range of the K2
  * @return Mat Returns a Mat
  */
-Mat HelperUtils::RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Size& imageSize, const Range& RangeK1, const Range& RangeK2)
+Mat HelperUtils::RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Size& imageSize, vector<int>& indices,  const Range& RangeK1, const Range& RangeK2)
 {
 	Mat image = Mat_<float>::zeros(imageSize);
 	auto link = (float *)image.data;
@@ -68,11 +69,16 @@ Mat HelperUtils::RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Siz
 			auto k1 = RangeK1.start + column * stepK1;
 			auto k2 = RangeK2.start + row * stepK2;
 
-			auto undistortedPoints = HelperUtils::Undistort(cameraMatrix, Vec4d(k1, k2, 0.0, 0.0), inputPoints);
+			auto distortion = Vec4d();
+			distortion[indices[0]] = k1;	
+			distortion[indices[1]] = k2;
+
+			auto undistortedPoints = HelperUtils::Undistort(cameraMatrix, distortion, inputPoints);
 			auto errors = vector<double>();
 			auto score = CostFunction::CalculateError(undistortedPoints.get(), errors);
+			auto scoref = min(555.0f, (float)score);
 
-			link[row * image.cols + column] = min(255.0f, (float)score);
+			link[row * image.cols + column] = scoref;
 		}
 	}
 
