@@ -19,26 +19,21 @@
  */
 int main(int argc, char ** argv) 
 {
-    auto logger = NVLib::Logger(2);
-    logger.StartApplication();
-
+    auto logger = NVL_App::Logger();
+ 
     try
     {
+        logger << NVL_App::Logger::Color(32) << "Starting Mapper Application" << NVL_App::Logger::Save();
         auto parameters = NVL_App::ArgUtils::Load("MemeFinder", argc, argv);
-        NVL_App::Engine(&logger, parameters).Run();
+        NVL_App::Engine(parameters).Run(logger);
     }
-    catch (runtime_error exception)
+    catch (const exception& ex) 
     {
-        logger.Log(1, "Error: %s", exception.what());
-        exit(EXIT_FAILURE);
-    }
-    catch (string exception)
-    {
-        logger.Log(1, "Error: %s", exception.c_str());
-        exit(EXIT_FAILURE);
+        logger << NVL_App::Logger::Color(31) << "Error: " << ex.what() << NVL_App::Logger::Save();
+        return EXIT_FAILURE;
     }
 
-    logger.StopApplication();
+    logger << NVL_App::Logger::Color(32) << "Mapper Application Finished" << NVL_App::Logger::Save();
 
     return EXIT_SUCCESS;
 }

@@ -17,10 +17,10 @@ using namespace std;
 #include <MemeFinderLib/PoseLoader.h>
 #include <MemeFinderLib/Parameters.h>
 #include <MemeFinderLib/Utilities.h>
+#include <MemeFinderLib/Logger.h>
 
 #include <NVLib/Path/PathHelper.h>
 
-#include "Logger.h"
 
 //-----------------------------------------------------------------
 // Prototypes
@@ -64,7 +64,7 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
 
     logger << NVL_App::Logger::Color(34) << "Creating an image of the cost function" << NVL_App::Logger::Save();
     auto indices = scene.GetIndices();
-    Mat image = NVL_App::HelperUtils::RenderKSpace(camera, points.get(), Size(640, 640), indices);
+    Mat image = NVL_App::HelperUtils::RenderKSpace(camera, points.get(), Size(640, 640), indices, cv::Range(-0.2, 0.2), cv::Range(-0.2, 0.2));
     imwrite("cost_2.tiff", image);
     logger << NVL_App::Logger::Color(32) << "Wrote 'cost.tiff' to disk" << NVL_App::Logger::Save();
 }

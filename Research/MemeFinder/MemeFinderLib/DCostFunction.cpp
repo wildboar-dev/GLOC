@@ -57,6 +57,7 @@ double DCostFunction::Evaluate(const Eigen::VectorXd& inputs)
 
     // Get the distortion parameters
     Mat distortion = _parameters->GetDistortion();
+    cout << "Using Distortion: " << distortion << endl;
 
     // Get the points
     auto upoints = HelperUtils::Undistort(camera, distortion, _dPoints);
