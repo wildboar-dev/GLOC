@@ -64,9 +64,9 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
 
     logger << NVL_App::Logger::Color(34) << "Creating an image of the cost function" << NVL_App::Logger::Save();
     auto indices = scene.GetIndices();
-    Mat image = NVL_App::HelperUtils::RenderKSpace(camera, points.get(), Size(640, 640), indices, cv::Range(-0.2, 0.2), cv::Range(-0.2, 0.2));
-    imwrite("cost_2.tiff", image);
-    logger << NVL_App::Logger::Color(32) << "Wrote 'cost.tiff' to disk" << NVL_App::Logger::Save();
+    Mat image = NVL_App::HelperUtils::RenderKSpace(camera, points.get(), Size(640, 640), indices, NVLib::Range<double>(-0.2, 0.2), NVLib::Range<double>(-0.2, 0.2));
+    auto fileName = "cost.tiff"; imwrite(fileName, image);
+    logger << NVL_App::Logger::Color(32) << "Wrote '" << fileName << "' to disk" << NVL_App::Logger::Save();
 }
 
 //-----------------------------------------------------------------

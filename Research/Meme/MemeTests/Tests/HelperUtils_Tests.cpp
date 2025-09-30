@@ -72,7 +72,7 @@ TEST(HelperUtils_Test, render)
 
 	// Execute
 	auto indices = vector<int> {0, 2}; // K1 and K3
-	Mat image = HelperUtils::RenderKSpace(cameraMatrix, points.get(), Size(1280, 960), indices, Range(-2, 2), Range(-2, 2));
+	Mat image = HelperUtils::RenderKSpace(cameraMatrix, points.get(), Size(1280, 960), indices, NVLib::Range<double>(-2, 2), NVLib::Range<double>(-2, 2));
 	imwrite("KSpace.tiff", image);
 }
 
@@ -101,6 +101,6 @@ TEST(HelperUtils_Test, refinement)
 
 	auto path = vector<Point2d>(); for (auto step : tracker.GetPath()) path.push_back(Point2d(step[0], step[1]));
 
-	auto image = HelperUtils::RenderPath(Size(1280, 960), path, Range(-2, 2), Range(-2, 2));
+	auto image = HelperUtils::RenderPath(Size(1280, 960), path, NVLib::Range<double>(-2, 2), NVLib::Range<double>(-2, 2));
 	imwrite("Path.png", image);
 }
