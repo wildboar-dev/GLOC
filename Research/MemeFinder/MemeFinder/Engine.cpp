@@ -58,7 +58,7 @@ void Engine::Run(NVL_App::Logger & logger)
 
     logger << NVL_App::Logger::Color(34) << "Create a parameters" << NVL_App::Logger::Save();
     auto cx = meta->GetCameraMatrix().at<double>(0, 2); auto cy = meta->GetCameraMatrix().at<double>(1, 2);
-    auto scene = NVL_App::Parameters(Point2d(cx, cy)); scene.SetValue(0, 0.1); scene.SetValue(2, 0.1);
+    auto scene = NVL_App::Parameters(Point2d(cx, cy)); scene.SetValue(0, 0.6); scene.SetValue(2, -0.6);
 
     logger << NVL_App::Logger::Color(34) << "Applying the parameters to the basePoints" << NVL_App::Logger::Save();
     Mat camera = meta->GetCameraMatrix().clone(); Mat distortion = scene.GetDistortion();
@@ -71,10 +71,39 @@ void Engine::Run(NVL_App::Logger & logger)
     logger << NVL_App::Logger::Color(34) << "Running optimization" << NVL_App::Logger::Save();
     auto x0 = VectorXd::Zero((int)scene.GetIndices().size());
     auto costFunction = DCostFunction(meta->GetCameraMatrix(), scene.GetIndices(), points.get());
-    auto solver = LMSolver(&costFunction); VectorXd result = x0; double finalCost = solver.Solve(result);
+
+    auto tracker = NVL_App::Tracker();
+    auto result = GradientDescent::Solve(&costFunction, x0, 1000, 1e-10, &tracker);
+    
     auto finalScore = costFunction.Evaluate(result);
     logger << NVL_App::Logger::Color(34) << "Final Score: " << finalScore << NVL_App::Logger::Save();
+    logger << NVL_App::Logger::Color(34) << "Result: " << result.transpose() << NVL_App::Logger::Save();
 
-    // _logger->Log(1, "Result: %f %f", result[0], result[1]);
-    // _logger->Log(1, "True Values: %f %f", scene->GetValueDelta(scene->GetIndices()[0]), scene->GetValueDelta(scene->GetIndices()[1]));
+    logger << NVL_App::Logger::Color(34) << "Saving the optimization path" << NVL_App::Logger::Save();
+    SavePath("path.txt", tracker);
+}
+
+//--------------------------------------------------
+// Execution Entry Point
+//--------------------------------------------------
+
+/**
+ * Saves the path to a file
+ * @param fileName The file name to save to
+ * @param tracker The tracker that contains the path
+ */
+void Engine::SavePath(const string & fileName, NVL_App::Tracker & tracker) 
+{
+    ofstream outFile(fileName);
+    if (!outFile) {
+        cerr << "Error opening file for writing: " << fileName << endl;
+        return;
+    }
+
+    // Write the path points to the file
+    for (const auto & point : tracker.GetPath()) {
+        outFile << point(0) << " " << point(1) << endl;
+    }
+
+    outFile.close();
 }

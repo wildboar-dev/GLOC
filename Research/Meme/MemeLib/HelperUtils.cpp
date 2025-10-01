@@ -66,8 +66,13 @@ Mat HelperUtils::RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Siz
 	{
 		for (auto column = 0; column < image.cols; column++) 
 		{
-			auto k1 = RangeK1.GetMin() + column * stepK1;
-			auto k2 = RangeK2.GetMin() + row * stepK2;
+			double k1 = RangeK1.GetMin() + column * stepK1;
+			double k2 = RangeK2.GetMin() + row * stepK2;
+
+			if (row == 24 && column == 615) 
+			{
+				cout << "Point: " << row << "," << column << " K1: " << k1 << " K2: " << k2 << endl;
+			}	
 
 			auto distortion = Vec4d();
 			distortion[indices[0]] = k1;	
@@ -76,7 +81,7 @@ Mat HelperUtils::RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Siz
 			auto undistortedPoints = HelperUtils::Undistort(cameraMatrix, distortion, inputPoints);
 			auto errors = vector<double>();
 			auto score = CostFunction::CalculateError(undistortedPoints.get(), errors);
-			auto scoref = min(555.0f, (float)score);
+			auto scoref = min(9555.0f, (float)score);
 
 			link[row * image.cols + column] = scoref;
 		}

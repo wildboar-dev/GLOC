@@ -24,6 +24,7 @@ using namespace std;
 #include <MemeLib/PointLoader.h>
 #include <MemeLib/MetaLoader.h>
 
+#include <OptLib/Helpers/Tracker.h>
 #include <OptLib/GradientDescent/GradientDescent.h>
 #include <OptLib/LM/LMSolver.h>
 
@@ -39,5 +40,7 @@ namespace NVL_App
 		~Engine();
 
 		void Run(NVL_App::Logger & logger);
+	private:
+		void SavePath(const string & fileName, NVL_App::Tracker & tracker);
 	};
 }

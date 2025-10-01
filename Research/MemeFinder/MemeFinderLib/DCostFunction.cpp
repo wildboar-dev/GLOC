@@ -57,19 +57,19 @@ double DCostFunction::Evaluate(const Eigen::VectorXd& inputs)
 
     // Get the distortion parameters
     Mat distortion = _parameters->GetDistortion();
-    cout << "Using Distortion: " << distortion << endl;
+    //cout << "Using Distortion: " << distortion << endl;
 
     // Get the points
     auto upoints = HelperUtils::Undistort(camera, distortion, _dPoints);
 
     // Compute the cost
     auto scores = vector<double>(); auto score = CostFunction::CalculateError(upoints.get(), scores);
-
+    
     // Add a random component
-    std::mt19937_64 eng(std::chrono::system_clock::now().time_since_epoch().count());
-	auto distribution = uniform_real_distribution<double>(0, 1);
-	score += distribution(eng);
+    //std::mt19937_64 eng(std::chrono::system_clock::now().time_since_epoch().count());
+	//auto distribution = uniform_real_distribution<double>(-1e-8, 1e-8);
+	//score += distribution(eng);
     
     // Return the score result
-    return score;
+    return score * score;
 }
