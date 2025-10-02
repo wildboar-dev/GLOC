@@ -77,8 +77,18 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
     Mat camera = meta->GetCameraMatrix().clone(); Mat distortion = scene.GetDistortion();
     auto points = NVL_App::Utilities::ApplyDistortion(camera, pose_1.get(), pose_2.get(), &scene, basePoints.get());
 
+    ////////////////////////////////////////////////////
+    //logger << NVL_App::Logger::Color(34) << "Test Undistorted points" << NVL_App::Logger::Save();
+    //auto errors = vector<double>();auto tscore_1 = NVL_App::CostFunction::CalculateError(basePoints.get(), errors);
+    //logger << NVL_App::Logger::Color(34) << "Score on Undistorted base points: " << tscore_1 << NVL_App::Logger::Save();
+
+    //logger << NVL_App::Logger::Color(34) << "Test Distorted points" << NVL_App::Logger::Save();
+    //errors = vector<double>();auto tscore_2 = NVL_App::CostFunction::CalculateError(points.get(), errors);
+    //logger << NVL_App::Logger::Color(34) << "Score on Distorted base points: " << tscore_2 << NVL_App::Logger::Save();
+    ///////////////////////////////////////////////////
+
     // //logger << NVL_App::Logger::Color(34) << "Creating an image of the cost function" << NVL_App::Logger::Save();
-    // auto indices = scene.GetIndices();
+    auto indices = scene.GetIndices();
     // Mat image = NVL_App::HelperUtils::RenderKSpace(camera, points.get(), Size(640, 640), indices, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
     // auto fileName = "cost.tiff"; imwrite(fileName, image);
     // logger << NVL_App::Logger::Color(32) << "Wrote '" << fileName << "' to disk" << NVL_App::Logger::Save();
@@ -89,32 +99,32 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
     // auto K_min = PixelToK(camera, minLoc, imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
     // logger << NVL_App::Logger::Color(32) << "K at Min: (" << K_min[0] << ", " << K_min[1] << ")" << NVL_App::Logger::Save();
 
-    // logger << NVL_App::Logger::Color(34) << "Creating an image of the vector field" << NVL_App::Logger::Save();
-    // Mat vImage = RenderVImage(camera, points.get(), indices, imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
+    logger << NVL_App::Logger::Color(34) << "Creating an image of the vector field" << NVL_App::Logger::Save();
+    Mat vImage = RenderVImage(camera, points.get(), indices, imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
 
-    // logger << NVL_App::Logger::Color(34) << "Determining the location of the expected minima" << NVL_App::Logger::Save();
-    // auto expected = FindExpectedMinima(imageSize, Vec2d(K1, K2), NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
-    // circle(vImage, Point((int)expected.x, (int)expected.y), 5, Scalar(0, 0, 255), -1);
-    // circle(vImage, Point(imageSize.width / 2, imageSize.height / 2), 5, Scalar(0, 255, 255), -1);
-    // logger << NVL_App::Logger::Color(32) << "Expected Minima: (" << expected.x << ", " << expected.y << ")" << NVL_App::Logger::Save();
+    logger << NVL_App::Logger::Color(34) << "Determining the location of the expected minima" << NVL_App::Logger::Save();
+    auto expected = FindExpectedMinima(imageSize, Vec2d(K1, K2), NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
+    circle(vImage, Point((int)expected.x, (int)expected.y), 5, Scalar(0, 0, 255), -1);
+    circle(vImage, Point(imageSize.width / 2, imageSize.height / 2), 5, Scalar(0, 255, 255), -1);
+    logger << NVL_App::Logger::Color(32) << "Expected Minima: (" << expected.x << ", " << expected.y << ")" << NVL_App::Logger::Save();
 
-    // logger << NVL_App::Logger::Color(34) << "Saving Vector Field" << NVL_App::Logger::Save();
-    // auto vFileName = "vector_field.png"; imwrite(vFileName, vImage);
-    // logger << NVL_App::Logger::Color(32) << "Wrote '" << vFileName << "' to disk" << NVL_App::Logger::Save();
+    logger << NVL_App::Logger::Color(34) << "Saving Vector Field" << NVL_App::Logger::Save();
+    auto vFileName = "vector_field.png"; imwrite(vFileName, vImage);
+    logger << NVL_App::Logger::Color(32) << "Wrote '" << vFileName << "' to disk" << NVL_App::Logger::Save();
 
-    // logger << NVL_App::Logger::Color(34) << "Rendering the optimization path" << NVL_App::Logger::Save();
-    // auto pathImage = RenderPathImage("../MemeFinder/path.txt", imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
-    // imwrite("optimization_path.png", pathImage);
-    // logger << NVL_App::Logger::Color(32) << "Wrote '" << "optimization_path.png" << "' to disk" << NVL_App::Logger::Save();
+    logger << NVL_App::Logger::Color(34) << "Rendering the optimization path" << NVL_App::Logger::Save();
+    auto pathImage = RenderPathImage("../MemeFinder/path.txt", imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
+    imwrite("optimization_path.png", pathImage);
+    logger << NVL_App::Logger::Color(32) << "Wrote '" << "optimization_path.png" << "' to disk" << NVL_App::Logger::Save();
 
-    // logger << NVL_App::Logger::Color(34) << "Creating a combo image" << NVL_App::Logger::Save();
-    // Mat combo = vImage + pathImage;
-    // imwrite("combo.png", combo);
-    // logger << NVL_App::Logger::Color(32) << "Wrote '" << "combo.png" << "' to disk" << NVL_App::Logger::Save();
+    logger << NVL_App::Logger::Color(34) << "Creating a combo image" << NVL_App::Logger::Save();
+    Mat combo = vImage + pathImage;
+    imwrite("combo.png", combo);
+    logger << NVL_App::Logger::Color(32) << "Wrote '" << "combo.png" << "' to disk" << NVL_App::Logger::Save();
 
-    // logger << NVL_App::Logger::Color(34) << "Calculating the score at point [615,24]" << NVL_App::Logger::Save();
-    // auto score_1 = PixelToCost(camera, points.get(), Point2d(615, 24), imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range)); 
-    // logger << NVL_App::Logger::Color(32) << "Score at (615,24): " << score_1 << NVL_App::Logger::Save();
+    logger << NVL_App::Logger::Color(34) << "Calculating the score at point [615,24]" << NVL_App::Logger::Save();
+    auto score_1 = PixelToCost(camera, points.get(), Point2d(615, 24), imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range)); 
+    logger << NVL_App::Logger::Color(32) << "Score at (615,24): " << score_1 << NVL_App::Logger::Save();
 
     logger << NVL_App::Logger::Color(34) << "Calculating the expected optimal point" << NVL_App::Logger::Save();
     auto optimal = KToPixel(camera, Vec2d(K1, K2), imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
@@ -243,7 +253,12 @@ Mat RenderVImage(Mat& cameraMatrix, NVL_App::Points * inputPoints, vector<int>& 
 
             auto gradient = FindGradient(cameraMatrix, inputPoints, indices, Vec2d(k1, k2));
 
-            arrowedLine(image, Point((int)(column + gradient[0] * 10), (int)(row + gradient[1] * 10)), Point(column, row), Scalar(0, 255, 0), 1, LINE_AA);
+            auto x = column + min(gradient[0] * 8, 8.0);
+            auto y = row + min(gradient[1] * 8, 8.0);
+
+            if (__isnan(x) || __isnan(y)) continue;
+
+            arrowedLine(image, Point(x,y), Point(column, row), Scalar(0, 255, 0), 1, LINE_AA, 0, 0.3);
 		}
 	}
 
@@ -348,9 +363,7 @@ Mat RenderPathImage(const string& pathFile,const Size& imageSize, const NVLib::R
     reader.close();
 
     return image;
-
 }
-
 
 //-----------------------------------------------------------------
 // Entry Point

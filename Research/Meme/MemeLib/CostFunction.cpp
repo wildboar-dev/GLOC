@@ -24,6 +24,12 @@ double CostFunction::CalculateError(Points * points, vector<double>& errors)
 	Mat H_1 = findHomography(points->GetScenePoints(), points->GetImagePoints_1());
 	Mat H_2 = findHomography(points->GetScenePoints(), points->GetImagePoints_2());
 
+	if (H_1.empty() || H_2.empty())
+	{
+		errors.clear();
+		return DBL_MAX;
+	}
+
 	auto errors_1 = vector<double>();
 	auto errors_2 = vector<double>();
 
