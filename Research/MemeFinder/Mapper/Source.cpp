@@ -49,7 +49,7 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
     //---------------------------------------------------
     // HARDCODED PARAMETERS
     //---------------------------------------------------
-    const double K1 = 0.6; const double K2 = -0.6;
+    const double K1 = 0.6; const double K2 = 0.3;
     const double range = 0.65; auto imageSize = Size(640, 640);
     //---------------------------------------------------
 
@@ -89,15 +89,15 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
 
     // //logger << NVL_App::Logger::Color(34) << "Creating an image of the cost function" << NVL_App::Logger::Save();
     auto indices = scene.GetIndices();
-    // Mat image = NVL_App::HelperUtils::RenderKSpace(camera, points.get(), Size(640, 640), indices, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
-    // auto fileName = "cost.tiff"; imwrite(fileName, image);
-    // logger << NVL_App::Logger::Color(32) << "Wrote '" << fileName << "' to disk" << NVL_App::Logger::Save();
+    Mat image = NVL_App::HelperUtils::RenderKSpace(camera, points.get(), Size(640, 640), indices, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
+    auto fileName = "cost.tiff"; imwrite(fileName, image);
+    logger << NVL_App::Logger::Color(32) << "Wrote '" << fileName << "' to disk" << NVL_App::Logger::Save();
 
-    // logger << NVL_App::Logger::Color(34) << "Finding the minimum" << NVL_App::Logger::Save();
-    // double minVal, maxVal; Point minLoc, maxLoc; minMaxLoc(image, &minVal, &maxVal, &minLoc, &maxLoc);
-    // logger << NVL_App::Logger::Color(32) << "Min Val: " << minVal << " at (" << minLoc.x << ", " << minLoc.y << ")" << NVL_App::Logger::Save();
-    // auto K_min = PixelToK(camera, minLoc, imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
-    // logger << NVL_App::Logger::Color(32) << "K at Min: (" << K_min[0] << ", " << K_min[1] << ")" << NVL_App::Logger::Save();
+    logger << NVL_App::Logger::Color(34) << "Finding the minimum" << NVL_App::Logger::Save();
+    double minVal, maxVal; Point minLoc, maxLoc; minMaxLoc(image, &minVal, &maxVal, &minLoc, &maxLoc);
+    logger << NVL_App::Logger::Color(32) << "Min Val: " << minVal << " at (" << minLoc.x << ", " << minLoc.y << ")" << NVL_App::Logger::Save();
+    auto K_min = PixelToK(camera, minLoc, imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
+    logger << NVL_App::Logger::Color(32) << "K at Min: (" << K_min[0] << ", " << K_min[1] << ")" << NVL_App::Logger::Save();
 
     logger << NVL_App::Logger::Color(34) << "Creating an image of the vector field" << NVL_App::Logger::Save();
     Mat vImage = RenderVImage(camera, points.get(), indices, imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));

@@ -45,6 +45,12 @@ Engine::~Engine()
  */
 void Engine::Run(NVL_App::Logger & logger)
 {
+    //---------------------------------------------------
+    // HARDCODED PARAMETERS
+    //---------------------------------------------------
+    const double K1 = 0.6; const double K2 = 0.3;
+    //---------------------------------------------------
+
     logger << NVL_App::Logger::Color(34) << "Loading Points" << NVL_App::Logger::Save();
     auto basePoints = NVL_App::PointLoader::Load(_pathHelper->GetPath("Point","point.txt"));
     logger << "Loaded " << basePoints->PointCount() << " basePoints" << NVL_App::Logger::Save();
@@ -58,7 +64,7 @@ void Engine::Run(NVL_App::Logger & logger)
 
     logger << NVL_App::Logger::Color(34) << "Create a parameters" << NVL_App::Logger::Save();
     auto cx = meta->GetCameraMatrix().at<double>(0, 2); auto cy = meta->GetCameraMatrix().at<double>(1, 2);
-    auto scene = NVL_App::Parameters(Point2d(cx, cy)); scene.SetValue(0, 0.6); scene.SetValue(2, -0.6);
+    auto scene = NVL_App::Parameters(Point2d(cx, cy)); scene.SetValue(0, K1); scene.SetValue(2, K2);
 
     logger << NVL_App::Logger::Color(34) << "Applying the parameters to the basePoints" << NVL_App::Logger::Save();
     Mat camera = meta->GetCameraMatrix().clone(); Mat distortion = scene.GetDistortion();
