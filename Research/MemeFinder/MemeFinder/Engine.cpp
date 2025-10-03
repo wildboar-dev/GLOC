@@ -48,7 +48,7 @@ void Engine::Run(NVL_App::Logger & logger)
     //---------------------------------------------------
     // HARDCODED PARAMETERS
     //---------------------------------------------------
-    const double K1 = 0.6; const double K2 = 0.3;
+    const double K1 = 0.6; const double K2 = -0.6;
     //---------------------------------------------------
 
     logger << NVL_App::Logger::Color(34) << "Loading Points" << NVL_App::Logger::Save();
@@ -79,8 +79,9 @@ void Engine::Run(NVL_App::Logger & logger)
     auto costFunction = DCostFunction(meta->GetCameraMatrix(), scene.GetIndices(), points.get());
 
     auto tracker = NVL_App::Tracker();
-    auto result = GradientDescent::Solve(&costFunction, x0, 1000, 1e-10, &tracker);
-    
+    //auto result = GradientDescent::Solve(&costFunction, x0, 1000, 1e-10, &tracker);
+    auto result = PSearch::Solve(&costFunction, x0, 100, 1e-2, 1e4, &tracker);
+
     auto finalScore = costFunction.Evaluate(result);
     logger << NVL_App::Logger::Color(34) << "Final Score: " << finalScore << NVL_App::Logger::Save();
     logger << NVL_App::Logger::Color(34) << "Result: " << result.transpose() << NVL_App::Logger::Save();

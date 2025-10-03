@@ -49,7 +49,7 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
     //---------------------------------------------------
     // HARDCODED PARAMETERS
     //---------------------------------------------------
-    const double K1 = 0.6; const double K2 = 0.3;
+    const double K1 = 0.6; const double K2 = -0.6;
     const double range = 0.65; auto imageSize = Size(640, 640);
     //---------------------------------------------------
 

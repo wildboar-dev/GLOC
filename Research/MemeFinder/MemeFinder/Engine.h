@@ -25,7 +25,7 @@ using namespace std;
 #include <MemeLib/MetaLoader.h>
 
 #include <OptLib/Helpers/Tracker.h>
-#include <OptLib/GradientDescent/GradientDescent.h>
+#include <OptLib/PSearch/PSearch.h>
 #include <OptLib/LM/LMSolver.h>
 
 namespace NVL_App
