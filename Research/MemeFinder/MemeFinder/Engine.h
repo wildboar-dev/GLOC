@@ -26,6 +26,7 @@ using namespace std;
 
 #include <OptLib/Helpers/Tracker.h>
 #include <OptLib/PSearch/PSearch.h>
+#include <OptLib/PSearch/FPSearch.h>
 #include <OptLib/LM/LMSolver.h>
 
 namespace NVL_App

@@ -80,7 +80,8 @@ void Engine::Run(NVL_App::Logger & logger)
 
     auto tracker = NVL_App::Tracker();
     //auto result = GradientDescent::Solve(&costFunction, x0, 1000, 1e-10, &tracker);
-    auto result = PSearch::Solve(&costFunction, x0, 100, 1e-2, 1e4, &tracker);
+    //auto result = PSearch::Solve(&costFunction, x0, 100, 1e-2, 1e4, &tracker);
+    auto result = FPSearch::Solve(&costFunction, x0, 100, 1e-2, 1e4, 1e-6, &tracker);
 
     auto finalScore = costFunction.Evaluate(result);
     logger << NVL_App::Logger::Color(34) << "Final Score: " << finalScore << NVL_App::Logger::Save();
