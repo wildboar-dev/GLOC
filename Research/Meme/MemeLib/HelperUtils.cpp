@@ -70,11 +70,6 @@ Mat HelperUtils::RenderKSpace(Mat& cameraMatrix, Points * inputPoints, const Siz
 			double k1 = RangeK1.GetMin() + column * stepK1;
 			double k2 = RangeK2.GetMin() + row * stepK2;
 
-			if (row == 24 && column == 615) 
-			{
-				cout << "Point: " << row << "," << column << " K1: " << k1 << " K2: " << k2 << endl;
-			}	
-
 			auto distortion = Vec4d();
 			distortion[indices[0]] = k1;	
 			distortion[indices[1]] = k2;

@@ -49,8 +49,9 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
     //---------------------------------------------------
     // HARDCODED PARAMETERS
     //---------------------------------------------------
-    const double K1 = 0.6; const double K2 = -0.6;
-    const double range = 0.65; auto imageSize = Size(640, 640);
+    const double K1 = -0.2, K2 = 0.7;
+    const int dIndex_1 = 0, dIndex_2 = 1;
+    const double range = 0.75; auto imageSize = Size(640, 640);
     //---------------------------------------------------
 
     logger << NVL_App::Logger::Color(34) << "Loading Parameters" << NVL_App::Logger::Save();
@@ -71,21 +72,11 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
 
     logger << NVL_App::Logger::Color(34) << "Create a parameters" << NVL_App::Logger::Save();
     auto cx = meta->GetCameraMatrix().at<double>(0, 2); auto cy = meta->GetCameraMatrix().at<double>(1, 2);
-    auto scene = NVL_App::Parameters(Point2d(cx, cy)); scene.SetValue(0, K1); scene.SetValue(2, K2);
+    auto scene = NVL_App::Parameters(Point2d(cx, cy)); scene.SetValue(dIndex_1, K1); scene.SetValue(dIndex_2, K2);
 
     logger << NVL_App::Logger::Color(34) << "Applying the parameters to the basePoints" << NVL_App::Logger::Save();
     Mat camera = meta->GetCameraMatrix().clone(); Mat distortion = scene.GetDistortion();
     auto points = NVL_App::Utilities::ApplyDistortion(camera, pose_1.get(), pose_2.get(), &scene, basePoints.get());
-
-    ////////////////////////////////////////////////////
-    //logger << NVL_App::Logger::Color(34) << "Test Undistorted points" << NVL_App::Logger::Save();
-    //auto errors = vector<double>();auto tscore_1 = NVL_App::CostFunction::CalculateError(basePoints.get(), errors);
-    //logger << NVL_App::Logger::Color(34) << "Score on Undistorted base points: " << tscore_1 << NVL_App::Logger::Save();
-
-    //logger << NVL_App::Logger::Color(34) << "Test Distorted points" << NVL_App::Logger::Save();
-    //errors = vector<double>();auto tscore_2 = NVL_App::CostFunction::CalculateError(points.get(), errors);
-    //logger << NVL_App::Logger::Color(34) << "Score on Distorted base points: " << tscore_2 << NVL_App::Logger::Save();
-    ///////////////////////////////////////////////////
 
     // //logger << NVL_App::Logger::Color(34) << "Creating an image of the cost function" << NVL_App::Logger::Save();
     auto indices = scene.GetIndices();
@@ -121,16 +112,6 @@ void Run(NVL_App::Logger & logger, NVLib::Parameters * parameters)
     Mat combo = vImage + pathImage;
     imwrite("combo.png", combo);
     logger << NVL_App::Logger::Color(32) << "Wrote '" << "combo.png" << "' to disk" << NVL_App::Logger::Save();
-
-    logger << NVL_App::Logger::Color(34) << "Calculating the score at point [615,24]" << NVL_App::Logger::Save();
-    auto score_1 = PixelToCost(camera, points.get(), Point2d(615, 24), imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range)); 
-    logger << NVL_App::Logger::Color(32) << "Score at (615,24): " << score_1 << NVL_App::Logger::Save();
-
-    logger << NVL_App::Logger::Color(34) << "Calculating the expected optimal point" << NVL_App::Logger::Save();
-    auto optimal = KToPixel(camera, Vec2d(K1, K2), imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
-    logger << NVL_App::Logger::Color(32) << "Optimal Point: (" << optimal.x << ", " << optimal.y << ")" << NVL_App::Logger::Save();
-    auto score_2 = PixelToCost(camera, points.get(), optimal, imageSize, NVLib::Range<double>(-range, range), NVLib::Range<double>(-range, range));
-    logger << NVL_App::Logger::Color(32) << "Score at Optimal Point: " << score_2 << NVL_App::Logger::Save();
 }
 
 /**

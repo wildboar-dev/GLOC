@@ -48,7 +48,8 @@ void Engine::Run(NVL_App::Logger & logger)
     //---------------------------------------------------
     // HARDCODED PARAMETERS
     //---------------------------------------------------
-    const double K1 = 0.6; const double K2 = -0.6;
+    const double K1 = -0.2, K2 = 0.7;
+    const int dIndex_1 = 0, dIndex_2 = 1;
     //---------------------------------------------------
 
     logger << NVL_App::Logger::Color(34) << "Loading Points" << NVL_App::Logger::Save();
@@ -64,7 +65,7 @@ void Engine::Run(NVL_App::Logger & logger)
 
     logger << NVL_App::Logger::Color(34) << "Create a parameters" << NVL_App::Logger::Save();
     auto cx = meta->GetCameraMatrix().at<double>(0, 2); auto cy = meta->GetCameraMatrix().at<double>(1, 2);
-    auto scene = NVL_App::Parameters(Point2d(cx, cy)); scene.SetValue(0, K1); scene.SetValue(2, K2);
+    auto scene = NVL_App::Parameters(Point2d(cx, cy)); scene.SetValue(dIndex_1, K1); scene.SetValue(dIndex_2, K2);
 
     logger << NVL_App::Logger::Color(34) << "Applying the parameters to the basePoints" << NVL_App::Logger::Save();
     Mat camera = meta->GetCameraMatrix().clone(); Mat distortion = scene.GetDistortion();
@@ -81,7 +82,7 @@ void Engine::Run(NVL_App::Logger & logger)
     auto tracker = NVL_App::Tracker();
     //auto result = GradientDescent::Solve(&costFunction, x0, 1000, 1e-10, &tracker);
     //auto result = PSearch::Solve(&costFunction, x0, 100, 1e-2, 1e4, &tracker);
-    auto result = FPSearch::Solve(&costFunction, x0, 100, 1e-2, 1e4, 1e-6, &tracker);
+    auto result = FPSearch::Solve(&costFunction, x0, 100, 1e-5, 1e4, 1e-21, &tracker);
 
     auto finalScore = costFunction.Evaluate(result);
     logger << NVL_App::Logger::Color(34) << "Final Score: " << finalScore << NVL_App::Logger::Save();
