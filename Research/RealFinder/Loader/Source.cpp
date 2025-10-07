@@ -29,6 +29,10 @@ Size GetImageSize(NVLib::PathHelper * pathHelper);
 // Main entry point into the application
 //--------------------------------------------------
 
+/**
+ * Main execution logic
+ * @param logger The logger that we are using
+ */
 void Run(NVL_App::Logger& logger) 
 {
     logger << NVL_App::Logger::Color(36) << "Generating a path helper" << NVL_App::Logger::Save();   
@@ -39,7 +43,11 @@ void Run(NVL_App::Logger& logger)
 
     logger << NVL_App::Logger::Color(36) << "Getting the image size" << NVL_App::Logger::Save();   
     auto imageSize = GetImageSize(pathHelper.get());
-    logger << NVL_App::Logger::Color(36) << "Image Size: " << imageSize.width << "x" << imageSize.height << NVL_App::Logger::Save();    
+    logger << NVL_App::Logger::Color(36) << "Image Size: " << imageSize.width << "x" << imageSize.height << NVL_App::Logger::Save();
+
+    logger << NVL_App::Logger::Color(36) << "Loading grids" << NVL_App::Logger::Save();
+    auto grid_1 = NVL_App::LoadUtils::LoadGrid(pathHelper.get(), settings.get(), 0, 0);
+    auto grid_2 = NVL_App::LoadUtils::LoadGrid(pathHelper.get(), settings.get(), 0, 1);
 }
 
 //--------------------------------------------------
