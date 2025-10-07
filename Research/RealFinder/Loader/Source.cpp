@@ -16,11 +16,14 @@ using namespace cv;
 
 #include <RealFinderLib/Logger.h>
 
+#include "LoadUtils.h"
+
 //--------------------------------------------------
 // Function Prototypes
 //--------------------------------------------------
 void Run(NVL_App::Logger& logger);
 unique_ptr<NVLib::PathHelper> CreatePathHelper();
+Size GetImageSize(NVLib::PathHelper * pathHelper);
 
 //--------------------------------------------------
 // Main entry point into the application
@@ -31,7 +34,33 @@ void Run(NVL_App::Logger& logger)
     logger << NVL_App::Logger::Color(36) << "Generating a path helper" << NVL_App::Logger::Save();   
     auto pathHelper = CreatePathHelper();
 
-    // Further processing can be added here
+    logger << NVL_App::Logger::Color(36) << "Loading board settings" << NVL_App::Logger::Save();
+    auto settings = NVL_App::LoadUtils::LoadBoardSettings(pathHelper.get());
+
+    logger << NVL_App::Logger::Color(36) << "Getting the image size" << NVL_App::Logger::Save();   
+    auto imageSize = GetImageSize(pathHelper.get());
+    logger << NVL_App::Logger::Color(36) << "Image Size: " << imageSize.width << "x" << imageSize.height << NVL_App::Logger::Save();    
+}
+
+//--------------------------------------------------
+// Helper Size
+//--------------------------------------------------
+
+/**
+ * Get the image size that we are dealing with
+ * @param pathHelper That we are finding
+ * @return The size of the image that we are getting
+*/
+Size GetImageSize(NVLib::PathHelper * pathHelper) 
+{
+    // Get the image path
+    auto path = pathHelper->GetPath("Tool_Output", "Camera_0_Image_0.jpg");
+
+    // Load the image
+    Mat image = imread(path); if (image.empty()) throw runtime_error("Unable to find: " + path);
+
+    // Return 
+    return image.size();
 }
 
 //--------------------------------------------------

@@ -12,6 +12,8 @@ include_directories("../")
 # Create the executable
 add_executable(Loader
     Source.cpp
+    Settings.cpp
+    LoadUtils.cpp
 )
 
 # Add link libraries                               
