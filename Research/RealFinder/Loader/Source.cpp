@@ -26,6 +26,7 @@ void Run(NVL_App::Logger& logger);
 unique_ptr<NVLib::PathHelper> CreatePathHelper();
 Size GetImageSize(NVLib::PathHelper * pathHelper);
 void WriteMeta(NVLib::PathHelper * pathHelper, NVL_App::Calibration * calibration, NVL_App::Settings * settings, const Size& imageSize);
+void WritePoints(NVLib::PathHelper * pathHelper, NVL_App::Grid * grid1, NVL_App::Grid * grid2);
 
 //--------------------------------------------------
 // Main entry point into the application
@@ -56,6 +57,9 @@ void Run(NVL_App::Logger& logger)
 
     logger << NVL_App::Logger::Color(36) << "Writing meta information" << NVL_App::Logger::Save();   
     WriteMeta(pathHelper.get(), calibration.get(), settings.get(), imageSize);
+
+    logger << NVL_App::Logger::Color(36) << "Writing points" << NVL_App::Logger::Save();   
+    WritePoints(pathHelper.get(), grid_1.get(), grid_2.get());
  }
 
 //--------------------------------------------------
@@ -138,6 +142,45 @@ void WriteMeta(NVLib::PathHelper * pathHelper, NVL_App::Calibration * calibratio
 
     // Release the file
     writer.release();
+}
+
+//--------------------------------------------------
+// Write associated points to disk
+//--------------------------------------------------
+
+/**
+ * Write the points that we are dealing with to disk
+ * @param pathHelper The path helper that we are using
+ * @param grid1 The first grid that we are writing
+ * @param grid2 The second grid that we are writing
+*/
+void WritePoints(NVLib::PathHelper * pathHelper, NVL_App::Grid * grid1, NVL_App::Grid * grid2) 
+{
+    // Check to see if a meta folder already exists
+    auto folderPath = pathHelper->GetPath("Points");
+    if (!NVLib::FileUtils::Exists(folderPath)) NVLib::FileUtils::AddFolder(folderPath);
+
+    // Open up a FileStorage XML generate the meta file
+    auto filePath = pathHelper->GetPath("Points", "points.txt");
+    auto writer = ofstream(filePath); 
+    if (!writer.is_open()) throw runtime_error("Unable to open file: " + filePath);
+
+    // Write the header
+    writer << "X,Y,Z,u1,v1,u2,v2" << endl;
+
+    // Write the points
+    for (auto i = 0; i < grid1->GetPointCount(); i++) 
+    {
+        auto scenePoint = grid1->GetScenePoints()[i];
+        auto imagePoint_1 = grid1->GetImagePoints()[i];
+        auto imagePoint_2 = grid2->GetImagePoints()[i];
+        writer << fixed << setprecision(11) << scenePoint.x << "," << scenePoint.y << "," << scenePoint.z << ",";
+        writer << fixed << setprecision(11) << imagePoint_1.x << "," << imagePoint_1.y << ",";
+        writer << fixed << setprecision(11) << imagePoint_2.x << "," << imagePoint_2.y << endl;
+    }
+
+    // Release the file
+    writer.close();
 }
 
 //--------------------------------------------------
