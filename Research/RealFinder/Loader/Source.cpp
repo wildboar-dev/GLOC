@@ -13,6 +13,7 @@ using namespace std;
 using namespace cv;
 
 #include <NVLib/Path/PathHelper.h>
+#include <NVLib/FileUtils.h>
 
 #include <RealFinderLib/Logger.h>
 
@@ -24,6 +25,7 @@ using namespace cv;
 void Run(NVL_App::Logger& logger);
 unique_ptr<NVLib::PathHelper> CreatePathHelper();
 Size GetImageSize(NVLib::PathHelper * pathHelper);
+void WriteMeta(NVLib::PathHelper * pathHelper, NVL_App::Calibration * calibration, NVL_App::Settings * settings, const Size& imageSize);
 
 //--------------------------------------------------
 // Main entry point into the application
@@ -51,6 +53,9 @@ void Run(NVL_App::Logger& logger)
 
     logger << NVL_App::Logger::Color(36) << "Loading calibrations" << NVL_App::Logger::Save();
     auto calibration = NVL_App::LoadUtils::LoadCalibration(pathHelper.get(), 0);
+
+    logger << NVL_App::Logger::Color(36) << "Writing meta information" << NVL_App::Logger::Save();   
+    WriteMeta(pathHelper.get(), calibration.get(), settings.get(), imageSize);
  }
 
 //--------------------------------------------------
@@ -96,6 +101,43 @@ unique_ptr<NVLib::PathHelper> CreatePathHelper()
 
     // Create the path helper
     return make_unique<NVLib::PathHelper>(databasePath, datasetName);
+}
+
+//--------------------------------------------------
+// Write Meta Information
+//--------------------------------------------------
+
+/**
+ * Write meta information
+ * @param pathHelper The path helper that we are using
+ * @param calibration The calibration that we are using
+ * @param settings The settings that we are using
+ * @param imageSize The size of the image that we are dealing with
+*/
+void WriteMeta(NVLib::PathHelper * pathHelper, NVL_App::Calibration * calibration, NVL_App::Settings * settings, const Size& imageSize) 
+{
+    // Check to see if a meta folder already exists
+    auto folderPath = pathHelper->GetPath("Meta");
+    if (!NVLib::FileUtils::Exists(folderPath)) NVLib::FileUtils::AddFolder(folderPath);
+
+    // Open up a FileStorage XML generate the meta file
+    auto filePath = pathHelper->GetPath("Meta", "meta.xml");
+    auto writer = FileStorage(filePath, FileStorage::WRITE | FileStorage::FORMAT_XML);
+
+    // Write the camera matrix
+    writer << "cameraMatrix" << calibration->GetCamera();
+
+    // Write the image size
+    writer << "imageSize" << imageSize;
+
+    // Write the grid size
+    writer << "gridSize" << settings->GetBoard1()->GetGridSize();
+
+    // Write the block size
+    writer << "blockSize" << settings->GetBoard1()->GetBoardSize().width;
+
+    // Release the file
+    writer.release();
 }
 
 //--------------------------------------------------
