@@ -133,9 +133,11 @@ Mat HelperUtils::RenderResult(Mat& cameraMatrix, const Vec4d& distCoeffs, Points
 
 	for (size_t i = 0; i < ipoints_1.size(); i++)
 	{
+		circle(image, ipoints_1[i], 8, Scalar(0, 255, 0), 3);
 		circle(image, ipoints_1[i], 5, Scalar(255, 0, 0), -1);
+
+		circle(image, ipoints_2[i], 8, Scalar(0, 255, 0), 3);
 		circle(image, ipoints_2[i], 5, Scalar(0, 0, 255), -1);
-		//line(image, ipoints_1[i], ipoints_2[i], Scalar(0, 255, 0), 2);
 	}
 
 	return image;
