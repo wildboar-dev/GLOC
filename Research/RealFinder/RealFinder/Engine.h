@@ -11,7 +11,8 @@
 #include <iostream>
 using namespace std;
 
-#include <NVLib/Logger.h>
+#include <RealFinderLib/Logger.h>
+
 #include <NVLib/Path/PathHelper.h>
 #include <RealFinderLib/ArgUtils.h>
 
@@ -21,12 +22,15 @@ namespace NVL_App
 	{
 	private:
 		NVLib::Parameters * _parameters;
-		NVLib::Logger* _logger;
+		NVL_App::Logger* _logger;
 		NVLib::PathHelper * _pathHelper;
 	public:
-		Engine(NVLib::Logger* logger, NVLib::Parameters * parameters);
+		Engine(NVL_App::Logger* logger, NVLib::Parameters * parameters);
 		~Engine();
 
 		void Run();
+
+	private:
+		NVL_App::Logger& Log() { return *_logger; }
 	};
 }

@@ -16,7 +16,7 @@ add_executable(RealFinder
 )
 
 # Add link libraries                               
-target_link_libraries(RealFinder RealFinderLib  NVLib ${OpenCV_LIBS} OpenSSL::SSL uuid)
+target_link_libraries(RealFinder RealFinderLib OptLib NVLib ${OpenCV_LIBS} OpenSSL::SSL uuid)
 
 # Copy Resources across
 add_custom_target(resource_copy ALL

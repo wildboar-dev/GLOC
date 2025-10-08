@@ -29,6 +29,13 @@ set_target_properties(NVLib PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES "${LIBRARY_BASE}/NVLib"
 )
 
+# OptLib
+add_library(OptLib STATIC IMPORTED)
+set_target_properties(OptLib PROPERTIES
+    IMPORTED_LOCATION "${LIBRARY_BASE}/OptLib/build/OptLib/libOptLib.a"
+    INTERFACE_INCLUDE_DIRECTORIES "${LIBRARY_BASE}/OptLib"
+)
+
 # Add opencv to the solution
 find_package( OpenCV REQUIRED)
 include_directories( ${OpenCV_INCLUDE_DIRS} )

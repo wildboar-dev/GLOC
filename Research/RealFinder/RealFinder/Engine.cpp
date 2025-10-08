@@ -18,11 +18,9 @@ using namespace NVL_App;
  * @param logger The logger that we are using for the system
  * @param parameters The input parameters
  */
-Engine::Engine(NVLib::Logger* logger, NVLib::Parameters* parameters) 
+Engine::Engine(NVL_App::Logger* logger, NVLib::Parameters* parameters) : _logger(logger), _parameters(parameters)
 {
-    _logger = logger; _parameters = parameters;
-
-    _logger->Log(1, "Creating a path helper");
+    Log() << Logger::Color(36) << "Creating a path helper" << Logger::Save();
     auto database = ArgUtils::GetString(parameters, "database");
     auto dataset = ArgUtils::GetString(parameters, "dataset");
     _pathHelper = new NVLib::PathHelper(database, dataset);

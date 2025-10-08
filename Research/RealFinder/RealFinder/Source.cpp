@@ -19,8 +19,8 @@
  */
 int main(int argc, char ** argv) 
 {
-    auto logger = NVLib::Logger(2);
-    logger.StartApplication();
+    auto logger = NVL_App::Logger();
+    logger << NVL_App::Logger::Color(32) << "Starting RealFinder Application" << NVL_App::Logger::Save();
 
     try
     {
@@ -29,16 +29,16 @@ int main(int argc, char ** argv)
     }
     catch (runtime_error exception)
     {
-        logger.Log(1, "Error: %s", exception.what());
+        logger << NVL_App::Logger::Color(31) << "Error: " << exception.what() << NVL_App::Logger::Save();
         exit(EXIT_FAILURE);
     }
     catch (string exception)
     {
-        logger.Log(1, "Error: %s", exception.c_str());
+        logger << NVL_App::Logger::Color(31) << "Error: " << exception.c_str() << NVL_App::Logger::Save();
         exit(EXIT_FAILURE);
     }
 
-    logger.StopApplication();
+    logger << NVL_App::Logger::Color(32) << "Stopping RealFinder Application" << NVL_App::Logger::Save();
 
     return EXIT_SUCCESS;
 }

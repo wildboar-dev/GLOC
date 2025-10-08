@@ -12,4 +12,6 @@ include_directories("../" "${LIBRARY_BASE}/NVLib")
 # Create Library
 add_library(RealFinderLib STATIC
     ArgUtils.cpp
+    MetaLoader.cpp
+    PointLoader.cpp
 )
