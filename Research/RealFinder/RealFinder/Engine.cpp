@@ -61,7 +61,7 @@ void Engine::Run()
     Log() << Logger::Color(34) << "Refining the model" << Logger::Save();
     //auto result = GradientDescent::Solve(&costFunction, x0, 1000, 1e-10);
     //auto result = PSearch::Solve(&costFunction, x0, 100, 1e-2, 1e4);
-    auto result = FPSearch::Solve(&costFunction, x0, 100, 1e-2, 100, DBL_EPSILON);
+    auto result = FPSearch::Solve(&costFunction, x0, 100, 1e-2, 150, DBL_EPSILON);
 
     auto finalScore = costFunction.Evaluate(result);
     Log() << NVL_App::Logger::Color(34) << "Final Score: " << finalScore << NVL_App::Logger::Save();
@@ -70,4 +70,41 @@ void Engine::Run()
     Log() << Logger::Color(34) << "Rendering the results" << Logger::Save();
     auto resultImage = HelperUtils::RenderResult(meta->GetCameraMatrix(), Vec4d(result[0], result[1], result[2], result[3]), points.get(), meta->GetImageSize());
     imwrite("points.png", resultImage);
+
+    Log() << Logger::Color(32) << "Saving the distortion parameters to disk" << Logger::Save();
+    Mat distortion = (Mat_<double>(4, 1) << result[0], result[1], result[2], result[3]);
+    SaveResult(_pathHelper, meta->GetCameraMatrix(), distortion);
+}
+
+//--------------------------------------------------
+// Saving Results
+//--------------------------------------------------
+
+/**
+ * Save the resultant camera and distortion coefficients to disk
+ * @param pathHelper The path helper that we are using
+ * @param camera The camera matrix
+ * @param distCoeffs The distortion coefficients
+ */
+void Engine::SaveResult(NVLib::PathHelper * pathHelper, Mat& camera, Mat& distCoeffs) 
+{
+    auto path = pathHelper->GetPath("Distortion");
+    if (!NVLib::FileUtils::Exists(path)) NVLib::FileUtils::AddFolder(path);
+
+    FileStorage fs(pathHelper->GetPath("Distortion", "result.xml"), FileStorage::WRITE);
+    fs << "CameraMatrix" << camera;
+    fs << "DistCoeffs" << distCoeffs;
+    fs.release();
+}
+
+/**
+ * Save the points to disk
+ * @param pathHelper The path helper that we are using
+ * @param points The points that we are saving
+ * @param camera The camera matrix
+ * @param distCoeffs The distortion coefficients
+ */
+void Engine::SavePoints(NVLib::PathHelper * pathHelper, Points * points, Mat& camera, Mat& distCoeffs) 
+{
+    throw runtime_error("Not implemented yet");
 }

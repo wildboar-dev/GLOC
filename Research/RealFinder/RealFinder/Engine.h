@@ -42,5 +42,8 @@ namespace NVL_App
 
 	private:
 		NVL_App::Logger& Log() { return *_logger; }
+
+		void SaveResult(NVLib::PathHelper * pathHelper, Mat& camera, Mat& distCoeffs);
+		void SavePoints(NVLib::PathHelper * pathHelper, Points * points, Mat& camera, Mat& distCoeffs);
 	};
 }
