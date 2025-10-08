@@ -14,7 +14,17 @@ using namespace std;
 #include <RealFinderLib/Logger.h>
 
 #include <NVLib/Path/PathHelper.h>
+
 #include <RealFinderLib/ArgUtils.h>
+#include <RealFinderLib/MetaLoader.h>
+#include <RealFinderLib/PointLoader.h>
+#include <RealFinderLib/CostFunction.h>
+#include <RealFinderLib/DCostFunction.h>
+
+#include <OptLib/PSearch/PSearch.h>
+#include <OptLib/PSearch/FPSearch.h>
+#include <OptLib/GradientDescent/GradientDescent.h>
+#include <OptLib/LM/LMSolver.h>
 
 namespace NVL_App
 {
