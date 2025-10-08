@@ -16,6 +16,7 @@ using namespace std;
 
 #include "Grid.h"
 #include "Settings.h"
+#include "Calibration.h"
 
 namespace NVL_App
 {
@@ -24,6 +25,7 @@ namespace NVL_App
 	public:
 		static unique_ptr<Settings> LoadBoardSettings(NVLib::PathHelper * pathHelper);
 		static unique_ptr<Grid> LoadGrid(NVLib::PathHelper * pHelper, Settings * settings, int cameraId, int gridId);
+        static unique_ptr<Calibration> LoadCalibration(NVLib::PathHelper * pHelper, int cameraId);
 	private:
 		static NVL_App::Board * GetBoard(const string& line);
 	};

@@ -48,7 +48,10 @@ void Run(NVL_App::Logger& logger)
     logger << NVL_App::Logger::Color(36) << "Loading grids" << NVL_App::Logger::Save();
     auto grid_1 = NVL_App::LoadUtils::LoadGrid(pathHelper.get(), settings.get(), 0, 0);
     auto grid_2 = NVL_App::LoadUtils::LoadGrid(pathHelper.get(), settings.get(), 0, 1);
-}
+
+    logger << NVL_App::Logger::Color(36) << "Loading calibrations" << NVL_App::Logger::Save();
+    auto calibration = NVL_App::LoadUtils::LoadCalibration(pathHelper.get(), 0);
+ }
 
 //--------------------------------------------------
 // Helper Size

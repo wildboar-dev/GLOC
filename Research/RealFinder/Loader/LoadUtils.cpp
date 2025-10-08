@@ -111,3 +111,53 @@ unique_ptr<Grid> LoadUtils::LoadGrid(NVLib::PathHelper * pHelper, Settings * set
 	// Return the result
 	return unique_ptr<Grid>(new Grid(scenePoints, imagePoints));
 }
+
+//--------------------------------------------------
+// Load Calibration
+//--------------------------------------------------
+
+/**
+ * Load calibration parameters
+ * @param pHelper The associated path helper
+ * @param cameraId The camera that we want the calibration for
+ * @return The calibration parameters that have been loaded
+*/
+unique_ptr<Calibration> LoadUtils::LoadCalibration(NVLib::PathHelper * pHelper, int cameraId) 
+{
+    // Define the name of the calibration file
+    auto fileName = stringstream(); fileName << "Camera_" << cameraId << "_Intrinsic.txt";
+
+    // Defines the path to the calibration files
+    auto path = pHelper->GetPath("Tool_Output", fileName.str());
+
+    // Open the calibration file
+    auto reader = ifstream(path); if (!reader.is_open()) throw runtime_error("Unable to open file: " + path);
+
+    // Create variables to hold the matrices
+    auto camera = Mat(); auto distortion = Mat();
+
+    // Read the camera matrix
+    for (auto row = 0; row < 3; row++) 
+    {
+        for (auto column = 0; column < 3; column++) 
+        {
+            auto value = 0.0; reader >> value;
+            if (camera.empty()) camera = Mat::zeros(3, 3, CV_64F);
+            camera.at<double>(row, column) = value;
+        }
+    }
+
+    // Read the distortion matrix
+    for (auto i = 0; i < 4; i++) 
+    {
+        auto value = 0.0; reader >> value;
+        if (distortion.empty()) distortion = Mat::zeros(1, 5, CV_64F);
+        distortion.at<double>(0, i) = value;
+    }
+
+    // Close the reader
+    reader.close();
+
+    // Return the result
+    return unique_ptr<Calibration>(new Calibration(camera, distortion));
+}
