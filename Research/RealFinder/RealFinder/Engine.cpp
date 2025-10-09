@@ -74,6 +74,9 @@ void Engine::Run()
     Log() << Logger::Color(32) << "Saving the distortion parameters to disk" << Logger::Save();
     Mat distortion = (Mat_<double>(4, 1) << result[0], result[1], result[2], result[3]);
     SaveResult(_pathHelper, meta->GetCameraMatrix(), distortion);
+
+    Log() << Logger::Color(32) << "Saving the undistorted points to disk" << Logger::Save();
+    SavePoints(_pathHelper, points.get(), meta->GetCameraMatrix(), distortion);
 }
 
 //--------------------------------------------------
@@ -106,5 +109,33 @@ void Engine::SaveResult(NVLib::PathHelper * pathHelper, Mat& camera, Mat& distCo
  */
 void Engine::SavePoints(NVLib::PathHelper * pathHelper, Points * points, Mat& camera, Mat& distCoeffs) 
 {
-    throw runtime_error("Not implemented yet");
+    // Check to see if a meta folder already exists
+    auto folderPath = pathHelper->GetPath("Distortion");
+    if (!NVLib::FileUtils::Exists(folderPath)) NVLib::FileUtils::AddFolder(folderPath);
+
+    // Open up a FileStorage XML generate the meta file
+    auto filePath = pathHelper->GetPath("Distortion", "points.txt");
+    auto writer = ofstream(filePath);
+    if (!writer.is_open()) throw runtime_error("Unable to open file: " + filePath);
+
+    // Find the undistorted points
+    auto distortion = Vec4d(distCoeffs.at<double>(0), distCoeffs.at<double>(1), distCoeffs.at<double>(2), distCoeffs.at<double>(3));
+    auto upoints = HelperUtils::Undistort(camera, distortion, points);
+
+    // Write the header
+    writer << "X,Y,Z,u1,v1,u2,v2" << endl;
+
+    // Write the points
+    for (auto i = 0; i < upoints->PointCount(); i++) 
+    {
+        auto scenePoint = upoints->GetScenePoints()[i];
+        auto imagePoint_1 = upoints->GetImagePoints_1()[i];
+        auto imagePoint_2 = upoints->GetImagePoints_2()[i];
+        writer << fixed << setprecision(11) << scenePoint.x << "," << scenePoint.y << "," << scenePoint.z << ",";
+        writer << fixed << setprecision(11) << imagePoint_1.x << "," << imagePoint_1.y << ",";
+        writer << fixed << setprecision(11) << imagePoint_2.x << "," << imagePoint_2.y << endl;
+    }
+
+    // Release the file
+    writer.close();
 }
