@@ -34,7 +34,7 @@ unique_ptr<Points> HelperUtils::Undistort(Mat& cameraMatrix, const Vec4d& distCo
 
 	// cout << "Using distortion: " << distCoeffs << endl;
 
-	auto term = TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 500, DBL_EPSILON);
+	auto term = TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 1000, DBL_EPSILON);
 	undistortPoints(ipoints_1, points_1, cameraMatrix, distCoeffs, Mat(), cameraMatrix, term);
 	undistortPoints(ipoints_2, points_2, cameraMatrix, distCoeffs, Mat(), cameraMatrix, term);
 

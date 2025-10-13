@@ -51,7 +51,7 @@ void Engine::Run()
     auto meta = NVL_App::MetaLoader::Load(_pathHelper->GetPath("Meta","meta.xml"));
 
     Log() << "Setting up a basic cost function" << meta->GetCameraMatrix() << Logger::Save();
-    auto x0 = VectorXd::Zero(4);
+    auto x0 = (VectorXd)VectorXd::Zero(4); 
     auto costFunction = DCostFunction(meta->GetCameraMatrix(), {0,1,2,3}, points.get());
 
     Log() << Logger::Color(34) << "Determining the initial error score" << Logger::Save();
@@ -59,9 +59,10 @@ void Engine::Run()
     Log() << Logger::Color(34) << "Initial Score: " << initialScore << Logger::Save();
 
     Log() << Logger::Color(34) << "Refining the model" << Logger::Save();
-    //auto result = GradientDescent::Solve(&costFunction, x0, 1000, 1e-10);
-    //auto result = PSearch::Solve(&costFunction, x0, 100, 1e-2, 1e4);
+    //auto result = GradientDescent::Solve(&costFunction, x0, 100, 1e-8);
+    //auto result = PSearch::Solve(&costFunction, x0, 100, 1e-2, 300);
     auto result = FPSearch::Solve(&costFunction, x0, 100, 1e-2, 150, DBL_EPSILON);
+    //auto result = x0;
 
     auto finalScore = costFunction.Evaluate(result);
     Log() << NVL_App::Logger::Color(34) << "Final Score: " << finalScore << NVL_App::Logger::Save();

@@ -13,6 +13,7 @@ using namespace std;
 using namespace cv;
 
 #include <NVLib/Path/PathHelper.h>
+#include <NVLib/PoseUtils.h>
 #include <NVLib/FileUtils.h>
 
 #include <RealFinderLib/Logger.h>
@@ -26,6 +27,8 @@ using namespace cv;
 //--------------------------------------------------
 void Run(NVL_App::Logger& logger);
 unique_ptr<NVLib::PathHelper> CreatePathHelper();
+Mat FindPose(Mat& camera, Mat& distortion, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints);
+Vec2d FindRepoError(Mat& camera, Mat& distortion, Mat& pose, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints);
 
 //--------------------------------------------------
 // Main entry point into the application
@@ -36,7 +39,7 @@ unique_ptr<NVLib::PathHelper> CreatePathHelper();
  * @param logger The logger that we are using
  */
 void Run(NVL_App::Logger& logger) 
-{
+{ 
     logger << NVL_App::Logger::Color(36) << "Creating a path helper" << NVL_App::Logger::Save();
     auto pathHelper = CreatePathHelper();
     
@@ -48,6 +51,72 @@ void Run(NVL_App::Logger& logger)
 
     logger << NVL_App::Logger::Color(36) << "Loading undistorted points" << NVL_App::Logger::Save();
     auto points = NVL_App::PointLoader::Load(pathHelper->GetPath("Points","points.txt"));
+
+    logger << NVL_App::Logger::Color(36) << "Finding the pose of the first board" << NVL_App::Logger::Save();
+    auto pose_1 = FindPose(meta->GetCameraMatrix(), dparams->GetDistortion(), points->GetScenePoints(), points->GetImagePoints_1());
+    auto error_1 = FindRepoError(dparams->GetCamera(), dparams->GetDistortion(), pose_1, points->GetScenePoints(), points->GetImagePoints_1());
+    logger << NVL_App::Logger::Color(36) << "Pose found with error: [" << error_1[0] << "," << error_1[1] << "]" << NVL_App::Logger::Save();
+
+    logger << NVL_App::Logger::Color(36) << "Finding the pose of the second board" << NVL_App::Logger::Save();
+    auto pose_2 = FindPose(meta->GetCameraMatrix(), dparams->GetDistortion(), points->GetScenePoints(), points->GetImagePoints_2());
+    auto error_2 = FindRepoError(dparams->GetCamera(), dparams->GetDistortion(), pose_2, points->GetScenePoints(), points->GetImagePoints_2());
+    logger << NVL_App::Logger::Color(36) << "Pose found with error: [" << error_2[0] << "," << error_2[1] << "]" << NVL_App::Logger::Save();     
+}
+
+//--------------------------------------------------
+// Calculation Helpers
+//--------------------------------------------------
+
+/**
+ * Find the pose of the calibration board
+ * @param camera The camera matrix
+ * @param distortion The distortion parameters
+ * @param scenePoints The associated 3D scene Points
+ * @param imagePoints The related image points
+ */
+Mat FindPose(Mat& camera, Mat& distortion, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints) 
+{
+    // Initialize the rotation and translation vectors
+    auto rvec = Vec3d(), tvec = Vec3d();
+
+    // Find the pose using solvePnP
+    solvePnP(scenePoints, imagePoints, camera, distortion, rvec, tvec);
+
+    // Return the result
+    return NVLib::PoseUtils::Vectors2Pose(rvec, tvec);
+}
+
+/**
+ * Find the reprojection error
+ * @param camera The camera matrix
+ * @param distortion The distortion parameters
+ * @param pose The pose matrix
+ * @param scenePoints The associated 3D scene Points
+ * @param imagePoints The related image points
+ */
+Vec2d FindRepoError(Mat& camera, Mat& distortion, Mat& pose, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints) 
+{
+    // Decompose the pose into rotation and translation
+    auto rvec = Vec3d(), tvec = Vec3d(); NVLib::PoseUtils::Pose2Vectors(pose, rvec, tvec);
+
+    // Add the logic to project points        
+    auto actual = vector<Point2d>(); projectPoints(scenePoints, rvec, tvec, camera, distortion, actual);
+
+    // Create a vector to hold errors
+    auto errors = vector<double>();
+
+    // Iterate through all points
+    for (size_t i = 0; i < scenePoints.size(); i++) {
+
+        // Compute the error
+        errors.push_back(norm(actual[i] - imagePoints[i]));
+    }
+
+    // Compute the mean and standard deviation of the errors
+    auto mean = Scalar(), stddev = Scalar(); meanStdDev(errors, mean, stddev);
+
+    // Return the error
+    return Vec2d(mean[0], stddev[0]);
 }
 
 //--------------------------------------------------

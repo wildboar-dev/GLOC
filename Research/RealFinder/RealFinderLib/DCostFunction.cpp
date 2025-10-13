@@ -52,8 +52,8 @@ double DCostFunction::Evaluate(const Eigen::VectorXd& inputs)
 
     // Setup the camera matrix
     Mat camera = _camera.clone();
-    camera.at<double>(0, 2) = _parameters->GetCx();
-    camera.at<double>(1, 2) = _parameters->GetCy();
+    //camera.at<double>(0, 2) = _parameters->GetCx();
+    //camera.at<double>(1, 2) = _parameters->GetCy();
 
     // Get the distortion parameters
     Mat distortion = _parameters->GetDistortion();
