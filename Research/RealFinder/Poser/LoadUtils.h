@@ -22,6 +22,6 @@ namespace NVL_App
 	class LoadUtils
 	{
 	public:
-		static unique_ptr<DParams> LoadDParams(NVLib::PathHelper * pathHelper);
+		static unique_ptr<DParams> LoadDParams(const string& path);
 	};
 }

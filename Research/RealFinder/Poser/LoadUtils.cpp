@@ -15,10 +15,18 @@ using namespace NVL_App;
 
 /**
  * @brief Loads distortion parameters from disk
- * @param pathHelper A link to the path helper for finding the input
+ * @param path The path to the distortion parameters file	
  * @return unique_ptr<DParams> Returns a unique_ptr<DParams>
  */
-unique_ptr<DParams> LoadUtils::LoadDParams(NVLib::PathHelper * pathHelper)
+unique_ptr<DParams> LoadUtils::LoadDParams(const string& path)
 {
-	throw runtime_error("Not implemented");
+	auto reader = FileStorage(path, FileStorage::READ | FileStorage::FORMAT_XML);
+	if (!reader.isOpened()) throw runtime_error("Could not open distortion parameters file: " + path);
+
+	Mat camera, distortion;
+	reader["CameraMatrix"] >> camera;
+	reader["DistCoeffs"] >> distortion;
+	reader.release();
+
+	return make_unique<DParams>(camera, distortion);
 }

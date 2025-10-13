@@ -19,6 +19,8 @@ using namespace cv;
 #include <RealFinderLib/MetaLoader.h>
 #include <RealFinderLib/PointLoader.h>
 
+#include "LoadUtils.h"
+
 //--------------------------------------------------
 // Function Prototypes
 //--------------------------------------------------
@@ -40,6 +42,9 @@ void Run(NVL_App::Logger& logger)
     
     logger << NVL_App::Logger::Color(36) << "Loading Meta" << NVL_App::Logger::Save();
     auto meta = NVL_App::MetaLoader::Load(pathHelper->GetPath("Meta","meta.xml"));
+
+    logger << NVL_App::Logger::Color(36) << "Loading Distortion Parameters" << NVL_App::Logger::Save();
+    auto dparams = NVL_App::LoadUtils::LoadDParams(pathHelper->GetPath("Distortion","result.xml"));
 
     logger << NVL_App::Logger::Color(36) << "Loading undistorted points" << NVL_App::Logger::Save();
     auto points = NVL_App::PointLoader::Load(pathHelper->GetPath("Points","points.txt"));
