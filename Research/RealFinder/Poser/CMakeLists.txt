@@ -12,6 +12,7 @@ include_directories("../")
 # Create the executable
 add_executable(Poser
     Source.cpp
+    LoadUtils.cpp
 )
 
 # Add link libraries                               

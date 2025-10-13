@@ -1,0 +1,24 @@
+<?xml version="1.0" ?> 
+
+<class> 
+
+<namespace>NVL_App</namespace> 
+<solution>RealFinderLib</solution> 
+<name>LoadUtils</name> 
+<description>Utilities for loading data from disk</description> 
+
+<includes>    
+    <include name="iostream" namespace="std" local="false" /> 
+    <include name="opencv2/opencv.hpp" namespace="cv" local="false" />
+    <include name="NVLib/Path/PathHelper.h" local="false" />
+    <include name="DParams.h" local="true" />
+</includes> 
+
+<methods>    
+
+<!-- Load Distortion from disk -->
+<method section="Distortion" modifiers="static" access="public" return="unique_ptr<DParams>" name="LoadDParams" description="Loads distortion parameters from disk" inline="false"> 
+    <parameter type="NVLib::PathHelper *" name="pathHelper" description="A link to the path helper for finding the input" /> 
+</method> 
+
+</class> 

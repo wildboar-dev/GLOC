@@ -16,11 +16,14 @@ using namespace cv;
 #include <NVLib/FileUtils.h>
 
 #include <RealFinderLib/Logger.h>
+#include <RealFinderLib/MetaLoader.h>
+#include <RealFinderLib/PointLoader.h>
 
 //--------------------------------------------------
 // Function Prototypes
 //--------------------------------------------------
 void Run(NVL_App::Logger& logger);
+unique_ptr<NVLib::PathHelper> CreatePathHelper();
 
 //--------------------------------------------------
 // Main entry point into the application
@@ -32,7 +35,38 @@ void Run(NVL_App::Logger& logger);
  */
 void Run(NVL_App::Logger& logger) 
 {
-    logger << NVL_App::Logger::Color(36) << "Call the the run method invoked" << NVL_App::Logger::Save();   
+    logger << NVL_App::Logger::Color(36) << "Creating a path helper" << NVL_App::Logger::Save();
+    auto pathHelper = CreatePathHelper();
+    
+    logger << NVL_App::Logger::Color(36) << "Loading Meta" << NVL_App::Logger::Save();
+    auto meta = NVL_App::MetaLoader::Load(pathHelper->GetPath("Meta","meta.xml"));
+
+    logger << NVL_App::Logger::Color(36) << "Loading undistorted points" << NVL_App::Logger::Save();
+    auto points = NVL_App::PointLoader::Load(pathHelper->GetPath("Points","points.txt"));
+}
+
+//--------------------------------------------------
+// Create a path helper
+//--------------------------------------------------
+
+/**
+ * Create the path helper
+ * @return The path helper
+ */
+unique_ptr<NVLib::PathHelper> CreatePathHelper() 
+{
+    // Load the configuration file
+    FileStorage fs("config.xml", FileStorage::READ);
+    if (!fs.isOpened()) throw runtime_error("Failed to open configuration file: config.xml");
+
+    // Read the database and dataset
+    string databasePath, datasetName;
+    fs["database"] >> databasePath;
+    fs["dataset"] >> datasetName;
+    fs.release();
+
+    // Create the path helper
+    return make_unique<NVLib::PathHelper>(databasePath, datasetName);
 }
 
 //--------------------------------------------------
