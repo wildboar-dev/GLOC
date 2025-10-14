@@ -84,6 +84,16 @@ void Run(NVL_App::Logger& logger)
     logger << NVL_App::Logger::Color(36) << "Finding the reprojection error" << NVL_App::Logger::Save();
     auto repo_error_2 = FindRepoError(meta->GetCameraMatrix(), pose_2, points->GetScenePoints(), points->GetImagePoints_2(), H_2);
     logger << NVL_App::Logger::Color(36) << "Reprojection error: " << repo_error_2[0] << " +/- " << repo_error_2[1] << NVL_App::Logger::Save();
+
+    /////////////////////////////////////////////////
+
+    logger << NVL_App::Logger::Color(36) << "Saving the result to disk" << NVL_App::Logger::Save();
+    auto writer = FileStorage(pathHelper->GetPath("Distortion","pose.xml"), FileStorage::WRITE | FileStorage::FORMAT_XML);
+    writer << "Pose_1" << pose_1;
+    writer << "Pose_2" << pose_2;
+    writer << "H_1" << H_1;
+    writer << "H_2" << H_2;
+    writer.release();
 }
 
 //--------------------------------------------------
