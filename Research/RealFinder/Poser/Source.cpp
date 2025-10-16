@@ -30,7 +30,40 @@ using namespace cv;
 // Defines a Cost Class
 //--------------------------------------------------
 
+class ReprojectionCost : public NVL_App::CostBase
+{
+private:
+    Mat _camera;
+    vector<Point3d> _scenePoints;
+    vector<Point2d> _imagePoints;   
+public:
+    ReprojectionCost(const Mat& camera, const vector<Point3d>& scenePoints, const vector<Point2d>& imagePoints)
+        : _camera(camera), _scenePoints(scenePoints), _imagePoints(imagePoints) {}
 
+    virtual double Evaluate(const Eigen::VectorXd& inputs) override
+    {
+        auto rvec = Vec3d(inputs[0], inputs[1], inputs[2]);
+        auto tvec = Vec3d(inputs[3], inputs[4], inputs[5]);
+        Mat pose = NVLib::PoseUtils::Vectors2Pose(rvec, tvec);
+
+        auto actualPoints = vector<Point2d>();
+        projectPoints( _scenePoints, rvec, tvec, _camera, Mat(), actualPoints);
+
+        auto errors = vector<double>();
+        for (auto i = 0; i < actualPoints.size(); i++) 
+        {
+            auto diff = actualPoints[i] - _imagePoints[i];
+            auto e = NVLib::Math2D::GetMagnitude(diff);
+            errors.push_back(e * e);
+        }
+
+        // Find the mean error
+        double mean = 0; for (auto e : errors) mean += e; mean /= errors.size();
+
+        // Return the mean error
+        return mean;
+    }
+};
 
 //--------------------------------------------------
 // Function Prototypes
@@ -346,8 +379,37 @@ unique_ptr<NVLib::PathHelper> CreatePathHelper()
  * @param imagePoints The related image points
  */
 Mat RefinePose(Mat& camera, Mat& initialPose, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints)
-{
-    throw runtime_error("Not implemented");
+
+    // Extract the rotation and translation vectors from the initial pose
+    auto plink = (double *)initialPose.data;
+    auto rvec = Vec3d(), tvec = Vec3d();
+    Mat R = (Mat_<double>(3,3) << plink[0], plink[1], plink[2], plink[4], plink[5], plink[6], plink[8], plink[9], plink[10]);
+    Rodrigues(R, rvec);
+    tvec = Vec3d(plink[3], plink[7], plink[11]);
+
+    // Create the cost function
+    auto cost = ReprojectionCost(camera, scenePoints, imagePoints);
+
+    // Create the optimizer
+    OptLib::Common::Optimizer optimizer;
+
+    // Set the initial parameters
+    Eigen::VectorXd inputs(6);
+    inputs[0] = rvec[0]; inputs[1] = rvec[1]; inputs[2] = rvec[2];
+    inputs[3] = tvec[0]; inputs[4] = tvec[1]; inputs[5] = tvec[2];
+
+    // Optimize the parameters
+    optimizer.SetCostFunction(&cost);
+    optimizer.SetInitialParameters(inputs);
+    optimizer.Optimize();
+
+    // Get the optimized parameters
+    auto optimizedInputs = optimizer.GetOptimizedParameters();
+
+    // Convert back to pose matrix
+    auto optimizedRVec = Vec3d(optimizedInputs[0], optimizedInputs[1], optimizedInputs[2]);
+    auto optimizedTVec = Vec3d(optimizedInputs[3], optimizedInputs[4], optimizedInputs[5]);
+    return NVLib::PoseUtils::Vectors2Pose(optimizedRVec, optimizedTVec);
 }
 
 //--------------------------------------------------
