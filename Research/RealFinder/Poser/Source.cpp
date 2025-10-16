@@ -14,6 +14,7 @@ using namespace cv;
 
 #include <NVLib/Path/PathHelper.h>
 #include <NVLib/Math2D.h>
+#include <NVLib/Math3D.h>
 #include <NVLib/PoseUtils.h>
 #include <NVLib/FileUtils.h>
 
@@ -21,7 +22,15 @@ using namespace cv;
 #include <RealFinderLib/MetaLoader.h>
 #include <RealFinderLib/PointLoader.h>
 
+#include <OptLib/Common/CostBase.h>
+
 #include "LoadUtils.h"
+
+//--------------------------------------------------
+// Defines a Cost Class
+//--------------------------------------------------
+
+
 
 //--------------------------------------------------
 // Function Prototypes
@@ -30,8 +39,11 @@ void Run(NVL_App::Logger& logger);
 unique_ptr<NVLib::PathHelper> CreatePathHelper();
 Mat FindPose(Mat& camera, Mat& H);
 Mat FindPose(Mat& camera, Mat& distortion, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints);
-Vec2d FindRepoError(Mat& camera, Mat& pose, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints, Mat& H);
+Vec2d FindRepoError(Mat& camera, Mat& pose, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints);
 Vec2d FindHError(Mat& H, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints);
+unique_ptr<NVL_App::Points> GetIdealPoints(NVL_App::Points * points, Mat& H_1, Mat& H_2);
+void WriteTsaiPoints(const string& filePath, NVL_App::Points * points, Mat& relativePose);
+Mat RefinePose(Mat& camera, Mat& initialPose, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints);
 
 //--------------------------------------------------
 // Main entry point into the application
@@ -64,10 +76,10 @@ void Run(NVL_App::Logger& logger)
 
     logger << NVL_App::Logger::Color(36) << "Finding the pose" << NVL_App::Logger::Save();
     auto pose_1 = FindPose(meta->GetCameraMatrix(), H_1);
-    //cout << "Pose: " << pose_1 << endl;
+    cout << "Pose: " << pose_1 << endl;
 
     logger << NVL_App::Logger::Color(36) << "Finding the reprojection error" << NVL_App::Logger::Save();
-    auto repo_error_1 = FindRepoError(meta->GetCameraMatrix(), pose_1, points->GetScenePoints(), points->GetImagePoints_1(), H_1);
+    auto repo_error_1 = FindRepoError(meta->GetCameraMatrix(), pose_1, points->GetScenePoints(), points->GetImagePoints_1());
     logger << NVL_App::Logger::Color(36) << "Reprojection error: " << repo_error_1[0] << " +/- " << repo_error_1[1] << NVL_App::Logger::Save();
 
     /////////////////////////////////////////////////
@@ -79,10 +91,10 @@ void Run(NVL_App::Logger& logger)
 
     logger << NVL_App::Logger::Color(36) << "Finding the pose" << NVL_App::Logger::Save();
     auto pose_2 = FindPose(meta->GetCameraMatrix(), H_2);
-    //cout << "Pose: " << pose_2 << endl;
+    cout << "Pose: " << pose_2 << endl;
 
     logger << NVL_App::Logger::Color(36) << "Finding the reprojection error" << NVL_App::Logger::Save();
-    auto repo_error_2 = FindRepoError(meta->GetCameraMatrix(), pose_2, points->GetScenePoints(), points->GetImagePoints_2(), H_2);
+    auto repo_error_2 = FindRepoError(meta->GetCameraMatrix(), pose_2, points->GetScenePoints(), points->GetImagePoints_2());
     logger << NVL_App::Logger::Color(36) << "Reprojection error: " << repo_error_2[0] << " +/- " << repo_error_2[1] << NVL_App::Logger::Save();
 
     /////////////////////////////////////////////////
@@ -94,6 +106,31 @@ void Run(NVL_App::Logger& logger)
     writer << "H_1" << H_1;
     writer << "H_2" << H_2;
     writer.release();
+
+    /////////////////////////////////////////////////
+
+    logger << NVL_App::Logger::Color(32) << "Finding Relative pose" << NVL_App::Logger::Save();
+    auto relative = (Mat)(pose_1.inv() * pose_2);
+    cout << "Relative Pose: " << relative << endl;
+    auto idealPoints = GetIdealPoints(points.get(), H_1, H_2);
+    WriteTsaiPoints(pathHelper->GetPath("Distortion","tsai_points.txt"), idealPoints.get(), relative);
+
+    //-----------------------------------> Test
+    logger << NVL_App::Logger::Color(36) << "Confirm the reformatted scene points" << NVL_App::Logger::Save();
+
+    auto s = vector<Point3d>(); auto p = vector<Point2d>();
+
+    for (auto i = 0; i < idealPoints->GetScenePoints().size(); i++) 
+    {
+        p.push_back(idealPoints->GetImagePoints_2()[i]);
+
+        auto scenePoint = (Mat)(relative * (Mat_<double>(4,1) << points->GetScenePoints()[i].x, points->GetScenePoints()[i].y, points->GetScenePoints()[i].z, 1));
+        auto slink = (double *)scenePoint.data;
+        s.push_back(Point3d(slink[0] / slink[3], slink[1] / slink[3], slink[2] / slink[3]));
+    }
+
+    auto repo_error_3 = FindRepoError(meta->GetCameraMatrix(), pose_1, s, p);
+    logger << NVL_App::Logger::Color(36) << "Reprojection error: " << repo_error_3[0] << " +/- " << repo_error_3[1] << NVL_App::Logger::Save();
 }
 
 //--------------------------------------------------
@@ -113,7 +150,7 @@ Mat FindPose(Mat& camera, Mat& H)
 
     auto v_1 = Vec3d(mlink[0], mlink[3], mlink[6]);
     auto v_2 = Vec3d(mlink[1], mlink[4], mlink[7]);
-    auto v_3 = v_1.cross(v_2);
+    auto v_3 = v_2.cross(v_1);
     auto t = Vec3d(mlink[2], mlink[5], mlink[8]);
     auto mag = sqrt(v_1[0] * v_1[0] + v_1[1] * v_1[1] + v_1[2] * v_1[2]); 
 
@@ -153,7 +190,7 @@ Mat FindPose(Mat& camera, Mat& distortion, vector<Point3d>& scenePoints, vector<
  * @param scenePoints The associated 3D scene Points
  * @param imagePoints The related image points
  */
-Vec2d FindRepoError(Mat& camera, Mat& pose, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints, Mat& H) 
+Vec2d FindRepoError(Mat& camera, Mat& pose, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints) 
 {
     // Reduce the pose matrix
     Mat M = Mat_<double>(3,4); auto mlink = (double *)M.data; auto plink = (double *)pose.data;
@@ -214,6 +251,66 @@ Vec2d FindHError(Mat& H, vector<Point3d>& scenePoints, vector<Point2d>& imagePoi
 }
 
 //--------------------------------------------------
+// Write Tsai Points
+//--------------------------------------------------
+
+/**
+ * Get the ideal points for the Tsai calibration
+ * @param points The points that we are using
+ * @param H_1 The homography for board 1
+ * @param H_2 The homography for board 2
+ * @return The ideal points
+ */
+unique_ptr<NVL_App::Points> GetIdealPoints(NVL_App::Points * points, Mat& H_1, Mat& H_2) 
+{
+    // Create the vectors to hold the ideal points
+    auto idealImagePoints_1 = vector<Point2d>();
+    auto idealImagePoints_2 = vector<Point2d>();
+
+    // Process each point
+    for (auto i = 0; i < points->PointCount(); i++) 
+    {
+        idealImagePoints_1.push_back(NVLib::Math2D::Transform(H_1, Point2d(points->GetScenePoints()[i].x, points->GetScenePoints()[i].y)));
+        idealImagePoints_2.push_back(NVLib::Math2D::Transform(H_2, Point2d(points->GetScenePoints()[i].x, points->GetScenePoints()[i].y)));
+    }
+
+    // Return the new points
+    return make_unique<NVL_App::Points>(points->GetScenePoints(), idealImagePoints_1, idealImagePoints_2);
+}
+
+/**
+ * Write the Tsai points to disk
+ * @param filePath The file path that we are writing to
+ * @param points The points that we are writing
+ * @param relativePose The relative pose between the two boards
+ */
+void WriteTsaiPoints(const string& filePath, NVL_App::Points * points, Mat& relativePose) 
+{
+    // Open the file for writing
+    ofstream writer(filePath);
+    if (!writer.is_open()) throw runtime_error("Failed to open file for writing: " + filePath);
+
+    // Write the points for the first board
+    for (auto i = 0; i < points->PointCount(); i++) 
+    {
+        writer << points->GetScenePoints()[i].x << " " << points->GetScenePoints()[i].y << " " << points->GetScenePoints()[i].z << " "
+               << points->GetImagePoints_1()[i].x << " " << points->GetImagePoints_1()[i].y << endl;
+    }
+
+    // Write the points for the second board
+    for (auto i = 0; i < points->PointCount(); i++) 
+    {
+        auto scenePoint = (Mat)(relativePose * (Mat_<double>(4,1) << points->GetScenePoints()[i].x, points->GetScenePoints()[i].y, points->GetScenePoints()[i].z, 1));
+
+        writer << scenePoint.at<double>(0) << " " << scenePoint.at<double>(1) << " " << scenePoint.at<double>(2) << " "
+               << points->GetImagePoints_2()[i].x << " " << points->GetImagePoints_2()[i].y << endl;
+    }
+
+    // Close the file
+    writer.close();
+}
+
+//--------------------------------------------------
 // Create a path helper
 //--------------------------------------------------
 
@@ -235,6 +332,22 @@ unique_ptr<NVLib::PathHelper> CreatePathHelper()
 
     // Create the path helper
     return make_unique<NVLib::PathHelper>(databasePath, datasetName);
+}
+
+//--------------------------------------------------
+// Pose Refinement Logic
+//--------------------------------------------------
+
+/**
+ * Refine the pose using bundle adjustment
+ * @param camera The camera matrix
+ * @param initialPose The initial pose that we are refining
+ * @param scenePoints The associated 3D scene Points
+ * @param imagePoints The related image points
+ */
+Mat RefinePose(Mat& camera, Mat& initialPose, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints)
+{
+    throw runtime_error("Not implemented");
 }
 
 //--------------------------------------------------
