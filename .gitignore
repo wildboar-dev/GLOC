@@ -27,10 +27,11 @@ Tests/Distortion_0001/build/
 Tests/MultiCharuco/build/
 Tests/Calibrator/build/
 Tests/GTrainer/build/
+Tests/DyNet/build/
+Tools/Tsai/build/
 
 # Tools
 Tools/ZhangFinder/build
-Tests/DyNet/build/
 
 # Research
 Research/Meme/build/

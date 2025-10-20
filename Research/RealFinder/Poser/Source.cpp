@@ -23,6 +23,10 @@ using namespace cv;
 #include <RealFinderLib/PointLoader.h>
 
 #include <OptLib/Common/CostBase.h>
+#include <OptLib/PSearch/PSearch.h>
+#include <OptLib/PSearch/FPSearch.h>
+#include <OptLib/GradientDescent/GradientDescent.h>
+#include <OptLib/LM/LMSolver.h>
 
 #include "LoadUtils.h"
 
@@ -46,6 +50,9 @@ public:
         auto tvec = Vec3d(inputs[3], inputs[4], inputs[5]);
         Mat pose = NVLib::PoseUtils::Vectors2Pose(rvec, tvec);
 
+        Mat camera = _camera.clone(); auto clink = (double *) camera.data;
+        //clink[4] *= inputs[6];
+
         auto actualPoints = vector<Point2d>();
         projectPoints( _scenePoints, rvec, tvec, _camera, Mat(), actualPoints);
 
@@ -54,7 +61,7 @@ public:
         {
             auto diff = actualPoints[i] - _imagePoints[i];
             auto e = NVLib::Math2D::GetMagnitude(diff);
-            errors.push_back(e * e);
+            errors.push_back(e);
         }
 
         // Find the mean error
@@ -111,11 +118,15 @@ void Run(NVL_App::Logger& logger)
     auto pose_1 = FindPose(meta->GetCameraMatrix(), H_1);
     cout << "Pose: " << pose_1 << endl;
 
+    logger << NVL_App::Logger::Color(36) << "Refining the pose" << NVL_App::Logger::Save();
+    pose_1 = RefinePose(meta->GetCameraMatrix(), pose_1, points->GetScenePoints(), points->GetImagePoints_1());
+    cout << "Refined Pose: " << pose_1 << endl;
+
     logger << NVL_App::Logger::Color(36) << "Finding the reprojection error" << NVL_App::Logger::Save();
     auto repo_error_1 = FindRepoError(meta->GetCameraMatrix(), pose_1, points->GetScenePoints(), points->GetImagePoints_1());
     logger << NVL_App::Logger::Color(36) << "Reprojection error: " << repo_error_1[0] << " +/- " << repo_error_1[1] << NVL_App::Logger::Save();
 
-    /////////////////////////////////////////////////
+    // /////////////////////////////////////////////////
 
     logger << NVL_App::Logger::Color(36) << "Find the homography for the second board" << NVL_App::Logger::Save();
     auto H_2 = findHomography(points->GetScenePoints(), points->GetImagePoints_2());
@@ -126,13 +137,17 @@ void Run(NVL_App::Logger& logger)
     auto pose_2 = FindPose(meta->GetCameraMatrix(), H_2);
     cout << "Pose: " << pose_2 << endl;
 
+    logger << NVL_App::Logger::Color(36) << "Refining the pose" << NVL_App::Logger::Save();
+    pose_2 = RefinePose(meta->GetCameraMatrix(), pose_2, points->GetScenePoints(), points->GetImagePoints_2());
+    cout << "Refined Pose: " << pose_2 << endl;
+
     logger << NVL_App::Logger::Color(36) << "Finding the reprojection error" << NVL_App::Logger::Save();
     auto repo_error_2 = FindRepoError(meta->GetCameraMatrix(), pose_2, points->GetScenePoints(), points->GetImagePoints_2());
     logger << NVL_App::Logger::Color(36) << "Reprojection error: " << repo_error_2[0] << " +/- " << repo_error_2[1] << NVL_App::Logger::Save();
 
-    /////////////////////////////////////////////////
+    // /////////////////////////////////////////////////
 
-    logger << NVL_App::Logger::Color(36) << "Saving the result to disk" << NVL_App::Logger::Save();
+    // logger << NVL_App::Logger::Color(36) << "Saving the result to disk" << NVL_App::Logger::Save();
     auto writer = FileStorage(pathHelper->GetPath("Distortion","pose.xml"), FileStorage::WRITE | FileStorage::FORMAT_XML);
     writer << "Pose_1" << pose_1;
     writer << "Pose_2" << pose_2;
@@ -140,7 +155,7 @@ void Run(NVL_App::Logger& logger)
     writer << "H_2" << H_2;
     writer.release();
 
-    /////////////////////////////////////////////////
+    // /////////////////////////////////////////////////
 
     logger << NVL_App::Logger::Color(32) << "Finding Relative pose" << NVL_App::Logger::Save();
     auto relative = (Mat)(pose_1.inv() * pose_2);
@@ -177,24 +192,42 @@ void Run(NVL_App::Logger& logger)
  */
 Mat FindPose(Mat& camera, Mat& H) 
 {
-    Mat M = camera.inv() * H;
+    Mat workH = camera.inv() * H;
 
-    auto mlink = (double *) M.data;
+    //cout << "WorkH: " << workH << endl;
 
-    auto v_1 = Vec3d(mlink[0], mlink[3], mlink[6]);
-    auto v_2 = Vec3d(mlink[1], mlink[4], mlink[7]);
-    auto v_3 = v_2.cross(v_1);
-    auto t = Vec3d(mlink[2], mlink[5], mlink[8]);
-    auto mag = sqrt(v_1[0] * v_1[0] + v_1[1] * v_1[1] + v_1[2] * v_1[2]); 
+    Mat pose = Mat_<double>::eye(3, 4);
 
-    Mat P = Mat_<double>::eye(4,4); auto plink = (double *)P.data;
-    plink[0] = v_1[0]; plink[1] = v_2[0]; plink[2] = v_3[0]; plink[3] = t[0];
-    plink[4] = v_1[1]; plink[5] = v_2[1]; plink[6] = v_3[1]; plink[7] = t[1];
-    plink[8] = v_1[2]; plink[9] = v_2[2]; plink[10] = v_3[2]; plink[11] = t[2];
 
-    P *= (1.0 / mag); plink[15] = 1.0;
+    double norm1 = (double)norm(workH.col(0));  
+    double norm2 = (double)norm(workH.col(1));  
+    double tnorm = (norm1 + norm2) / 2.0; // Normalization value
+    tnorm = 1.0 / tnorm;
 
-    return P;
+    Mat p1 = workH.col(0);       // Pointer to first column of H
+    Mat p2 = pose.col(0);    // Pointer to first column of pose (empty)
+
+    cv::normalize(p1, p2);   // Normalize the rotation, and copies the column to pose
+    //cout << "pose: " << pose << endl;
+
+    p1 = H.col(1);           // Pointer to second column of H
+    p2 = pose.col(1);        // Pointer to second column of pose (empty)
+
+    cv::normalize(p1, p2);   // Normalize the rotation and copies the column to pose
+    //cout << "pose: " << pose << endl;
+
+    p1 = pose.col(0);
+    p2 = pose.col(1);
+
+    Mat p3 = p1.cross(p2);   // Computes the cross-product of p1 and p2
+    Mat c2 = pose.col(2);    // Pointer to third column of pose
+    p3.copyTo(c2);       // Third column is the crossproduct of columns one and two
+
+    pose.col(3) = (workH.col(2) * tnorm);  //vector t [R|t] is the last column of pose    
+
+    //cout << "pose: " << pose << endl;
+
+    return pose;    
 }
 
 /**
@@ -379,36 +412,29 @@ unique_ptr<NVLib::PathHelper> CreatePathHelper()
  * @param imagePoints The related image points
  */
 Mat RefinePose(Mat& camera, Mat& initialPose, vector<Point3d>& scenePoints, vector<Point2d>& imagePoints)
-
+{
     // Extract the rotation and translation vectors from the initial pose
-    auto plink = (double *)initialPose.data;
-    auto rvec = Vec3d(), tvec = Vec3d();
-    Mat R = (Mat_<double>(3,3) << plink[0], plink[1], plink[2], plink[4], plink[5], plink[6], plink[8], plink[9], plink[10]);
-    Rodrigues(R, rvec);
-    tvec = Vec3d(plink[3], plink[7], plink[11]);
+    auto rvec = Vec3d(), tvec = Vec3d(); NVLib::PoseUtils::Pose2Vectors(initialPose, rvec, tvec);
 
     // Create the cost function
     auto cost = ReprojectionCost(camera, scenePoints, imagePoints);
 
+    // Create the parameter vector
+    auto params = VectorXd(6); 
+    params << rvec[0], rvec[1], rvec[2], tvec[0], tvec[1], tvec[2];
+
+    // Get the initial cost
+    auto initialCost = cost.Evaluate(params);
+    cout << "Initial Cost: " << initialCost << endl;
+
     // Create the optimizer
-    OptLib::Common::Optimizer optimizer;
-
-    // Set the initial parameters
-    Eigen::VectorXd inputs(6);
-    inputs[0] = rvec[0]; inputs[1] = rvec[1]; inputs[2] = rvec[2];
-    inputs[3] = tvec[0]; inputs[4] = tvec[1]; inputs[5] = tvec[2];
-
-    // Optimize the parameters
-    optimizer.SetCostFunction(&cost);
-    optimizer.SetInitialParameters(inputs);
-    optimizer.Optimize();
-
-    // Get the optimized parameters
-    auto optimizedInputs = optimizer.GetOptimizedParameters();
+    auto solver = NVL_App::LMSolver(&cost);
+    auto result = solver.Solve(params);
+    //params = NVL_App::FPSearch::Solve(&cost, params, 100, 1e-6, 5e5);
 
     // Convert back to pose matrix
-    auto optimizedRVec = Vec3d(optimizedInputs[0], optimizedInputs[1], optimizedInputs[2]);
-    auto optimizedTVec = Vec3d(optimizedInputs[3], optimizedInputs[4], optimizedInputs[5]);
+    auto optimizedRVec = Vec3d(params[0], params[1], params[2]);
+    auto optimizedTVec = Vec3d(params[3], params[4], params[5]);
     return NVLib::PoseUtils::Vectors2Pose(optimizedRVec, optimizedTVec);
 }
 
